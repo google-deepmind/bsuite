@@ -1,0 +1,71 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% BSUITE LATEX PREAMBLE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Use this LaTeX code to generate an automatic bsuite appendix for your paper
+% submission. First\input{bsuite_preamble} before your \begin{document}, you can
+% fill in the custom \buitecolab, \bsuiteradarplot, \bsuitebarplot to link to
+% the necessary bsuite assets for publication.
+%
+% Next, fill in the necessary sections of bsuite_appendix, and either copy/paste
+% or \input{} this into your conference file to create an appendix page.
+%
+% For some conference formats (e.g. ICLR) it is important to allow margin change
+% \includepackage{geometry}, we do not include this in the preamble by default.
+%
+% Remember that \input{bsuite_preamble.tex} is essentially equivalent to
+% copy/paste... and in some cases that approach will be much easier to debug!
+
+\usepackage{caption}
+\usepackage{changepage}
+\usepackage{enumitem}
+\usepackage{graphicx}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DO NOT CHANGE THESE LINKS
+%
+% These are useful commands that are used in the bsuite_appendix.
+% You should not change these from their default values.
+
+\newcommand{\bsuite}{\texttt{bsuite}}
+\newcommand{\bsuiteversion}{\texttt{bsuite2019}}
+\newcommand{\bsuitegithub}{\url{github.com/deepmind/bsuite}}
+
+% This is a Macro that returns a title = bsuite report: Your Paper Title.
+\newcommand{\bsuitetitle}[1]{
+\rule{\linewidth}{4pt}
+\vspace{-5mm}
+
+\section{\hfil \LARGE \normalfont
+\bsuite\ report: #1
+\vspace{2mm} \hfil
+\vspace{-3mm}
+}
+
+\rule{\linewidth}{1pt}
+}
+
+\newcommand{\bsuiteabstract}{
+{\small
+\begin{adjustwidth}{1.5cm}{1.5cm}
+The \textit{Behaviour Suite for Core Reinforcement Learning}, or \bsuite\ for short, is a collection of carefully-designed experiments that investigate core capabilities of a reinforcement learning (RL) agent.
+The aim of the \bsuite\ project is to collect clear, informative and scalable problems that capture key issues in the design of efficient and general learning algorithms and study agent behaviour through their performance on these shared benchmarks.
+This report provides a snapshot of agent performance on \bsuiteversion, obtained by running the experiments from \bsuitegithub\ \cite{osband2019bsuite}.
+\end{adjustwidth}
+}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHANGE THESE LINKS
+%
+% These are convenience macros that provide links to you bsuite material.
+% Remember that paths to images should be given *relative* to the file that
+% is \input{bsuite_appendix}. In some cases this will be easier to debug
+% if you just copy/paste the tex into your paper file.
+
+\newcommand{\bsuitecolab}{\href{YOUR-LINK-HERE}}  % full bsuite colab report
+\newcommand{\bsuiteradarplot}{images/radar_plot}  % path to radar plot
+\newcommand{\bsuitebarplot}{images/bar_plot}  % path to bar plot
+
+

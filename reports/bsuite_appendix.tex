@@ -1,0 +1,105 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% BSUITE REPORT TEMPLATE %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Use this LaTeX code to generate an automatic bsuite appendix for your paper
+% submission. First \input{bsuite_preamble} before your \begin{document}.
+% You can use the bsuite_preamble to define the location of your plots, plus a
+% link to the full bsuite comments.
+%
+% Then, write a short description of your agents in app:bsuite-agents, and a short
+% commentary on your results in app:bsuite-commentary.
+%
+% For some conference formats (e.g. ICLR) it is important to allow margin change
+% \includepackage{geometry}, we do not include this in the preamble by default.
+%
+
+
+\newpage
+\onecolumn
+
+% If the package does not allow geometry, do not fail
+\ifx\newgeometry\undefined\else
+\newgeometry{top=20mm, bottom=20mm, left=20mm, right=20mm}
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TITLE + ABSTRACT [ADD PAPER TITLE]
+%
+% Macros are defined in bsuite_preamble.tex, use the \label{} to \ref{} from
+% other sections in your paper.
+\bsuitetitle{Your Paper Title}
+\label{app:bsuite-report}
+\bsuiteabstract
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% AGENT DEFINITION [EDIT]
+%
+% Use this section to provide a brief overview of the agents that you run on
+% bsuite. Usually this will involve links to full descriptions elsewhere in
+% your paper.
+
+\subsection{Agent definition}
+\label{app:bsuite-agents}
+In this experiment all implementations are taken from \url{github.com/deepmind/bsuite/baselines} with default configurations.
+We provide a brief summary of the agents run on \bsuiteversion:
+\begin{itemize}[noitemsep, nolistsep]
+    \item {\bf random}: selects action uniformly at random each timestep.
+    \item {\bf dqn}: Deep Q-networks \cite{mnih2015human}.
+    \item {\bf boot\_dqn}: bootstrapped DQN with prior networks \cite{osband2016deep,osband2018rpf}.
+    \item {\bf actor\_critic\_rnn}: an actor critic with recurrent neural network \cite{mnih2016asynchronous}.
+\end{itemize}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SUMMARY SCORES [DO NOT EDIT]
+\subsection{Summary scores}
+\label{app:bsuite-scores}
+
+Each \bsuite\ experiment outputs a summary score in [0,1].
+We aggregate these scores by according to key experiment type, according to the standard analysis notebook.
+A detailed analysis of each of these experiments may be found in a notebook hosted on Colaboratory: \bsuitecolab.
+
+\ifx\newgeometry\undefined\vspace{-2mm}\else\fi % Squeezing for ICML
+
+\begin{figure}[h!]
+\centering
+\begin{minipage}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth,height=60mm,keepaspectratio]{\bsuiteradarplot}
+  \captionof{figure}{Radar plot gives a snapshot of agent behaviour.}
+  \label{fig:radar}
+\end{minipage}%
+\begin{minipage}[t]{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth,height=60mm,keepaspectratio]{\bsuitebarplot}
+  \captionof{figure}{Summary score for each \bsuite\ experiment.}
+  \label{fig:bar}
+\end{minipage}
+\end{figure}
+
+\ifx\newgeometry\undefined\vspace{-2mm}\else\fi % Squeezing for ICML
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% RESULTS COMMENTARY [EDIT]
+
+\subsection{Results commentary}
+\label{app:bsuite-commentary}
+
+\begin{itemize}[noitemsep, nolistsep, leftmargin=*]
+    \item {\bf random} performs poorly across all aspects.
+    This confirms that our scoring functions are working as intended.
+    \item {\bf dqn} performs well on basic tasks, and quite well on credit assignment, generalization, noise and scale.
+    DQN performs extremely poorly across memory and exploration tasks.
+    The feedforward MLP has no mechanism for memory, and $\epsilon$=5\%-greedy action selection is notoriously inefficient in domains that require efficient exploration.
+    \item {\bf boot\_dqn} performs mostly identically to DQN, except for exploration where it greatly outperforms, and also a smaller boost to performance under noise.
+    This result matches our understanding of Bootstrapped DQN as a variant of DQN designed to estimate uncertainty and use this to guide deep exploration.
+    \item {\bf actor\_critic\_rnn} typically performs worse than either DQN or Bootstrapped DQN on all tasks apart from memory.
+    This agent is the only one able to perform better than random due to its recurrent network architecture.
+\end{itemize}
+
+
+\newpage

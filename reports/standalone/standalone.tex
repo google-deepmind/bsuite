@@ -1,0 +1,42 @@
+\documentclass[10pt]{article}
+
+
+\input{../bsuite_preamble}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FORMATTING OPTIONS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{xcolor}
+\usepackage[margin=2cm]{geometry}
+\usepackage{titlesec}
+\definecolor{darkblue}{RGB}{0,0,140}
+\usepackage[colorlinks=true, allcolors=darkblue]{hyperref}
+
+\titlespacing{\section}{0pt}{1ex}{0ex}
+\titlespacing*{\subsection}{0pt}{1ex}{0ex}
+\setlength{\parskip}{6pt}%
+\setlength{\parindent}{0pt}%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DOCUMENT START
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\begin{document}
+
+\appendix
+\input{../bsuite_appendix}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BIBLIOGRAPHY
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{
+\small
+\bibliographystyle{plain}
+\bibliography{references}
+}
+
+
+\end{document}
