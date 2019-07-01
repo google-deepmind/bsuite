@@ -20,5 +20,3 @@ from __future__ import division
 from __future__ import print_function
 
 SETTINGS = tuple({'seed': n, 'height_threshold': n / 20} for n in range(20))
-
-TAGS = ('generalization', 'exploration')

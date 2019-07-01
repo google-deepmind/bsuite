@@ -25,5 +25,3 @@ _log_spaced.extend([12, 14, 17, 20, 25])
 _log_spaced.extend(range(30, 55, 10))
 
 SETTINGS = tuple({'num_mapping': 3, 'num_hierarchy': n} for n in _log_spaced)
-
-TAGS = ('hierarchy',)

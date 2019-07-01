@@ -32,7 +32,7 @@ import mock
 import numpy as np
 
 
-class FakeEnvironment(dm_env.Base):
+class FakeEnvironment(dm_env.Environment):
   """An environment that returns pre-determined rewards and observations."""
 
   def __init__(self, time_steps):

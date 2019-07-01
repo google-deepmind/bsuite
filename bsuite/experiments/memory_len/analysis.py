@@ -20,59 +20,63 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
-from bsuite import plotting
+from bsuite.utils import plotting
 import numpy as np
 import pandas as pd
 import plotnine as gg
 
 from typing import Text, Sequence
 
+EPISODE = 10000
+TAGS = ('memory',)
+PERFECTION_THRESH = 0.5
 
-def score(df: pd.DataFrame) -> float:
+
+def memory_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
+  """Preprocess data for memory environments."""
+  df = df_in.copy()
+  df['perfection_regret'] = df.episode - df.total_perfect
+  return df
+
+
+def score(df: pd.DataFrame, group_col: Text = 'memory_length') -> float:
   """Output a single score for memory_len."""
-  n_eps = 10000
   return_list = []  # Loop to handle partially-finished runs.
-  for _, sub_df in df.groupby('memory_length'):
-    max_eps = np.minimum(sub_df.episode.max(), n_eps)
-    ave_return = (
-        sub_df.loc[sub_df.episode == max_eps, 'total_return'].mean() / max_eps)
-    return_list.append(ave_return)
-  return np.mean(np.array(return_list) > 0.5)
+  for _, sub_df in df.groupby(group_col):
+    max_eps = np.minimum(sub_df.episode.max(), EPISODE)
+    ave_perfection = (
+        sub_df.loc[sub_df.episode == max_eps, 'total_perfect'].mean() / max_eps)
+    return_list.append(ave_perfection)
+  return np.mean(np.array(return_list) > PERFECTION_THRESH)
 
 
-def plot_learning(df_in: pd.DataFrame,
-                  sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+def plot_learning(df: pd.DataFrame,
+                  sweep_vars: Sequence[Text] = None,
+                  group_col: Text = 'memory_length') -> gg.ggplot:
   """Plots the average return through time by memory_length."""
-  df = df_in.copy()
-  df['average_regret'] = 1 - df.total_return / df.episode
-  p = (gg.ggplot(df[df.episode >= 100])
-       + gg.aes('episode', 'average_regret', group='factor(memory_length)',
-                fill='memory_length', colour='memory_length')
-       + gg.geom_line(size=2, alpha=0.75)
-       + gg.geom_hline(
-           gg.aes(yintercept=1.), linetype='dashed', alpha=0.4, size=1.75)
-       + gg.ylab('average regret per episode')
-      )
-  return plotting.facet_sweep_plot(p, sweep_vars, tall_plot=True)
+  df = memory_preprocess(df_in=df)
+  p = plotting.plot_regret_group_nosmooth(
+      df_in=df,
+      group_col=group_col,
+      sweep_vars=sweep_vars,
+      regret_col='perfection_regret',
+      max_episode=EPISODE,
+  )
+  return p + gg.ylab('average % of imperfect episodes')
 
 
-def plot_scale(df_in: pd.DataFrame,
-               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+def plot_scale(df: pd.DataFrame,
+               sweep_vars: Sequence[Text] = None,
+               group_col: Text = 'memory_length') -> gg.ggplot:
   """Plots the average return through time by memory_length."""
-  df = df_in.copy()
-  n_eps = 10000
-  group_vars = (sweep_vars or []) + ['memory_length']
-  plt_df = (df[df.episode == n_eps]
-            .groupby(group_vars)['total_return'].mean().reset_index())
-  plt_df['average_regret'] = 1 - plt_df.total_return / n_eps
-  p = (gg.ggplot(plt_df)
-       + gg.aes('memory_length', 'average_regret',
-                colour='average_regret < 0.5')
-       + gg.geom_point(size=5, alpha=0.8)
-       + gg.scale_x_log10(breaks=[1, 3, 10, 30, 100])
-       + gg.geom_hline(
-           gg.aes(yintercept=1.), linetype='dashed', alpha=0.4, size=1.75)
-       + gg.scale_colour_manual(values=['#d73027', '#313695'])
-       + gg.ylab('average regret at 10k episodes')
-      )
-  return plotting.facet_sweep_plot(p, sweep_vars)
+  df = memory_preprocess(df_in=df)
+  p = plotting.plot_regret_ave_scaling(
+      df_in=df,
+      group_col=group_col,
+      episode=EPISODE,
+      regret_thresh=0.5,
+      sweep_vars=sweep_vars,
+      regret_col='perfection_regret'
+  )
+  p += gg.ylab('% of imperfect episodes after {} episodes'.format(EPISODE))
+  return p

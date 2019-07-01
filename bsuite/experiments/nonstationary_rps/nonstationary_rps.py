@@ -57,6 +57,7 @@ class NonstationaryRPS(auto_reset_environment.Base):
 
     self._probs = self._sample_uniform_dirichlet()
     self._total_regret = 0.
+    self._total_rescaled_regret = 0.
 
   def _sample_uniform_dirichlet(self):
     w = self._rng.exponential(1, size=_NUM_ACTION)

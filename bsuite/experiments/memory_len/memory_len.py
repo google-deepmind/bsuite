@@ -53,8 +53,9 @@ class MemoryChain(auto_reset_environment.Base):
     self._context = self._rng.binomial(1, 0.5, num_bits)
 
     # Logging info
-    self._episode_mistakes = 0
-    self._total_perfect = 0
+    self._episode_mistakes = 0.
+    self._total_perfect = 0.
+    self._total_regret = 0.
 
   def _get_observation(self):
     obs = np.zeros(shape=(1, self._num_bits + 1), dtype=np.float32)
@@ -79,6 +80,7 @@ class MemoryChain(auto_reset_environment.Base):
       else:
         reward = -1.
         self._episode_mistakes += 1
+        self._total_regret += 2.
       return dm_env.termination(reward=reward, observation=observation)
 
     elif self._timestep < self._memory_length + self._num_bits:
@@ -106,4 +108,5 @@ class MemoryChain(auto_reset_environment.Base):
     self._raw_observation = (observation * 255).astype(np.uint8)
 
   def bsuite_info(self):
-    return dict(total_perfect=self._total_perfect)
+    return dict(total_perfect=self._total_perfect,
+                total_regret=self._total_regret)

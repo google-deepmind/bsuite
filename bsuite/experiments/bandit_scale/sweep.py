@@ -26,4 +26,3 @@ for scale in [0.001, 0.03, 1.0, 30., 1000.]:
 
 SETTINGS = tuple(_settings)
 
-TAGS = ('scale',)

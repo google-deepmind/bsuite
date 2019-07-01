@@ -33,11 +33,11 @@ from typing import Any, Mapping, Text
 _STEP_KEY = 'steps'
 
 
-def wrap_environment(env: dm_env.Base,
+def wrap_environment(env: dm_env.Environment,
                      db_path: Text,
                      experiment_name: Text,
                      setting_id: int,
-                     log_by_step: bool = False) -> dm_env.Base:
+                     log_by_step: bool = False) -> dm_env.Environment:
   """Returns a wrapped environment that logs using SQLite."""
   logger = Logger(db_path, experiment_name, setting_id)
   return wrappers.Logging(env, logger, log_by_step=log_by_step)
@@ -128,18 +128,18 @@ class Logger(object):
       primary key (setting_id, steps)
     );'''.format(self._experiment_name, column_declaration)
 
-    print(create_statement)
-
     try:
       with self._connection:
         self._connection.execute(create_statement)
+        print('Created table {} with definition:'.format(self._experiment_name))
+        print(create_statement)
     except sqlite3.OperationalError:
       # There are several possible reasons for this error, e.g. malformed SQL.
       # We only want to ignore the error if the table already exists.
       exception_info = sys.exc_info()
       message = ''.join(traceback.format_exception(*exception_info))
       if 'already exists' in message:
-        print('Table already exists.')
+        print('Table {} already exists.'.format(self._experiment_name))
       else:
         six.reraise(*exception_info)
 

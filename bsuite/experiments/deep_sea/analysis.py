@@ -20,12 +20,15 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
-from bsuite import plotting
+from bsuite.utils import plotting
 import numpy as np
 import pandas as pd
 import plotnine as gg
 
 from typing import Text, Sequence
+
+EPISODE = 10000
+TAGS = ('exploration',)
 
 
 def _check_data(df: pd.DataFrame) -> None:
@@ -38,11 +41,12 @@ def _check_data(df: pd.DataFrame) -> None:
 def find_solution(df_in: pd.DataFrame,
                   sweep_vars: Sequence[Text] = None,
                   merge: bool = True,
-                  thresh: float = 0.9) -> pd.DataFrame:
+                  thresh: float = 0.5) -> pd.DataFrame:
   """Find first episode that gets below thresh regret by sweep_vars."""
   # Check data has the necessary columns for deep sea
   df = df_in.copy()
   _check_data(df)
+  df = df[df.episode <= EPISODE]
 
   # Parse the variables that you are aggregating over
   if sweep_vars is None:
@@ -137,20 +141,20 @@ def _base_scaling(plt_df: pd.DataFrame,
   return p
 
 
-def scaling_plot(plt_df: pd.DataFrame,
+def plot_scaling(plt_df: pd.DataFrame,
                  sweep_vars: Sequence[Text] = None,
                  with_baseline: bool = True) -> gg.ggplot:
   """Plot scaling of learning time against exponential baseline."""
   p = _base_scaling(plt_df, sweep_vars, with_baseline)
   p += gg.xlab('deep sea problem size')
-  p += gg.ylab('#episodes until average regret < 0.9')
+  p += gg.ylab('#episodes until < 90% bad episodes')
   if with_baseline:
     max_steps = np.minimum(10000, plt_df.episode.max())
     p += gg.coord_cartesian(ylim=(0, max_steps))
   return plotting.facet_sweep_plot(p, sweep_vars)
 
 
-def scaling_plot_log(plt_df: pd.DataFrame,
+def plot_scaling_log(plt_df: pd.DataFrame,
                      sweep_vars: Sequence[Text] = None,
                      with_baseline=True) -> gg.ggplot:
   """Plot scaling of learning time against exponential baseline."""
@@ -158,7 +162,7 @@ def scaling_plot_log(plt_df: pd.DataFrame,
   p += gg.scale_x_log10(breaks=[5, 10, 20, 50])
   p += gg.scale_y_log10(breaks=[100, 300, 1000, 3000, 10000])
   p += gg.xlab('deep sea problem size (log scale)')
-  p += gg.ylab('#episodes until average regret < 0.9 (log scale)')
+  p += gg.ylab('#episodes until < 90% bad episodes (log scale)')
   return plotting.facet_sweep_plot(p, sweep_vars)
 
 
@@ -167,16 +171,15 @@ def plot_regret(df_in: pd.DataFrame,
   """Plot average regret of deep_sea through time by size."""
   df = df_in.copy()
   df = df[df['size'].isin([10, 20, 30, 40, 50])]
-  df['total_regret'] = df.optimal_return * df.episode - df.total_return
-  df['average_regret'] = df.total_regret / df.episode
+  df['avg_bad'] = df.total_bad_episodes / df.episode
   df['size'] = df['size'].astype('category')
   p = (gg.ggplot(df)
-       + gg.aes('episode', 'average_regret', group='size', colour='size')
+       + gg.aes('episode', 'avg_bad', group='size', colour='size')
        + gg.geom_line(size=2, alpha=0.75)
        + gg.geom_hline(
            gg.aes(yintercept=0.99), linetype='dashed', alpha=0.4, size=1.75)
        + gg.geom_hline(gg.aes(yintercept=0.0), alpha=0)  # axis hack
-       + gg.ylab('average regret')
+       + gg.ylab('average bad episodes')
        + gg.scale_colour_manual(values=plotting.FIVE_COLOURS)
       )
   return plotting.facet_sweep_plot(p, sweep_vars)

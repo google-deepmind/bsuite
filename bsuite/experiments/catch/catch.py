@@ -27,8 +27,8 @@ import numpy as np
 _ACTIONS = (-1, 0, 1)  # Left, no-op, right.
 
 
-class Catch(dm_env.Base):
-  """A Catch environment built on the dm_env.Base class.
+class Catch(dm_env.Environment):
+  """A Catch environment built on the dm_env.Environment class.
 
   The agent must move a paddle to intercept falling balls. Falling balls only
   move downwards on the column they are in.

@@ -32,11 +32,11 @@ STANDARD_KEYS = frozenset(
     ['steps', 'episode', 'total_return', 'episode_len', 'episode_return'])
 
 
-class Logging(dm_env.Base):
+class Logging(dm_env.Environment):
   """Environment wrapper to track and log bsuite stats."""
 
   def __init__(self,
-               env: dm_env.Base,
+               env: dm_env.Environment,
                logger,
                log_by_step: bool = False,
                log_debug: bool = False):
@@ -138,7 +138,7 @@ def _logarithmic_logging(episode: int, ratios: Sequence[float] = None) -> bool:
   return any(episode == val for val in special_vals)
 
 
-class ImageObservation(dm_env.Base):
+class ImageObservation(dm_env.Environment):
   """Environment wrapper to convert observations to an image-like format."""
 
   def __init__(self, env, shape):
@@ -235,7 +235,7 @@ def to_image(shape, observation):
                      .format(observation.shape, shape))
 
 
-class RewardNoise(dm_env.Base):
+class RewardNoise(dm_env.Environment):
   """Reward Noise environment wrapper."""
 
   def __init__(self, env, noise_scale, seed=None):
@@ -277,7 +277,7 @@ class RewardNoise(dm_env.Base):
     return self._env.bsuite_info()
 
 
-class RewardScale(dm_env.Base):
+class RewardScale(dm_env.Environment):
   """Reward Scale environment wrapper.
   """
 

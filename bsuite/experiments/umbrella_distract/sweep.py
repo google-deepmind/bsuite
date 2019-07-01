@@ -26,4 +26,3 @@ _log_spaced.extend(range(30, 105, 10))
 
 SETTINGS = tuple({'n_distractor': n} for n in _log_spaced)
 
-TAGS = ('credit_assignment',)

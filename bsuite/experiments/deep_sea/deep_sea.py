@@ -77,7 +77,6 @@ class DeepSea(auto_reset_environment.Base):
     self._row = 0
     self._bad_episode = False
     self._total_bad_episodes = 0
-    self._approx_total_regret = 0  # Approximation ignoring move_cost
     self._reset()
 
   def _get_observation(self):
@@ -89,9 +88,6 @@ class DeepSea(auto_reset_environment.Base):
       return obs
 
   def _reset(self):
-    if self._bad_episode:
-      self._total_bad_episodes += 1
-      self._approx_total_regret += self._optimal_return
     self._row = 0
     self._column = 0
     self._bad_episode = False
@@ -121,6 +117,8 @@ class DeepSea(auto_reset_environment.Base):
 
     observation = self._get_observation()
     if self._row == self._size:
+      if self._bad_episode:
+        self._total_bad_episodes += 1
       return dm_env.termination(reward=reward, observation=observation)
     else:
       return dm_env.transition(reward=reward, observation=observation)
@@ -132,7 +130,6 @@ class DeepSea(auto_reset_environment.Base):
     return specs.DiscreteArray(2, name='action')
 
   def bsuite_info(self):
-    return dict(total_bad_episodes=self._total_bad_episodes,
-                approx_total_regret=self._approx_total_regret)
+    return dict(total_bad_episodes=self._total_bad_episodes)
 
 

@@ -15,7 +15,7 @@
 # ============================================================================
 """Behaviour Suite.
 
-Each environment defines extra "columns of interest" to log, mechanism TBC.
+Each environment defines extra "columns of interest" to log.
 Each environment also has a basic 0-indexed discrete action space and a single
 observation.
 """
@@ -24,8 +24,6 @@ from __future__ import absolute_import
 from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
-
-from absl import flags
 
 from bsuite import sweep
 from bsuite.experiments.bandit import bandit
@@ -45,6 +43,9 @@ from bsuite.experiments.hierarchy_sea import hierarchy_sea
 from bsuite.experiments.hierarchy_sea_explore import hierarchy_sea_explore
 from bsuite.experiments.memory_len import memory_len
 from bsuite.experiments.memory_size import memory_size
+from bsuite.experiments.mnist import mnist
+from bsuite.experiments.mnist_noise import mnist_noise
+from bsuite.experiments.mnist_scale import mnist_scale
 from bsuite.experiments.mountain_car import mountain_car
 from bsuite.experiments.mountain_car_noise import mountain_car_noise
 from bsuite.experiments.mountain_car_scale import mountain_car_scale
@@ -55,9 +56,6 @@ from bsuite.experiments.umbrella_length import umbrella_length
 
 import dm_env
 from typing import Any, Mapping, Text
-
-FLAGS = flags.FLAGS
-flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite identifier')
 
 # Mapping from experiment name to environment constructor or load function.
 # Each constructor or load function accepts keyword arguments as defined in
@@ -80,6 +78,9 @@ EXPERIMENT_NAME_TO_ENVIRONMENT = dict(
     hierarchy_sea_explore=hierarchy_sea_explore.load,
     memory_len=memory_len.MemoryChain,
     memory_size=memory_size.load,
+    mnist=mnist.MNISTBandit,
+    mnist_noise=mnist_noise.load,
+    mnist_scale=mnist_scale.load,
     mountain_car=mountain_car.MountainCar,
     mountain_car_noise=mountain_car_noise.load,
     mountain_car_scale=mountain_car_scale.load,
@@ -94,17 +95,14 @@ LOG_BY_STEP = frozenset([])
 
 
 def load(name: Text, kwargs: Mapping[Text, Any],
-         log_stats: bool = False) -> dm_env.Base:
+         log_stats: bool = False) -> dm_env.Environment:
   """Configure and load bsuite environment via simple interface."""
   del log_stats  # Not yet implemented.
   return EXPERIMENT_NAME_TO_ENVIRONMENT[name](**kwargs)
 
 
-def load_from_sweep(bsuite_id: Text = None,
-                    log_stats: bool = True) -> dm_env.Base:
-  """Load bsuite environment from bsuite_id, defaults to flag."""
-  if bsuite_id is None:
-    bsuite_id = FLAGS.bsuite_id
+def load_from_id(bsuite_id: Text, log_stats: bool = True) -> dm_env.Environment:
+  """Load bsuite environment from bsuite_id."""
 
   kwargs = sweep.SETTINGS[bsuite_id]
   name = bsuite_id.split(sweep.SEPARATOR)[0]

@@ -13,71 +13,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Analysis for mountain_car."""
+"""Analysis for mountain_car scale environments."""
+
 from __future__ import absolute_import
 from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
-from bsuite import plotting
-from bsuite.experiments.mountain_car import analysis
-from bsuite.utils import smoothers
-
-import numpy as np
+from bsuite.experiments.mountain_car_noise import analysis as mc_noise_analysis
 import pandas as pd
 import plotnine as gg
 
 from typing import Sequence, Text
 
-score = analysis.score
+EPISODE = mc_noise_analysis.EPISODE
+TAGS = ('scale', 'credit_assignment', 'generalization')
+score = mc_noise_analysis.score
 
 
-def plot_learning(df_in: pd.DataFrame,
+def plot_learning(df: pd.DataFrame,
                   sweep_vars: Sequence[Text] = None) -> gg.ggplot:
-  """Plots the average regret through time by reward_scale."""
-  df = df_in.copy()
-  df['average_regret'] = 1 - (df.total_return /(df.episode * df.reward_scale))
-  df['reward_scale'] = df.reward_scale.astype('category')
-  p = (gg.ggplot(df)
-       + gg.aes('episode', 'average_regret', group='reward_scale',
-                colour='reward_scale', fill='reward_scale')
-       + gg.geom_smooth(method=smoothers.mean, span=0.1, size=1.75, alpha=0.1)
-       + gg.scale_colour_manual(values=plotting.FIVE_COLOURS)
-       + gg.scale_fill_manual(values=plotting.FIVE_COLOURS)
-       + gg.scale_y_continuous(breaks=np.arange(0, 1.1, 0.1).tolist())
-       + gg.theme(panel_grid_major_y=gg.element_line(size=2.5),
-                  panel_grid_minor_y=gg.element_line(size=0),)
-       + gg.geom_hline(
-           gg.aes(yintercept=0.5), linetype='dashed', alpha=0.4, size=1.75)
-       + gg.ylab('average regret per timestep')
-       + gg.coord_cartesian(ylim=(0, 1))
-      )
-  return plotting.facet_sweep_plot(p, sweep_vars, tall_plot=True)
+  return mc_noise_analysis.plot_learning(df, sweep_vars, 'reward_scale')
 
 
-def plot_average(df_in: pd.DataFrame,
+def plot_average(df: pd.DataFrame,
                  sweep_vars: Sequence[Text] = None) -> gg.ggplot:
-  """Plots the average regret through time by reward_scale."""
-  df = df_in.copy()
-  n_eps = 10000
-  group_vars = (sweep_vars or []) + ['reward_scale']
-  plt_df = (df[df.episode == n_eps]
-            .groupby(group_vars)['total_return'].mean().reset_index())
-  plt_df['average_arm'] = plt_df.total_return / (n_eps * plt_df.reward_scale)
-  plt_df['average_regret'] = 1 - plt_df.average_arm
-  plt_df['reward_scale'] = plt_df.reward_scale.astype('category')
-
-  p = (gg.ggplot(plt_df)
-       + gg.aes('reward_scale', 'average_regret', fill='reward_scale')
-       + gg.geom_bar(stat='identity')
-       + gg.scale_fill_manual(values=plotting.FIVE_COLOURS)
-       + gg.scale_y_continuous(breaks=np.arange(0, 1.1, 0.1).tolist())
-       + gg.theme(panel_grid_major_y=gg.element_line(size=2.5),
-                  panel_grid_minor_y=gg.element_line(size=0),)
-       + gg.geom_hline(
-           gg.aes(yintercept=0.5), linetype='dashed', alpha=0.4, size=1.75)
-       + gg.ylab('average regret after 10k episodes')
-       + gg.coord_cartesian(ylim=(0, 1))
-      )
-  return plotting.facet_sweep_plot(p, sweep_vars)
-
+  return mc_noise_analysis.plot_average(df, sweep_vars, 'reward_scale')

@@ -25,7 +25,7 @@ from dm_env import specs
 import numpy as np
 
 
-class Cartpole(dm_env.Base):
+class Cartpole(dm_env.Environment):
   """A configurable Cart Pole environment: move a cart to balance a pole.
 
   This implements the classic Cart Pole task as described here:
@@ -75,6 +75,7 @@ class Cartpole(dm_env.Base):
     self._initial_theta = initial_theta
 
     # Updating internal state
+    self._raw_return = 0.
     self._state = np.zeros((1, 5))
 
   def reset(self):
@@ -124,6 +125,7 @@ class Cartpole(dm_env.Base):
                  and np.abs(x) < self._x_reward_threshold)
     reward = float(is_reward)
     reward -= self._move_cost * np.abs(action - 1)
+    self._raw_return += reward
 
     if time_elapsed > self._max_time or np.abs(x) > self._width_threshold:
       self._reset_next_step = True
@@ -147,3 +149,6 @@ class Cartpole(dm_env.Base):
     obs[0, 3] /= np.pi
     obs[0, 4] /= self._max_time
     return obs
+
+  def bsuite_info(self):
+    return dict(raw_return=self._raw_return)

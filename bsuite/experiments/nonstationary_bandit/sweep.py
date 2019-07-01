@@ -26,4 +26,3 @@ for gamma in [0.5, 0.75, 0.9, 0.95, 0.99]:
 
 SETTINGS = tuple(_settings)
 
-TAGS = ('nonstationarity',)

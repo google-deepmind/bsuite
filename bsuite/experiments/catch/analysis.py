@@ -19,33 +19,29 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
-from bsuite import plotting
-from bsuite.utils import smoothers
-
-import numpy as np
+from bsuite.utils import plotting
 import pandas as pd
 import plotnine as gg
 
 from typing import Sequence, Text
 
 
+BASE_REGRET = 1.
+EPISODE = 10000
+TAGS = ('basic',)
+
+
 def score(df: pd.DataFrame) -> float:
   """Output a single score for catch."""
-  n_eps = np.minimum(df.episode.max(), 10000)
-  mean_regret = df.loc[df.episode == n_eps, 'total_regret'].mean() / n_eps
-  return np.clip(1 - mean_regret, 0, 1)
+  return plotting.ave_regret_score(
+      df, baseline_regret=BASE_REGRET, episode=EPISODE)
 
 
-def plot(df: pd.DataFrame,
-         sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+def plot_learning(df: pd.DataFrame,
+                  sweep_vars: Sequence[Text] = None) -> gg.ggplot:
   """Simple learning curves for catch."""
-  p = (gg.ggplot(df)
-       + gg.aes('episode', 'mean_regret')
-       + gg.geom_smooth(method=smoothers.mean, span=0.05, size=2, alpha=0.1,
-                        colour='#313695', fill='#313695')
-       + gg.geom_hline(
-           gg.aes(yintercept=1.), linetype='dashed', alpha=0.4, size=1.75)
-       + gg.geom_hline(gg.aes(yintercept=0.0), alpha=0)  # axis hack
-       + gg.ylab('average regret')
-      )
-  return plotting.facet_sweep_plot(p, sweep_vars)
+  p = plotting.plot_regret_learning(
+      df, sweep_vars=sweep_vars, max_episode=EPISODE)
+  p += gg.geom_hline(
+      gg.aes(yintercept=BASE_REGRET), linetype='dashed', alpha=0.4, size=1.75)
+  return p

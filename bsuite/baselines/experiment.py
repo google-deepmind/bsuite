@@ -24,15 +24,17 @@ from absl import logging
 
 from bsuite.baselines import base
 import dm_env
+import numpy as np
 import pandas as pd
 
+from typing import Sequence
 
-def run_experiment(agent: base.Agent,
-                   environment: dm_env.Base,
-                   num_episodes: int = None,
-                   verbose: bool = False) -> pd.DataFrame:
-  """Runs the experiment."""
 
+def run(agent: base.Agent,
+        environment: dm_env.Environment,
+        num_episodes: int = None,
+        verbose: bool = False) -> pd.DataFrame:
+  """Runs an agent on an environment and returns basic performance data."""
   if num_episodes is None:
     num_episodes = float('inf')
 
@@ -69,10 +71,20 @@ def run_experiment(agent: base.Agent,
         'episode_return': episode_return,
         'total_return': total_return,
     }
-    results.append(result)
     if verbose:
       logging.info(result)
-
+    if logarithmic_logging(episode):  # Only log at exponential intervals
+      results.append(result)
     episode += 1
 
   return pd.DataFrame(results)
+
+
+def logarithmic_logging(episode: int, ratios: Sequence[float] = None) -> bool:
+  """Returns `True` only at specific ratios of 10**exponent."""
+  if ratios is None:
+    ratios = [1., 1.2, 1.4, 1.7, 2., 2.5, 3., 4., 5., 6., 7., 8., 9., 10.]
+  exponent = np.floor(np.log10(np.maximum(1, episode)))
+  special_vals = [10**exponent * ratio for ratio in ratios]
+  do_log = any([episode == val for val in special_vals])
+  return do_log

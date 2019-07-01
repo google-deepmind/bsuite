@@ -26,4 +26,3 @@ for winning_update in [0.01, 0.03, 0.1, 0.3, 0.9]:
 
 SETTINGS = tuple(_settings)
 
-TAGS = ('nonstationarity',)

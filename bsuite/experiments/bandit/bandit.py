@@ -58,7 +58,7 @@ class SimpleBandit(auto_reset_environment.Base):
 
   def _step(self, action):
     reward = self._rewards[action]
-    self._total_regret += self._optimal_return - self._rewards[action]
+    self._total_regret += self._optimal_return - reward
     observation = self._get_observation()
     return dm_env.termination(reward=reward, observation=observation)
 

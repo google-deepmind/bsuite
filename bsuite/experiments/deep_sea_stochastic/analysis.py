@@ -13,12 +13,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Analysis for deep sea."""
+"""Analysis for deep sea stochastic.
+
+We say that a deep sea episode is 'bad' when the agent takes a move 'left'
+while it on the 'optimal' trajectory. However, for the stochastic case this
+means that the agent can have few 'bad' trajectories just by luck of the
+environment noise. To make sure that this is not by dumb luck, we use a more
+stringent threshold and only once the agent has done at least 100 episodes.
+"""
 from __future__ import absolute_import
 from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
-# pylint:disable=wildcard-import
-# pylint:disable=unused-import
-from bsuite.experiments.deep_sea.analysis import *
+from bsuite.experiments.deep_sea import analysis as deep_sea_analysis
+
+import pandas as pd
+
+from typing import Text, Sequence
+
+EPISODE = deep_sea_analysis.EPISODE
+TAGS = ('exploration', 'noise')
+
+score = deep_sea_analysis.score
+plot_scaling = deep_sea_analysis.plot_scaling
+plot_scaling_log = deep_sea_analysis.plot_scaling_log
+plot_regret = deep_sea_analysis.plot_regret
+
+
+def find_solution(df_in: pd.DataFrame,
+                  sweep_vars: Sequence[Text] = None) -> pd.DataFrame:
+  """Find first solution episode, with harsher thresh for stochastic domain."""
+  df = df_in.copy()
+  df = df[df.episode >= 100]
+  return deep_sea_analysis.find_solution(df, sweep_vars, thresh=0.25)

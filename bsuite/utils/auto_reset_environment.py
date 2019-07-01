@@ -27,7 +27,7 @@ import abc
 import dm_env
 
 
-class Base(dm_env.Base):
+class Base(dm_env.Environment):
   """This class implements the required `step()` and `reset()` methods.
 
   It instead requires users to implement `_step()` and `_reset()`. This class

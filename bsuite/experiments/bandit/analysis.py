@@ -20,65 +20,37 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
-from bsuite import plotting
-from bsuite.utils import smoothers
+from bsuite.utils import plotting
 import numpy as np
 import pandas as pd
 import plotnine as gg
 from typing import Text, Sequence
 
+BASE_REGRET = 0.5
+EPISODE = 10000
+TAGS = ('basic',)
+
 
 def score(df: pd.DataFrame) -> float:
-  """Output a single score for reward_noise."""
-  n_eps = np.minimum(df.episode.max(), 10000)
-  mean_regret = df.loc[df.episode == n_eps, 'total_regret'].mean() / n_eps
-  unclipped_score = (0.5 - mean_regret) / 0.5
-  return np.clip(unclipped_score, 0, 1)
+  """Output a single score for bandit experiment."""
+  return plotting.ave_regret_score(
+      df, baseline_regret=BASE_REGRET, episode=EPISODE)
 
 
-def plot_learning(df_in: pd.DataFrame,
+def plot_learning(df: pd.DataFrame,
                   sweep_vars: Sequence[Text] = None) -> gg.ggplot:
-  """Plots the average regret through time by noise_scale."""
-  df = df_in.copy()
-  df['noise_scale'] = df.noise_scale.astype('category')
-  df['average_regret'] = df.total_regret / df.episode
-  p = (gg.ggplot(df)
-       + gg.aes('episode', 'average_regret', group='noise_scale',
-                colour='noise_scale', fill='noise_scale')
-       + gg.geom_smooth(method=smoothers.mean, span=0.1, size=1.75, alpha=0.1)
-       + gg.scale_colour_manual(values=plotting.FIVE_COLOURS)
-       + gg.scale_fill_manual(values=plotting.FIVE_COLOURS)
-       + gg.scale_y_continuous(breaks=np.arange(0, 1.1, 0.1).tolist())
-       + gg.theme(panel_grid_major_y=gg.element_line(size=2.5),
-                  panel_grid_minor_y=gg.element_line(size=0),)
-       + gg.geom_hline(
-           gg.aes(yintercept=0.5), linetype='dashed', alpha=0.4, size=1.75)
-       + gg.ylab('average regret per timestep')
-       + gg.coord_cartesian(ylim=(0, 1))
-      )
-  return plotting.facet_sweep_plot(p, sweep_vars, tall_plot=True)
+  """Plots the average regret through time."""
+  p = plotting.plot_regret_learning(
+      df, sweep_vars=sweep_vars, max_episode=EPISODE)
+  return bandit_learning_format(p)
 
 
-def plot_average(df_in: pd.DataFrame,
-                 sweep_vars: Sequence[Text] = None) -> gg.ggplot:
-  """Plots the average regret through time by noise_scale."""
-  df = df_in.copy()
-  n_eps = 10000
-  group_vars = (sweep_vars or []) + ['noise_scale']
-  plt_df = (df[df.episode == n_eps]
-            .groupby(group_vars)['total_regret'].mean().reset_index())
-  plt_df['noise_scale'] = plt_df.noise_scale.astype('category')
-  plt_df['average_regret'] = plt_df.total_regret / n_eps
-  p = (gg.ggplot(plt_df)
-       + gg.aes('noise_scale', 'average_regret', fill='noise_scale')
-       + gg.geom_bar(stat='identity')
-       + gg.scale_fill_manual(values=plotting.FIVE_COLOURS)
-       + gg.scale_y_continuous(breaks=np.arange(0, 1.1, 0.1).tolist())
-       + gg.theme(panel_grid_major_y=gg.element_line(size=2.5),
-                  panel_grid_minor_y=gg.element_line(size=0),)
-       + gg.geom_hline(
-           gg.aes(yintercept=0.5), linetype='dashed', alpha=0.4, size=1.75)
-       + gg.ylab('average regret after 10k steps')
-       + gg.coord_cartesian(ylim=(0, 1))
-      )
-  return plotting.facet_sweep_plot(p, sweep_vars)
+def bandit_learning_format(plot: gg.ggplot) -> gg.ggplot:
+  """Add nice bandit formatting to ggplot."""
+  plot += gg.scale_y_continuous(breaks=np.arange(0, 1.1, 0.1).tolist())
+  plot += gg.theme(panel_grid_major_y=gg.element_line(size=2.5),
+                   panel_grid_minor_y=gg.element_line(size=0))
+  plot += gg.geom_hline(
+      gg.aes(yintercept=BASE_REGRET), linetype='dashed', alpha=0.4, size=1.75)
+  plot += gg.coord_cartesian(ylim=(0, 1))
+  return plot

@@ -16,7 +16,7 @@
 """Reusable TestCase for environments in bsuite.
 
 This generally kicks the tyres on an environment, and checks that it complies
-with the interface contract for dm_env.Base.
+with the interface contract for dm_env.Environment.
 
 Here we assume the environment simply exposes and accepts standalone arrays for
 actions and observations, rather than handling the general case of arbitrarily
@@ -35,7 +35,7 @@ import dm_env
 
 
 class EnvironmentTestMixin(object):
-  """Mixin to help test implementations of dm_env.Base."""
+  """Mixin to help test implementations of dm_env.Environment."""
 
   def setUp(self):
     super(EnvironmentTestMixin, self).setUp()

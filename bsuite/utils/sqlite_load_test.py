@@ -63,12 +63,17 @@ class SqliteLoadTest(absltest.TestCase):
     connection = sqlite3.connect(':memory:')
 
     generate_results(
-        experiment_name='test', setting_id=1, connection=connection)
+        experiment_name='catch', setting_id=1, connection=connection)
     generate_results(
-        experiment_name='test', setting_id=2, connection=connection)
+        experiment_name='catch', setting_id=2, connection=connection)
 
     df = sqlite_load.load_bsuite(db_path='unused', connection=connection)
     self.assertLen(df, _NUM_WRITES * 2)
+
+    # Check that sweep metadata is joined correctly.
+    # Catch includes a 'seed' parameter, so we expect to see it here.
+    self.assertIn('seed', df.columns)
+    self.assertIn('bsuite_id', df.columns)
 
 
 if __name__ == '__main__':

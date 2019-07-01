@@ -1,0 +1,76 @@
+# pylint: disable=g-bad-file-header
+# Copyright 2019 The bsuite Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or  implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+"""Runs a random agent on a bsuite experiment."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import multiprocessing
+import os
+
+from absl import app
+from absl import flags
+
+from bsuite import bsuite
+from bsuite import sweep
+from bsuite.baselines import experiment
+from bsuite.baselines.random import random
+from bsuite.utils import sqlite_logging
+
+flags.DEFINE_string('db_path', None, 'sqlite database path for results')
+flags.DEFINE_integer('processes', None, 'number of processes')
+flags.DEFINE_integer('num_episodes', 10000, 'number of episodes to run')
+
+FLAGS = flags.FLAGS
+
+_MAX_DB_INDEX = 100000
+
+
+def run(args):
+  bsuite_id, num_episodes, db_path = args
+  print('Running {} and saving results to {}'.format(bsuite_id, db_path))
+  experiment_name, setting_id = bsuite_id.split(sweep.SEPARATOR)
+  raw_env = bsuite.load_from_id(bsuite_id)
+  env = sqlite_logging.wrap_environment(
+      raw_env, db_path, experiment_name, setting_id)
+  agent = random.Random(action_spec=env.action_spec())
+  experiment.run(agent, env, num_episodes=num_episodes)
+
+
+def _get_database_path():
+  """Returns a path to a new sqlite database file, or FLAGS.db_path if set."""
+  if FLAGS.db_path is not None:
+    return FLAGS.db_path
+
+  for i in range(_MAX_DB_INDEX):
+    db_path = '/tmp/bsuite_demo_{}.db'.format(i)
+    if not os.path.exists(db_path):
+      break
+  else:
+    raise RuntimeError('Could not create a database file in /tmp')
+  return db_path
+
+
+def main(argv):
+  del argv  # Unused.
+  db_path = _get_database_path()
+  args = [(s, FLAGS.num_episodes, db_path) for s in sweep.SWEEP]
+  pool = multiprocessing.Pool(FLAGS.processes)
+  pool.map(run, args)
+
+if __name__ == '__main__':
+  app.run(main)

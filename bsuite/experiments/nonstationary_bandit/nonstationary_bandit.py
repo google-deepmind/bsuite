@@ -65,6 +65,7 @@ class NonstationaryBandit(auto_reset_environment.Base):
     return dm_env.restart(observation)
 
   def _step(self, action):
+    # Compute the regret
     self._total_regret += self.optimal_return - self._probs[action]
     reward = float(self._rng.binomial(1, self._probs[action]))
 

@@ -25,10 +25,7 @@ from typing import Any, Sequence
 
 
 class Replay(object):
-  """Uniform replay buffer.
-
-  Allocates all required memory at the time of initialization.
-  """
+  """Uniform replay buffer. Allocates all required memory initialization."""
 
   def __init__(self, capacity: int):
     """Initializes a new `Replay`.
@@ -61,6 +58,10 @@ class Replay(object):
     indices = np.random.randint(self.size, size=size)
     return [slot[indices] for slot in self._data]
 
+  def reset(self,):
+    """Resets the replay."""
+    self._data = None
+
   @property
   def size(self) -> int:
     return min(self._capacity, self._num_added)
@@ -74,12 +75,12 @@ class Replay(object):
     as_array = []
     for item in items:
       if item is None:
-        raise ValueError("Cannot store `None` objects in replay.")
+        raise ValueError('Cannot store `None` objects in replay.')
       as_array.append(np.asarray(item))
 
     self._data = [np.zeros(dtype=x.dtype, shape=(self._capacity,) + x.shape)
                   for x in as_array]
 
   def __repr__(self):
-    return "Replay: size={}, capacity={}, num_added={}".format(
+    return 'Replay: size={}, capacity={}, num_added={}'.format(
         self.size, self._capacity, self._num_added)

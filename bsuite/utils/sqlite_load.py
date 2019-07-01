@@ -38,7 +38,8 @@ def join_metadata(df: pd.DataFrame) -> pd.DataFrame:
   for bsuite_id, env_kwargs in metadata.items():
     # Add environment and id to dataframe.
     bsuite_env = bsuite_id.split(sweep.SEPARATOR)[0]
-    env_kwargs.update(dict(bsuite_id=bsuite_id, bsuite_env=bsuite_env))
+    env_kwargs['bsuite_id'] = bsuite_id
+    env_kwargs['bsuite_env'] = bsuite_env
     data.append(env_kwargs)
 
   df_out = df.copy()
@@ -75,6 +76,9 @@ def load_bsuite(db_path: Text,
   dataframes = []
   for table_name in table_names:
     dataframe = pd.read_sql_query('select * from ' + table_name[0], connection)
+    dataframe['bsuite_id'] = [table_name[0] + sweep.SEPARATOR + str(setting_id)
+                              for setting_id in dataframe.setting_id]
     dataframes.append(dataframe)
 
-  return pd.concat(dataframes, sort=False)
+  df = pd.concat(dataframes, sort=False)
+  return join_metadata(df)

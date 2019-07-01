@@ -37,7 +37,8 @@ def _reduced_names_and_kwargs():
     name = bsuite_id.split(sweep.SEPARATOR)[0]
     keywords = set(kwargs)
     if name != last_name or keywords != last_keywords:
-      result.append((name, kwargs))
+      if 'mnist' not in name:
+        result.append((name, kwargs))
     last_name = name
     last_keywords = keywords
   return result

@@ -20,10 +20,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
-from bsuite import plotting
-from bsuite.utils import smoothers
-
-import numpy as np
+from bsuite.utils import plotting
 import pandas as pd
 import plotnine as gg
 
@@ -31,28 +28,31 @@ from typing import Text, Sequence
 
 _SOLVED_STEPS = 100
 _WORST_STEPS = 1000
+EPISODE = 1000
+TAGS = ('basic', 'generalization', 'credit_assignment')
+BASE_REGRET = _WORST_STEPS - _SOLVED_STEPS
 
 
 def score(df: pd.DataFrame) -> float:
   """Output a single score for mountain car."""
-  n_eps = np.minimum(df.episode.max(), 10000)
-  mean_steps = -1 * df.loc[df.episode == n_eps, 'raw_return'].mean() / n_eps
-  raw_score = (_WORST_STEPS - mean_steps) / (_WORST_STEPS - _SOLVED_STEPS)
-  return np.clip(raw_score, 0, 1)
+  cp_df = mountain_car_preprocess(df_in=df)
+  return plotting.ave_regret_score(
+      cp_df, baseline_regret=BASE_REGRET, episode=EPISODE)
 
 
-def plot(df_in: pd.DataFrame,
-         sweep_vars: Sequence[Text] = None) -> gg.ggplot:
-  """Simple learning curves for mountain car."""
+def mountain_car_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
+  """Preprocess mountain_car data for use with regret metrics."""
   df = df_in.copy()
-  df['regret'] = (_WORST_STEPS - df.raw_return) / (_WORST_STEPS - _SOLVED_STEPS)
-  p = (gg.ggplot(df)
-       + gg.aes('episode', 'regret')
-       + gg.geom_smooth(method=smoothers.mean, span=0.05, size=2, alpha=0.1,
-                        colour='#313695', fill='#313695')
-       + gg.geom_hline(
-           gg.aes(yintercept=1.), linetype='dashed', alpha=0.4, size=1.75)
-       + gg.geom_hline(gg.aes(yintercept=0.0), alpha=0)  # axis hack
-       + gg.ylab('average regret')
-      )
-  return plotting.facet_sweep_plot(p, sweep_vars)
+  df['total_regret'] = (BASE_REGRET * df.episode) + df.raw_return
+  return df
+
+
+def plot_learning(df: pd.DataFrame,
+                  sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+  """Simple learning curves for mountain_car."""
+  df = mountain_car_preprocess(df)
+  p = plotting.plot_regret_learning(
+      df, sweep_vars=sweep_vars, max_episode=EPISODE)
+  p += gg.geom_hline(gg.aes(yintercept=BASE_REGRET),
+                     linetype='dashed', alpha=0.4, size=1.75)
+  return p

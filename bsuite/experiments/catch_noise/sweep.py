@@ -26,4 +26,3 @@ for scale in [0.1, 0.3, 1.0, 3., 10.]:
 
 SETTINGS = tuple(_settings)
 
-TAGS = ('noise',)

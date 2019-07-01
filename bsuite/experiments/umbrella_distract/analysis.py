@@ -20,22 +20,38 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
-from bsuite.experiments.umbrella_length import analysis
+from bsuite.experiments.umbrella_length import analysis as umbrella_length_analysis
+from bsuite.utils import plotting
 import pandas as pd
 import plotnine as gg
-
 from typing import Sequence, Text
+
+EPISODE = umbrella_length_analysis.EPISODE
+TAGS = ('credit_assignment', 'noise')
 
 
 def score(df: pd.DataFrame) -> float:
-  return analysis.score_by_group(df, 'n_distractor')
+  return umbrella_length_analysis.score_by_group(df, 'n_distractor')
 
 
-def plot_learning(df_in: pd.DataFrame,
+def plot_learning(df: pd.DataFrame,
                   sweep_vars: Sequence[Text] = None) -> gg.ggplot:
-  return analysis.plot_learning_by_group(df_in, 'n_distractor', sweep_vars)
+  """Plots the average regret through time."""
+  return plotting.plot_regret_group_nosmooth(
+      df_in=df,
+      group_col='n_distractor',
+      sweep_vars=sweep_vars,
+      max_episode=EPISODE,
+  )
 
 
-def plot_scale(df_in: pd.DataFrame,
+def plot_scale(df: pd.DataFrame,
                sweep_vars: Sequence[Text] = None) -> gg.ggplot:
-  return analysis.plot_scale_by_group(df_in, 'n_distractor', sweep_vars)
+  """Plots the average return at end of learning investigating scaling."""
+  return plotting.plot_regret_ave_scaling(
+      df_in=df,
+      group_col='n_distractor',
+      episode=EPISODE,
+      regret_thresh=0.5,
+      sweep_vars=sweep_vars,
+  )

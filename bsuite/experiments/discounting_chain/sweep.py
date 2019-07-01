@@ -21,4 +21,3 @@ from __future__ import print_function
 
 SETTINGS = tuple({'seed': n} for n in range(20))
 
-TAGS = ('credit_assignment',)
