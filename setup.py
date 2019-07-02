@@ -38,7 +38,7 @@ setup(
         'pandas',
         'plotnine',
         'scipy',
-        'skimage',
+        'scikit-image',
         'six',
         'tensorflow',
     ],
