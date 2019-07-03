@@ -59,9 +59,9 @@ class MountainCar(auto_reset_environment.Base):
     return np.array([obs], dtype=np.float32)
 
   def _reset(self):
-    """Random initialize in [-0.6, 0.4] and zero velocity."""
+    """Random initialize in [-0.6, -0.4] and zero velocity."""
     self._timestep = 0
-    self._position = self._rng.rand() - 0.6
+    self._position = self._rng.uniform(-0.6, -0.4)
     self._velocity = 0
     return dm_env.restart(self._get_observation())
 
