@@ -45,7 +45,6 @@ class DQN(base.Agent):
       online_network: snt.AbstractModule,
       target_network: snt.AbstractModule,
       batch_size: int,
-      reward_bound: float,
       agent_discount: float,
       replay_capacity: int,
       min_replay_size: int,
@@ -60,7 +59,6 @@ class DQN(base.Agent):
     # DQN configuration and hyperparameters.
     self._action_spec = action_spec
     self._num_actions = action_spec.maximum - action_spec.minimum + 1
-    self._reward_bound = reward_bound
     self._agent_discount = agent_discount
     self._batch_size = batch_size
     self._sgd_period = sgd_period
@@ -113,11 +111,6 @@ class DQN(base.Agent):
   def update(self, old_step: dm_env.TimeStep, action: base.Action,
              new_step: dm_env.TimeStep):
     """Takes in a transition from the environment."""
-
-    # Do reward clipping.
-    new_step = new_step._replace(
-        reward=np.clip(new_step.reward, -self._reward_bound,
-                       self._reward_bound))
 
     # Add this transition to replay.
     self._replay.add([

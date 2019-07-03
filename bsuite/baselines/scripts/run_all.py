@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Runs a random agent on a bsuite experiment."""
+"""Example of generating a full set of bsuite results using multiprocessing."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -28,7 +28,9 @@ from absl import flags
 from bsuite import bsuite
 from bsuite import sweep
 from bsuite.baselines import experiment
+
 from bsuite.baselines.random import random
+
 from bsuite.utils import sqlite_logging
 
 flags.DEFINE_string('db_path', None, 'sqlite database path for results')
@@ -41,13 +43,17 @@ _MAX_DB_INDEX = 100000
 
 
 def run(args):
+  """Runs an agent against a single bsuite environment."""
   bsuite_id, num_episodes, db_path = args
   print('Running {} and saving results to {}'.format(bsuite_id, db_path))
   experiment_name, setting_id = bsuite_id.split(sweep.SEPARATOR)
   raw_env = bsuite.load_from_id(bsuite_id)
   env = sqlite_logging.wrap_environment(
       raw_env, db_path, experiment_name, setting_id)
+
+  # We can replace this with any agent.
   agent = random.Random(action_spec=env.action_spec())
+
   experiment.run(agent, env, num_episodes=num_episodes)
 
 

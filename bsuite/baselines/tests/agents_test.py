@@ -25,6 +25,7 @@ from bsuite.baselines import experiment
 from bsuite.baselines.actor_critic import actor_critic
 from bsuite.baselines.boot_dqn import boot_dqn
 from bsuite.baselines.dqn import dqn
+from bsuite.baselines.popart_dqn import popart_dqn
 from bsuite.baselines.random import random
 import sonnet as snt
 import tensorflow as tf
@@ -64,9 +65,23 @@ class AgentsTest(absltest.TestCase):
     agent = dqn.DQN(
         obs_spec=self._obs_spec, action_spec=self._action_spec,
         online_network=net, target_network=net,
-        batch_size=5, reward_bound=1., agent_discount=.99, replay_capacity=20,
+        batch_size=5, agent_discount=.99, replay_capacity=20,
         min_replay_size=5, sgd_period=1, target_update_period=2,
         optimizer=tf.train.AdamOptimizer(0.01), epsilon=0.1, seed=42)
+    experiment.run(agent, self._env, num_episodes=5)
+
+  def test_popart_dqn(self):
+    torso = snt.Sequential([
+        snt.BatchFlatten(), snt.nets.MLP([10], activate_final=True)])
+    head = snt.Linear(self._num_actions)
+    agent = popart_dqn.PopArtDQN(
+        obs_spec=self._obs_spec, action_spec=self._action_spec,
+        torso=torso, head=head,
+        batch_size=5, agent_discount=.99, replay_capacity=20,
+        min_replay_size=5, update_period=1,
+        optimizer=tf.train.AdamOptimizer(learning_rate=0.01),
+        popart_step_size=0.01, popart_lb=1e-3, popart_ub=1e3,
+        epsilon=0.1, seed=42)
     experiment.run(agent, self._env, num_episodes=5)
 
   def test_random(self):
@@ -76,4 +91,3 @@ class AgentsTest(absltest.TestCase):
 
 if __name__ == '__main__':
   absltest.main()
-
