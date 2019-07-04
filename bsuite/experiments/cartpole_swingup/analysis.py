@@ -77,4 +77,4 @@ def plot_scale(df: pd.DataFrame,
       sweep_vars=sweep_vars,
       regret_col='perfection_regret'
   )
-  return p
+  return p + gg.scale_x_discrete(breaks=[0, 0.25, 0.5, 0.75, 1.0])

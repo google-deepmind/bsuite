@@ -13,28 +13,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Set of experiments for investigating specific aspects of agent behaviour.
-
-The behaviour suite (bsuite) is a set of targeted experiments designed to
-investigate specific aspects (and scaling) of agent behaviour.
-
-bsuite logs data "under the hood" to its own dataframe, and requires minimal
-changes to your agent code to generate results.
-
-Use case:
-
-```python
-import bsuite
-env = bsuite.load_from_sweep('catch/0')
-action = 0
-env.step(action)
-```
-"""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-from . import bsuite as _bsuite
-
-load = _bsuite.load
-load_from_id = _bsuite.load_from_id

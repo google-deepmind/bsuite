@@ -63,20 +63,20 @@ def facet_sweep_plot(base_plot: gg.ggplot,
     n_hypers = 1
 
   if n_hypers == 1:
-    fig_size = (10, 6)
+    fig_size = (8, 5)
   elif n_hypers == 2:
-    fig_size = (16, 6)
+    fig_size = (15, 5)
   elif n_hypers == 4:
-    fig_size = (16, 10)
+    fig_size = (15, 9)
   elif n_hypers <= 12:
-    fig_size = (21, 5 * np.divide(n_hypers, 3) + 1)
+    fig_size = (18, 4 * np.divide(n_hypers, 3) + 1)
   else:
     print('WARNING - comparing {} agents at once is more than recommended.'
           .format(n_hypers))
-    fig_size = (21, 16)
+    fig_size = (18, 15)
 
   if tall_plot:
-    fig_size = (fig_size[0], fig_size[1] * 1.4)
+    fig_size = (fig_size[0], fig_size[1] * 1.25)
 
   return base_plot + gg.theme(figure_size=fig_size)
 

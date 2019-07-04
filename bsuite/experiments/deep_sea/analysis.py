@@ -41,7 +41,7 @@ def _check_data(df: pd.DataFrame) -> None:
 def find_solution(df_in: pd.DataFrame,
                   sweep_vars: Sequence[Text] = None,
                   merge: bool = True,
-                  thresh: float = 0.5) -> pd.DataFrame:
+                  thresh: float = 0.75) -> pd.DataFrame:
   """Find first episode that gets below thresh regret by sweep_vars."""
   # Check data has the necessary columns for deep sea
   df = df_in.copy()

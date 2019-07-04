@@ -26,7 +26,7 @@ import plotnine as gg
 from typing import Sequence, Text
 
 
-BASE_REGRET = 1.
+BASE_REGRET = 1.6
 EPISODE = 10000
 TAGS = ('basic',)
 

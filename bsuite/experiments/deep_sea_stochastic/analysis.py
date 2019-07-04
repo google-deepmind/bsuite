@@ -46,4 +46,4 @@ def find_solution(df_in: pd.DataFrame,
   """Find first solution episode, with harsher thresh for stochastic domain."""
   df = df_in.copy()
   df = df[df.episode >= 100]
-  return deep_sea_analysis.find_solution(df, sweep_vars, thresh=0.25)
+  return deep_sea_analysis.find_solution(df, sweep_vars, thresh=0.5)

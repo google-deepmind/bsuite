@@ -26,7 +26,7 @@ import plotnine as gg
 
 from typing import Text, Sequence
 
-_SOLVED_STEPS = 100
+_SOLVED_STEPS = 20
 _WORST_STEPS = 1000
 EPISODE = 1000
 TAGS = ('basic', 'generalization', 'credit_assignment')
@@ -43,7 +43,9 @@ def score(df: pd.DataFrame) -> float:
 def mountain_car_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
   """Preprocess mountain_car data for use with regret metrics."""
   df = df_in.copy()
-  df['total_regret'] = (BASE_REGRET * df.episode) + df.raw_return
+  ideal_total_return = _SOLVED_STEPS * -1 * df.episode
+  total_return = df.raw_return  # Sum of all rewards so far.
+  df['total_regret'] = ideal_total_return - total_return
   return df
 
 
