@@ -111,7 +111,8 @@ for bsuite_summary in BSUITE_INFO.values():
 def _is_finished(df: pd.DataFrame, n_min: int) -> bool:
   """Check to see if every bsuite id in the dataframe is finished."""
   # At this point we have grouped by any additional hyperparameters.
-  assert len(set(df.bsuite_id)) == len(set(df.wid))
+  if 'wid' in df.columns:
+    assert len(set(df.bsuite_id)) == len(set(df.wid))
   max_time = df.groupby('bsuite_id')['episode'].max().reset_index()
   return max_time['episode'].min() >= n_min
 
