@@ -41,6 +41,7 @@ setup(
         'scikit-image',
         'six',
         'tensorflow',
+        'trfl',
     ],
     tests_require=[
         'absl-py',
