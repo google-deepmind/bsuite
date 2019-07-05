@@ -20,10 +20,13 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+import collections
+
 from bsuite import sweep
 import pandas as pd
+import six
 import sqlite3
-from typing import Text
+from typing import Mapping, Sequence, Text, Union
 
 _CATEGORICAL_COLUMNS = ('setting_id',)
 
@@ -53,8 +56,8 @@ def join_metadata(df: pd.DataFrame) -> pd.DataFrame:
   return pd.merge(df_out, bsuite_df, on='bsuite_id')
 
 
-def load_bsuite(db_path: Text,
-                connection: sqlite3.Connection = None) -> pd.DataFrame:
+def load_one_result_set(db_path: Text,
+                        connection: sqlite3.Connection = None) -> pd.DataFrame:
   """Returns a pandas DataFrame of bsuite results.
 
   Args:
@@ -81,6 +84,40 @@ def load_bsuite(db_path: Text,
     dataframes.append(dataframe)
 
   df = pd.concat(dataframes, sort=False)
-  df['agent_filename'] = db_path
-  sweep_vars = ['agent_filename']
-  return join_metadata(df), sweep_vars
+  return join_metadata(df)
+
+
+PathCollection = Union[Text, Sequence[Text], Mapping[Text, Text]]
+
+
+def load_bsuite(db_paths: PathCollection) -> pd.DataFrame:
+  """Returns a pandas DataFrame of bsuite results.
+
+  Args:
+    db_paths: Paths to one or more database files containing results. These may
+      be given as one of:
+        - A sequence (e.g. list, tuple) of paths
+        - a mapping from agent or algorithm name to path.
+        - A string containing a single path.
+
+  Returns:
+    A tuple of:
+      - A pandas DataFrame containing the bsuite results.
+      - A list of column names to group by, used by the provided notebook.
+        When grouping by these columns, each group corresponds to one set of
+        results.
+  """
+  # Convert any inputs to mapping format.
+  if isinstance(db_paths, six.string_types):
+    db_paths = {db_paths: db_paths}
+  if not isinstance(db_paths, collections.Mapping):
+    db_paths = {path: path for path in db_paths}
+
+  dataframes = []
+  for name, path in db_paths.items():
+    dataframe = load_one_result_set(db_path=path)
+    dataframe['agent_name'] = name
+    dataframes.append(dataframe)
+
+  sweep_vars = ['agent_name']
+  return pd.concat(dataframes, sort=False), sweep_vars

@@ -67,7 +67,8 @@ class SqliteLoadTest(absltest.TestCase):
     generate_results(
         experiment_name='catch', setting_id=2, connection=connection)
 
-    df, _ = sqlite_load.load_bsuite(db_path='unused', connection=connection)
+    df = sqlite_load.load_one_result_set(db_path='unused',
+                                         connection=connection)
     self.assertLen(df, _NUM_WRITES * 2)
 
     # Check that sweep metadata is joined correctly.
