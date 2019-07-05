@@ -34,7 +34,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import bsuite as _bsuite
+from . import bsuite as _bsuite
 
 load = _bsuite.load
 load_from_id = _bsuite.load_from_id
