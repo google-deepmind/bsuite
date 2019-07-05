@@ -81,7 +81,7 @@ class Logger(object):
     if not skip_name_validation:
       _validate_experiment_name(experiment_name)
     if connection is None:
-      self._connection = sqlite3.connect(db_path)
+      self._connection = sqlite3.connect(db_path, timeout=20.0)
     else:
       self._connection = connection
 
