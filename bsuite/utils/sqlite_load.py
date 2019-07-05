@@ -81,4 +81,6 @@ def load_bsuite(db_path: Text,
     dataframes.append(dataframe)
 
   df = pd.concat(dataframes, sort=False)
-  return join_metadata(df)
+  df['agent_filename'] = db_path
+  sweep_vars = ['agent_filename']
+  return join_metadata(df), sweep_vars
