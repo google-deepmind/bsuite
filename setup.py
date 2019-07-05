@@ -40,7 +40,8 @@ setup(
         'scipy',
         'scikit-image',
         'six',
-        'tensorflow',
+        'tensorflow>=1.13,<1.14',
+        'tensorflow-probability>=0.6,<0.7',
         'trfl',
     ],
     tests_require=[
