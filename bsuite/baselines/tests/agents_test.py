@@ -45,7 +45,7 @@ class AgentsTest(absltest.TestCase):
     agent = actor_critic.ActorCritic(
         obs_spec=self._obs_spec, action_spec=self._action_spec,
         network=net, optimizer=tf.train.AdamOptimizer(0.01),
-        sequence_length=9, td_lambda=.9, discount=.99, seed=42)
+        sequence_length=9, td_lambda=.9, agent_discount=.99, seed=42)
     experiment.run(agent, self._env, num_episodes=5)
 
   def test_boot_dqn(self):

@@ -48,7 +48,7 @@ class ActorCritic(base.Agent):
       optimizer: tf.train.Optimizer,
       sequence_length: int,
       td_lambda: int,
-      discount: float,
+      agent_discount: float,
       seed: int,
   ):
     """A simple actor-critic agent."""
@@ -84,7 +84,7 @@ class ActorCritic(base.Agent):
     critic_loss, (advantages, _) = trfl.td_lambda(
         state_values=values,
         rewards=rewards,
-        pcontinues=discount * discounts,
+        pcontinues=agent_discount * discounts,
         bootstrap_value=bootstrap_value,
         lambda_=td_lambda)
     actor_loss = trfl.discrete_policy_gradient_loss(logits, actions, advantages)
@@ -129,3 +129,31 @@ class PolicyValueNet(snt.AbstractModule):
     logits = snt.Linear(self._num_actions)(hiddens)
     value = tf.squeeze(snt.Linear(1)(hiddens), axis=-1)
     return logits, value
+
+
+def default_agent(obs_spec: specs.Array,
+                  action_spec: specs.DiscreteArray,
+                  num_hidden_layers: int = 1,
+                  num_units: int = 256,
+                  **kwargs):
+  """Initialize a DQN agent with default parameters."""
+
+  params = {
+      'agent_discount': .99,
+      'sequence_length': 36,
+      'td_lambda': 0.9,
+      'optimizer': tf.train.AdamOptimizer(learning_rate=1e-2),
+      'seed': 42,
+  }
+  params.update(kwargs)
+
+  num_actions = action_spec.num_values
+  units_per_hidden_layer = [num_units] * num_hidden_layers + [num_actions]
+
+  network = PolicyValueNet(units_per_hidden_layer, num_actions)
+
+  return ActorCritic(
+      obs_spec=obs_spec,
+      action_spec=action_spec,
+      network=network,
+      **params)

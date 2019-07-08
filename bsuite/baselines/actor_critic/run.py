@@ -35,7 +35,7 @@ flags.DEFINE_integer('num_units', 256, 'number of units per hidden layer')
 flags.DEFINE_float('learning_rate', 1e-2, 'the learning rate')
 flags.DEFINE_integer('sequence_length', 32, 'mumber of transitions to batch')
 flags.DEFINE_float('td_lambda', 0.9, 'mixing parameter for boostrapping')
-flags.DEFINE_float('discount', .99, 'discounting on the agent side')
+flags.DEFINE_float('agent_discount', .99, 'discounting on the agent side')
 flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
 
 FLAGS = flags.FLAGS
@@ -44,18 +44,17 @@ FLAGS = flags.FLAGS
 def main(argv):
   del argv  # Unused.
   env = bsuite.load_from_id(FLAGS.bsuite_id)
-  num_actions = env.action_spec().num_values
-  units_per_hidden_layer = [FLAGS.num_units] * FLAGS.num_hidden_layers
-
-  agent = actor_critic.ActorCritic(
+  agent = actor_critic.default_agent(
       obs_spec=env.observation_spec(),
       action_spec=env.action_spec(),
-      network=actor_critic.PolicyValueNet(units_per_hidden_layer, num_actions),
-      optimizer=tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate),
+      num_hidden_layers=FLAGS.num_hidden_layers,
+      num_units=FLAGS.num_units,
+      agent_discount=FLAGS.agent_discount,
       sequence_length=FLAGS.sequence_length,
       td_lambda=FLAGS.td_lambda,
-      discount=FLAGS.discount,
-      seed=FLAGS.seed)
+      optimizer=tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate),
+      seed=FLAGS.seed,
+  )
 
   FLAGS.alsologtostderr = True
   experiment.run(
