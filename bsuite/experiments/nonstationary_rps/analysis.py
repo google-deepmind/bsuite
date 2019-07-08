@@ -27,6 +27,7 @@ import pandas as pd
 import plotnine as gg
 from typing import Text, Sequence
 
+NUM_EPISODES = sweep.NUM_EPISODES
 BASE_REGRET = 0.5
 TAGS = ('nonstationarity',)
 

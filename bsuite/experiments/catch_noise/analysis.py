@@ -28,6 +28,7 @@ import plotnine as gg
 
 from typing import Sequence, Text
 
+NUM_EPISODES = sweep.NUM_EPISODES
 score = catch_analysis.score
 TAGS = ('noise',)
 

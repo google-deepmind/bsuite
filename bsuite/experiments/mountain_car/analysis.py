@@ -29,6 +29,7 @@ from typing import Text, Sequence
 
 _SOLVED_STEPS = 20
 _WORST_STEPS = 1000
+NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('basic', 'generalization', 'credit_assignment')
 BASE_REGRET = _WORST_STEPS - _SOLVED_STEPS
 

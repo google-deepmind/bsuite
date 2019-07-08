@@ -27,11 +27,13 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.deep_sea import analysis as deep_sea_analysis
+from bsuite.experiments.deep_sea_stochastic import sweep
 
 import pandas as pd
 
 from typing import Text, Sequence
 
+NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('exploration', 'noise')
 
 score = deep_sea_analysis.score

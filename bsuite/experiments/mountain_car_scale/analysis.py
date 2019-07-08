@@ -21,11 +21,13 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.mountain_car_noise import analysis as mc_noise_analysis
+from bsuite.experiments.mountain_car_scale import sweep
 import pandas as pd
 import plotnine as gg
 
 from typing import Sequence, Text
 
+NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('scale', 'credit_assignment', 'generalization')
 score = mc_noise_analysis.score
 

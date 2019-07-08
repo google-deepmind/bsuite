@@ -26,6 +26,7 @@ import plotnine as gg
 
 from typing import Sequence, Text
 
+NUM_EPISODES = sweep.NUM_EPISODES
 BASE_REGRET = 1000
 TAGS = ('basic', 'generalization')
 

@@ -21,11 +21,13 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.memory_len import analysis as memory_len_analysis
+from bsuite.experiments.memory_size import sweep
 import pandas as pd
 import plotnine as gg
 
 from typing import Sequence, Text
 
+NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('memory',)
 
 

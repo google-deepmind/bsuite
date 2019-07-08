@@ -13,18 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Analysis for num_hierarchy."""
+"""Tests for bsuite.experiments.summary_analysis."""
 
 from __future__ import absolute_import
 from __future__ import division
-# Standard __future__ imports.
 from __future__ import print_function
 
-from bsuite.experiments.hierarchy_sea import analysis as hierarchy_sea_analysis
-from bsuite.experiments.hierarchy_sea_explore import sweep
+from absl.testing import absltest
+from bsuite.experiments import summary_analysis
 
-NUM_EPISODES = sweep.NUM_EPISODES
-TAGS = ('hierarchy', 'exploration',)
-score = hierarchy_sea_analysis.score
-plot_learning = hierarchy_sea_analysis.plot_learning
-plot_scale = hierarchy_sea_analysis.plot_scale
+
+class SummaryAnalysisTest(absltest.TestCase):
+
+  def test_constants(self):
+    self.assertNotEmpty(summary_analysis.BSUITE_INFO)
+
+
+if __name__ == '__main__':
+  absltest.main()

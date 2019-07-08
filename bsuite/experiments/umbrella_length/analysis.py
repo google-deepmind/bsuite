@@ -28,6 +28,7 @@ import plotnine as gg
 
 from typing import Sequence, Text
 
+NUM_EPISODES = sweep.NUM_EPISODES
 REGRET_THRESH = 0.5
 TAGS = ('credit_assignment', 'noise')
 

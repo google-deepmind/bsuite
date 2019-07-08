@@ -70,7 +70,7 @@ def _parse_bsuite(package) -> BsuiteSummary:
       score=package.score,
       type=package.TAGS[0],
       tags=package.TAGS,
-      episode=package.EPISODE,
+      episode=package.NUM_EPISODES,
       )
 
 BSUITE_INFO = dict(

@@ -21,11 +21,13 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.catch_noise import analysis as catch_noise_analysis
+from bsuite.experiments.catch_noise import sweep
 import pandas as pd
 import plotnine as gg
 
 from typing import Sequence, Text
 
+NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('scale',)
 score = catch_noise_analysis.score
 

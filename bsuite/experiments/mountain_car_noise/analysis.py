@@ -29,6 +29,7 @@ import plotnine as gg
 
 from typing import Text, Sequence
 
+NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('noise', 'credit_assignment', 'generalization')
 score = mountain_car_analysis.score
 

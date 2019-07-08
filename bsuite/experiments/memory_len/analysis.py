@@ -28,6 +28,7 @@ import plotnine as gg
 
 from typing import Text, Sequence
 
+NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('memory',)
 PERFECTION_THRESH = 0.5
 

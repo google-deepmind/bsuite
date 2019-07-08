@@ -21,11 +21,13 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.cartpole_noise import analysis as cartpole_noise_analysis
+from bsuite.experiments.cartpole_scale import sweep
 import pandas as pd
 import plotnine as gg
 
 from typing import Sequence, Text
 
+NUM_EPISODES = sweep.NUM_EPISODES
 score = cartpole_noise_analysis.score
 TAGS = ('scale', 'generalization')
 

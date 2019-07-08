@@ -27,6 +27,7 @@ import pandas as pd
 import plotnine as gg
 from typing import Sequence, Text
 
+NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('credit_assignment', 'noise')
 
 

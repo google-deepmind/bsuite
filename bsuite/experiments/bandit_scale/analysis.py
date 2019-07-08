@@ -21,11 +21,13 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.bandit_noise import analysis as bandit_noise_analysis
+from bsuite.experiments.bandit_noise import sweep
 import pandas as pd
 import plotnine as gg
 
 from typing import Sequence, Text
 
+NUM_EPISODES = sweep.NUM_EPISODES
 score = bandit_noise_analysis.score
 TAGS = ('scale',)
 

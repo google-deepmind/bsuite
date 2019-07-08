@@ -28,7 +28,7 @@ import plotnine as gg
 
 from typing import Text, Sequence
 
-EP_MAX = 1000
+NUM_EPISODES = sweep.NUM_EPISODES
 REWARD_THRESH = 10
 TAGS = ('exploration', 'generalization')
 
@@ -47,7 +47,7 @@ def score(df: pd.DataFrame) -> float:
 def cp_swingup_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
   """Preprocess data for cartpole swingup."""
   df = df_in.copy()
-  df['perfection_regret'] = df.episode * EP_MAX - df.total_return
+  df['perfection_regret'] = df.episode * sweep.NUM_EPISODES - df.total_return
   return df
 
 

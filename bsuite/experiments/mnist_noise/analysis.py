@@ -28,6 +28,7 @@ import pandas as pd
 import plotnine as gg
 from typing import Text, Sequence
 
+NUM_EPISODES = sweep.NUM_EPISODES
 score = mnist_analysis.score
 TAGS = ('noise', 'generalization')
 
