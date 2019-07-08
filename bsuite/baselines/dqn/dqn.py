@@ -166,7 +166,6 @@ def default_agent(obs_spec: specs.Array,
       snt.nets.MLP(output_sizes),
   ])
 
-  # pylint: disable=unexpected-keyword-arg
   return DQN(
       obs_spec=obs_spec,
       action_spec=action_spec,
