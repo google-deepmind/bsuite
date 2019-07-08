@@ -73,7 +73,7 @@ def run(agent: base.Agent,
     }
     if verbose:
       logging.info(result)
-    if logarithmic_logging(episode):  # Only log at exponential intervals
+    if logarithmic_logging(episode):  # Only log at exponential intervals.
       results.append(result)
     episode += 1
 
