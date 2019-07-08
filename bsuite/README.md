@@ -64,7 +64,7 @@ pip install -e /path/to/bsuite/
 
 ## Interacting with an environment.
 
-Our environments implement the Python interface defined in [`dm_env`](https://github.com/deepmind/dm_env/docs/index.md).
+Our environments implement the Python interface defined in [`dm_env`](https://github.com/deepmind/dm_env/blob/master/docs/index.md).
 
 More specifically, all our environments accept a discrete, zero-based integer
 action (or equivalently, a scalar numpy array with shape `()`).
