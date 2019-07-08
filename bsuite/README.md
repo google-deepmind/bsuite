@@ -62,6 +62,39 @@ run
 pip install -e /path/to/bsuite/
 ```
 
+## Interacting with an environment.
+
+Our environments implement the Python interface defined in [`dm_env`](https://github.com/deepmind/dm_env/docs/index.md).
+
+More specifically, all our environments accept a discrete, zero-based integer
+action (or equivalently, a scalar numpy array with shape `()`).
+
+To determine the number of actions for a specific environment, use
+
+```python
+num_actions = env.action_spec().num_values
+```
+
+Each environment returns observations in the form of a numpy array.
+
+We also add a `num_episodes` property for each environment in bsuite. This
+allows users to run exactly the number of episodes required for bsuite's
+analysis, which may vary between environments used in different experiments.
+
+Example run loop for an agent with a `step()` method.
+
+```python
+for _ in range(env.num_episodes):
+
+  timestep = env.reset()
+  while True:
+    action = agent.step(timestep)
+    timestep = env.step(action)
+    if timestep.last():
+      _ = agent.step(timestep)
+      break
+```
+
 ## Baselines
 
 We also include implementations of several common agents in the `baselines`
