@@ -19,6 +19,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from bsuite.experiments.bandit import sweep as bandit_sweep
+
+NUM_EPISODES = bandit_sweep.NUM_EPISODES
+
 _settings = []
 for scale in [0.1, 0.3, 1.0, 3., 10.]:
   for seed in range(4):

@@ -27,6 +27,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from bsuite.experiments.umbrella_length import sweep
 from bsuite.utils import auto_reset_environment
 import dm_env
 from dm_env import specs
@@ -52,6 +53,7 @@ class UmbrellaChain(auto_reset_environment.Base):
     self._need_umbrella = self._rng.binomial(1, 0.5)
     self._has_umbrella = 0
     self._total_regret = 0
+    self.bsuite_num_episodes = sweep.NUM_EPISODES
 
   def _get_observation(self):
     obs = np.zeros(shape=(1, 3 + self._n_distractor), dtype=np.float32)

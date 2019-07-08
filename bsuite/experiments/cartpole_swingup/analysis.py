@@ -20,6 +20,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.cartpole_swingup import sweep
 from bsuite.utils import plotting
 import numpy as np
 import pandas as pd
@@ -27,7 +28,6 @@ import plotnine as gg
 
 from typing import Text, Sequence
 
-EPISODE = 1000
 EP_MAX = 1000
 REWARD_THRESH = 10
 TAGS = ('exploration', 'generalization')
@@ -37,7 +37,7 @@ def score(df: pd.DataFrame) -> float:
   """Percentage of heights for which the agent receives positive return."""
   return_list = []  # Loop to handle partially-finished runs.
   for _, sub_df in df.groupby('height_threshold'):
-    max_eps = np.minimum(sub_df.episode.max(), EPISODE)
+    max_eps = np.minimum(sub_df.episode.max(), sweep.NUM_EPISODES)
     ave_return = (
         sub_df.loc[sub_df.episode == max_eps, 'total_return'].mean() / max_eps)
     return_list.append(ave_return)
@@ -60,7 +60,7 @@ def plot_learning(df: pd.DataFrame,
       group_col='height_threshold',
       sweep_vars=sweep_vars,
       regret_col='perfection_regret',
-      max_episode=EPISODE,
+      max_episode=sweep.NUM_EPISODES,
   )
   return p
 
@@ -72,7 +72,7 @@ def plot_scale(df: pd.DataFrame,
   p = plotting.plot_regret_ave_scaling(
       df_in=df,
       group_col='height_threshold',
-      episode=EPISODE,
+      episode=sweep.NUM_EPISODES,
       regret_thresh=0.5,
       sweep_vars=sweep_vars,
       regret_col='perfection_regret'

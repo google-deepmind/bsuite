@@ -17,17 +17,19 @@
 
 from __future__ import absolute_import
 from __future__ import division
-# Standard __future__ imports.
 from __future__ import print_function
 
 from bsuite.experiments.catch import catch
+from bsuite.experiments.catch_scale import sweep
 from bsuite.utils import wrappers
 
 
 def load(reward_scale, seed):
   """Load a catch experiment with the prescribed settings."""
-  return wrappers.RewardScale(
+  env = wrappers.RewardScale(
       env=catch.Catch(seed=seed),
       reward_scale=reward_scale,
       seed=seed)
+  env.bsuite_num_episodes = sweep.NUM_EPISODES
+  return env
 

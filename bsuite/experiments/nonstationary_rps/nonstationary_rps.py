@@ -27,6 +27,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.nonstationary_rps import sweep
 from bsuite.utils import auto_reset_environment
 import dm_env
 from dm_env import specs
@@ -58,6 +59,8 @@ class NonstationaryRPS(auto_reset_environment.Base):
     self._probs = self._sample_uniform_dirichlet()
     self._total_regret = 0.
     self._total_rescaled_regret = 0.
+
+    self.bsuite_num_episodes = sweep.NUM_EPISODES
 
   def _sample_uniform_dirichlet(self):
     w = self._rng.exponential(1, size=_NUM_ACTION)

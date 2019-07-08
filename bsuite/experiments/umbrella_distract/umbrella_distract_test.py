@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.deep_sea_stochastic."""
+"""Tests for bsuite.experiments.umbrella_distract."""
 
 from __future__ import absolute_import
 from __future__ import division

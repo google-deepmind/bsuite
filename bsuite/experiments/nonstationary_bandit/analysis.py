@@ -20,27 +20,28 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.nonstationary_bandit import sweep
 from bsuite.utils import plotting
 import pandas as pd
 import plotnine as gg
 from typing import Text, Sequence
 
 BASE_REGRET = 0.5
-EPISODE = 10000
 TAGS = ('nonstationarity',)
 
 
 def score(df: pd.DataFrame) -> float:
   """Output a single score for bandit experiment."""
   return plotting.ave_regret_score(
-      df, baseline_regret=BASE_REGRET, episode=EPISODE)
+      df, baseline_regret=BASE_REGRET, episode=sweep.NUM_EPISODES)
 
 
 def plot_learning(df: pd.DataFrame,
                   sweep_vars: Sequence[Text] = None) -> gg.ggplot:
   """Plots the average regret through time."""
   p = plotting.plot_regret_learning(
-      df_in=df, group_col='gamma', sweep_vars=sweep_vars, max_episode=EPISODE)
+      df_in=df, group_col='gamma', sweep_vars=sweep_vars,
+      max_episode=sweep.NUM_EPISODES)
   return p
 
 
@@ -50,7 +51,7 @@ def plot_average(df: pd.DataFrame,
   p = plotting.plot_regret_average(
       df_in=df,
       group_col='gamma',
-      episode=EPISODE,
+      episode=sweep.NUM_EPISODES,
       sweep_vars=sweep_vars
   )
   return p

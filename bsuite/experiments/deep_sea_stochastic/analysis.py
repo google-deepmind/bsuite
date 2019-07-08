@@ -32,7 +32,6 @@ import pandas as pd
 
 from typing import Text, Sequence
 
-EPISODE = deep_sea_analysis.EPISODE
 TAGS = ('exploration', 'noise')
 
 score = deep_sea_analysis.score

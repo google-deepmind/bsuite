@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Analysis for catch scale environments."""
+"""Analysis for memory size environments."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -26,7 +26,6 @@ import plotnine as gg
 
 from typing import Sequence, Text
 
-EPISODE = memory_len_analysis.EPISODE
 TAGS = ('memory',)
 
 

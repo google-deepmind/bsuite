@@ -20,6 +20,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.umbrella_length import sweep
 from bsuite.utils import plotting
 import numpy as np
 import pandas as pd
@@ -27,7 +28,6 @@ import plotnine as gg
 
 from typing import Sequence, Text
 
-EPISODE = 10000
 REGRET_THRESH = 0.5
 TAGS = ('credit_assignment', 'noise')
 
@@ -36,7 +36,7 @@ def score_by_group(df: pd.DataFrame, group_col: Text) -> float:
   """Output a single score for umbrella_chain."""
   regret_list = []  # Loop to handle partially-finished runs.
   for _, sub_df in df.groupby(group_col):
-    max_eps = np.minimum(sub_df.episode.max(), EPISODE)
+    max_eps = np.minimum(sub_df.episode.max(), sweep.NUM_EPISODES)
     ave_regret = (
         sub_df.loc[sub_df.episode == max_eps, 'total_regret'].mean() / max_eps)
     regret_list.append(ave_regret)
@@ -54,7 +54,7 @@ def plot_learning(df: pd.DataFrame,
       df_in=df,
       group_col='chain_length',
       sweep_vars=sweep_vars,
-      max_episode=EPISODE,
+      max_episode=sweep.NUM_EPISODES,
   )
 
 
@@ -64,7 +64,7 @@ def plot_scale(df: pd.DataFrame,
   return plotting.plot_regret_ave_scaling(
       df_in=df,
       group_col='chain_length',
-      episode=EPISODE,
+      episode=sweep.NUM_EPISODES,
       regret_thresh=0.5,
       sweep_vars=sweep_vars,
   )

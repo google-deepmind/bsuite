@@ -24,12 +24,15 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.bandit import bandit
+from bsuite.experiments.bandit import sweep
 from bsuite.utils import wrappers
 
 
 def load(reward_scale, seed):
   """Load a bandit_scale experiment with the prescribed settings."""
-  return wrappers.RewardScale(
+  env = wrappers.RewardScale(
       env=bandit.SimpleBandit(seed=seed),
       reward_scale=reward_scale,
       seed=seed)
+  env.bsuite_num_episodes = sweep.NUM_EPISODES
+  return env

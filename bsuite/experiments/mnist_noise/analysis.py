@@ -21,13 +21,13 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.mnist import analysis as mnist_analysis
+from bsuite.experiments.mnist_noise import sweep
 from bsuite.utils import plotting
 import numpy as np
 import pandas as pd
 import plotnine as gg
 from typing import Text, Sequence
 
-EPISODE = mnist_analysis.EPISODE
 score = mnist_analysis.score
 TAGS = ('noise', 'generalization')
 
@@ -37,7 +37,8 @@ def plot_learning(df: pd.DataFrame,
                   group_col: Text = 'noise_scale') -> gg.ggplot:
   """Plots the average regret through time."""
   p = plotting.plot_regret_learning(
-      df_in=df, group_col=group_col, sweep_vars=sweep_vars, max_episode=EPISODE)
+      df_in=df, group_col=group_col, sweep_vars=sweep_vars,
+      max_episode=sweep.NUM_EPISODES)
   p += gg.geom_hline(gg.aes(yintercept=mnist_analysis.BASE_REGRET),
                      linetype='dashed', alpha=0.4, size=1.75)
   return p
@@ -50,7 +51,7 @@ def plot_average(df: pd.DataFrame,
   p = plotting.plot_regret_average(
       df_in=df,
       group_col=group_col,
-      episode=mnist_analysis.EPISODE,
+      episode=sweep.NUM_EPISODES,
       sweep_vars=sweep_vars
   )
   p += gg.scale_y_continuous(breaks=np.arange(0, 1.1, 0.1).tolist())

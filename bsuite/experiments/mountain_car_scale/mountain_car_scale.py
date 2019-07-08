@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Catch reinforcement learning environment."""
+"""Mountain car scale reinforcement learning environment."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -21,13 +21,15 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.mountain_car import mountain_car
+from bsuite.experiments.mountain_car_noise import sweep
 from bsuite.utils import wrappers
 
 
 def load(reward_scale, seed):
   """Load a mountain_car experiment with the prescribed settings."""
-  return wrappers.RewardScale(
+  env = wrappers.RewardScale(
       env=mountain_car.MountainCar(seed=seed),
       reward_scale=reward_scale,
       seed=seed)
-
+  env.bsuite_num_episodes = sweep.NUM_EPISODES
+  return env

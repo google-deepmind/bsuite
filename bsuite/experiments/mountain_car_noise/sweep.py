@@ -13,11 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Sweep definition for catch experiment."""
+"""Sweep definition for mountain car noise experiment."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
+from bsuite.experiments.mountain_car import sweep as mountain_car_sweep
+
+NUM_EPISODES = mountain_car_sweep.NUM_EPISODES
 
 _settings = []
 for scale in [0.1, 0.3, 1.0, 3., 10.]:

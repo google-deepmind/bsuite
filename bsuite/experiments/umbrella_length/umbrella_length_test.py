@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.umbrella_chain."""
+"""Tests for bsuite.experiments.umbrella_length."""
 
 from __future__ import absolute_import
 from __future__ import division

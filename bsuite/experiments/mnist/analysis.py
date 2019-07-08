@@ -20,27 +20,27 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.mnist import sweep
 from bsuite.utils import plotting
 import pandas as pd
 import plotnine as gg
 from typing import Text, Sequence
 
 BASE_REGRET = 1.8
-EPISODE = 10000
 TAGS = ('basic', 'generalization')
 
 
 def score(df: pd.DataFrame) -> float:
   """Output a single score for bandit experiment."""
   return plotting.ave_regret_score(
-      df, baseline_regret=BASE_REGRET, episode=EPISODE)
+      df, baseline_regret=BASE_REGRET, episode=sweep.NUM_EPISODES)
 
 
 def plot_learning(df: pd.DataFrame,
                   sweep_vars: Sequence[Text] = None) -> gg.ggplot:
   """Plots the average regret through time."""
   p = plotting.plot_regret_learning(
-      df, sweep_vars=sweep_vars, max_episode=EPISODE)
+      df, sweep_vars=sweep_vars, max_episode=sweep.NUM_EPISODES)
   p += gg.geom_hline(gg.aes(yintercept=BASE_REGRET),
                      linetype='dashed', alpha=0.4, size=1.75)
   return p

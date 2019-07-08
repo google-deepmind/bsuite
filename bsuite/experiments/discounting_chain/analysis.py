@@ -20,6 +20,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.discounting_chain import sweep
 from bsuite.utils import plotting
 
 import numpy as np
@@ -29,14 +30,13 @@ import plotnine as gg
 from typing import Sequence, Text
 
 BASE_REGRET = 0.08
-EPISODE = 1000
 TAGS = ('credit_assignment',)
 _HORIZONS = np.array([1, 3, 10, 30, 100])
 
 
 def score(df: pd.DataFrame) -> float:
   """Output a single score for discounting_chain."""
-  n_eps = np.minimum(df.episode.max(), EPISODE)
+  n_eps = np.minimum(df.episode.max(), sweep.NUM_EPISODES)
   ave_return = df.loc[df.episode == n_eps, 'total_return'].mean() / n_eps
   return 1. - 10. * (1.1 - ave_return)
 
@@ -58,7 +58,7 @@ def plot_learning(df: pd.DataFrame,
       df_in=df,
       group_col='optimal_horizon',
       sweep_vars=sweep_vars,
-      max_episode=EPISODE
+      max_episode=sweep.NUM_EPISODES
   )
   p += gg.geom_hline(gg.aes(yintercept=BASE_REGRET),
                      linetype='dashed', alpha=0.4, size=1.75)
@@ -73,7 +73,7 @@ def plot_average(df: pd.DataFrame,
   p = plotting.plot_regret_average(
       df_in=df,
       group_col='optimal_horizon',
-      episode=EPISODE,
+      episode=sweep.NUM_EPISODES,
       sweep_vars=sweep_vars
   )
   p += gg.geom_hline(gg.aes(yintercept=BASE_REGRET),

@@ -21,6 +21,7 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.cartpole import analysis as cartpole_analysis
+from bsuite.experiments.cartpole_noise import sweep
 from bsuite.utils import plotting
 
 import pandas as pd
@@ -28,7 +29,6 @@ import plotnine as gg
 
 from typing import Text, Sequence
 
-EPISODE = cartpole_analysis.EPISODE
 score = cartpole_analysis.score
 TAGS = ('noise', 'generalization')
 
@@ -39,7 +39,8 @@ def plot_learning(df: pd.DataFrame,
   """Plots the average regret through time."""
   df = cartpole_analysis.cartpole_preprocess(df)
   p = plotting.plot_regret_learning(
-      df_in=df, group_col=group_col, sweep_vars=sweep_vars, max_episode=EPISODE)
+      df_in=df, group_col=group_col, sweep_vars=sweep_vars,
+      max_episode=sweep.NUM_EPISODES)
   p += gg.geom_hline(gg.aes(yintercept=cartpole_analysis.BASE_REGRET),
                      linetype='dashed', alpha=0.4, size=1.75)
   return p
@@ -53,7 +54,7 @@ def plot_average(df: pd.DataFrame,
   p = plotting.plot_regret_average(
       df_in=df,
       group_col=group_col,
-      episode=cartpole_analysis.EPISODE,
+      episode=sweep.NUM_EPISODES,
       sweep_vars=sweep_vars
   )
   p += gg.geom_hline(gg.aes(yintercept=cartpole_analysis.BASE_REGRET),

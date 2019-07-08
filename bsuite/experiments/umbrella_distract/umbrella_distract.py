@@ -20,14 +20,16 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.umbrella_distract import sweep
 from bsuite.experiments.umbrella_length import umbrella_length
 
 
 def load(n_distractor):
   """Load a deep sea experiment with the prescribed settings."""
-  return umbrella_length.UmbrellaChain(
+  env = umbrella_length.UmbrellaChain(
       chain_length=20,
       n_distractor=n_distractor,
       seed=73,
   )
-
+  env.bsuite_num_episodes = sweep.NUM_EPISODES
+  return env

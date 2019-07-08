@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+NUM_EPISODES = 10000
+
 _log_spaced = []
 _log_spaced.extend(range(5, 11))
 _log_spaced.extend([12, 14, 17, 20, 25])

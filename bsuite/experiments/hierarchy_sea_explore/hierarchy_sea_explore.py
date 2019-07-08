@@ -21,15 +21,18 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.hierarchy_sea import hierarchy_sea
+from bsuite.experiments.hierarchy_sea_explore import sweep
 
 
 def load(num_hierarchy, num_mapping):
   """Load a hierarchy sea experiment with the prescribed settings."""
   intra_ds_shaping = -1. / num_hierarchy
   inter_ds_shaping = -1. / num_hierarchy
-  return hierarchy_sea.HierarchySea(
+  env = hierarchy_sea.HierarchySea(
       num_hierarchy=num_hierarchy,
       num_mapping=num_mapping,
       intra_ds_shaping=intra_ds_shaping,
       inter_ds_shaping=inter_ds_shaping,
   )
+  env.bsuite_num_episodes = sweep.NUM_EPISODES
+  return env

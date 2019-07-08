@@ -13,13 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Analysis for nonstationary RPS."""
+"""Analysis for nonstationary rock-paper-scissors."""
 
 from __future__ import absolute_import
 from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.nonstationary_rps import sweep
 from bsuite.utils import plotting
 
 import pandas as pd
@@ -27,14 +28,13 @@ import plotnine as gg
 from typing import Text, Sequence
 
 BASE_REGRET = 0.5
-EPISODE = 10000
 TAGS = ('nonstationarity',)
 
 
 def score(df: pd.DataFrame) -> float:
   """Output a single score for RPS experiment."""
   return plotting.ave_regret_score(
-      df, baseline_regret=BASE_REGRET, episode=EPISODE)
+      df, baseline_regret=BASE_REGRET, episode=sweep.NUM_EPISODES)
 
 
 def plot_learning(df: pd.DataFrame,
@@ -44,7 +44,7 @@ def plot_learning(df: pd.DataFrame,
       df_in=df,
       group_col='winning_update',
       sweep_vars=sweep_vars,
-      max_episode=EPISODE
+      max_episode=sweep.NUM_EPISODES
   )
 
 
@@ -54,7 +54,7 @@ def plot_average(df: pd.DataFrame,
   p = plotting.plot_regret_average(
       df_in=df,
       group_col='winning_update',
-      episode=EPISODE,
+      episode=sweep.NUM_EPISODES,
       sweep_vars=sweep_vars
   )
   return p

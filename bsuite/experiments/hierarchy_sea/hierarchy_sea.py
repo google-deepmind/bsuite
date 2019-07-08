@@ -21,6 +21,7 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.deep_sea import deep_sea
+from bsuite.experiments.hierarchy_sea import sweep
 from bsuite.utils import auto_reset_environment
 
 import dm_env
@@ -78,6 +79,8 @@ class HierarchySea(auto_reset_environment.Base):
     self._ds_solve_thresh = 0.5  # if ds_reward > ds_solve_thresh -> solved DS.
     self._total_stages = 0  # total number of deep sea stages completed.
     self._total_perfect = 0  # total number of 'perfect' episodes = completed.
+
+    self.bsuite_num_episodes = sweep.NUM_EPISODES
 
   def _get_obs(self, deep_sea_obs):
     hierarchy_obs = np.expand_dims(

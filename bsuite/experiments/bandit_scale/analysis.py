@@ -26,7 +26,6 @@ import plotnine as gg
 
 from typing import Sequence, Text
 
-EPISODE = bandit_noise_analysis.EPISODE
 score = bandit_noise_analysis.score
 TAGS = ('scale',)
 

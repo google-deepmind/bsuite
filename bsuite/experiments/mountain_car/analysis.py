@@ -20,6 +20,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.mountain_car import sweep
 from bsuite.utils import plotting
 import pandas as pd
 import plotnine as gg
@@ -28,7 +29,6 @@ from typing import Text, Sequence
 
 _SOLVED_STEPS = 20
 _WORST_STEPS = 1000
-EPISODE = 1000
 TAGS = ('basic', 'generalization', 'credit_assignment')
 BASE_REGRET = _WORST_STEPS - _SOLVED_STEPS
 
@@ -37,7 +37,7 @@ def score(df: pd.DataFrame) -> float:
   """Output a single score for mountain car."""
   cp_df = mountain_car_preprocess(df_in=df)
   return plotting.ave_regret_score(
-      cp_df, baseline_regret=BASE_REGRET, episode=EPISODE)
+      cp_df, baseline_regret=BASE_REGRET, episode=sweep.NUM_EPISODES)
 
 
 def mountain_car_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
@@ -54,7 +54,7 @@ def plot_learning(df: pd.DataFrame,
   """Simple learning curves for mountain_car."""
   df = mountain_car_preprocess(df)
   p = plotting.plot_regret_learning(
-      df, sweep_vars=sweep_vars, max_episode=EPISODE)
+      df, sweep_vars=sweep_vars, max_episode=sweep.NUM_EPISODES)
   p += gg.geom_hline(gg.aes(yintercept=BASE_REGRET),
                      linetype='dashed', alpha=0.4, size=1.75)
   return p

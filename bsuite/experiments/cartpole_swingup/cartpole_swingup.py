@@ -21,13 +21,16 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.cartpole import cartpole
+from bsuite.experiments.cartpole_swingup import sweep
 import numpy as np
 
 
 def load(seed: int, height_threshold: float):
   """Load a bandit_scale experiment with the prescribed settings."""
-  return cartpole.Cartpole(
+  env = cartpole.Cartpole(
       seed=seed,
       height_threshold=height_threshold,
       initial_theta=np.pi,
       move_cost=0.)
+  env.bsuite_num_episodes = sweep.NUM_EPISODES
+  return env

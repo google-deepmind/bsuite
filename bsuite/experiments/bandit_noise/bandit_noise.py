@@ -24,12 +24,15 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.bandit import bandit
+from bsuite.experiments.bandit import sweep
 from bsuite.utils import wrappers
 
 
 def load(noise_scale, seed):
   """Load a bandit_noise experiment with the prescribed settings."""
-  return wrappers.RewardNoise(
+  env = wrappers.RewardNoise(
       env=bandit.SimpleBandit(seed=seed),
       noise_scale=noise_scale,
       seed=seed)
+  env.bsuite_num_episodes = sweep.NUM_EPISODES
+  return env

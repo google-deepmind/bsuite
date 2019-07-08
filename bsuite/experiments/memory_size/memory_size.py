@@ -28,13 +28,16 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.memory_len import memory_len
+from bsuite.experiments.memory_size import sweep
 
 
 def load(num_bits):
   """Load a deep sea experiment with the prescribed settings."""
-  return memory_len.MemoryChain(
+  env = memory_len.MemoryChain(
       memory_length=30,
       num_bits=num_bits,
       seed=73,
   )
+  env.bsuite_num_episodes = sweep.NUM_EPISODES
+  return env
 

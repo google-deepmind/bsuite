@@ -28,6 +28,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from bsuite.experiments.discounting_chain import sweep
 from bsuite.utils import auto_reset_environment
 
 import dm_env
@@ -58,6 +59,8 @@ class DiscountingChain(auto_reset_environment.Base):
 
     self._timestep = 0
     self._context = -1
+
+    self.bsuite_num_episodes = sweep.NUM_EPISODES
 
   def _get_observation(self):
     obs = np.zeros(shape=(1, 2), dtype=np.float32)

@@ -13,11 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Sweep definition for experiment."""
+"""Sweep definition for mountain car experiment."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-SETTINGS = tuple({'seed': n} for n in range(20))
+NUM_EPISODES = 1000
 
+SETTINGS = tuple({'seed': n} for n in range(20))

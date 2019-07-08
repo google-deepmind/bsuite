@@ -50,6 +50,7 @@ class EnvironmentsTest(parameterized.TestCase):
   def test_environment(self, name, settings):
     env = bsuite.load(name, settings, log_stats=False)
     self.assertGreater(env.action_spec().num_values, 0)
+    self.assertGreater(env.bsuite_num_episodes, 0)
 
 if __name__ == '__main__':
   absltest.main()

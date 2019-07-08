@@ -22,7 +22,6 @@ from __future__ import print_function
 
 from bsuite.experiments.hierarchy_sea import analysis as hierarchy_sea_analysis
 
-EPISODE = hierarchy_sea_analysis.EPISODE
 TAGS = ('hierarchy', 'exploration',)
 score = hierarchy_sea_analysis.score
 plot_learning = hierarchy_sea_analysis.plot_learning

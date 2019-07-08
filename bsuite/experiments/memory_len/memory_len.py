@@ -27,6 +27,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.memory_len import sweep
 from bsuite.utils import auto_reset_environment
 import dm_env
 from dm_env import specs
@@ -56,6 +57,9 @@ class MemoryChain(auto_reset_environment.Base):
     self._episode_mistakes = 0.
     self._total_perfect = 0.
     self._total_regret = 0.
+
+    # bsuite experiment length.
+    self.bsuite_num_episodes = sweep.NUM_EPISODES
 
   def _get_observation(self):
     obs = np.zeros(shape=(1, self._num_bits + 1), dtype=np.float32)

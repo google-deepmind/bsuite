@@ -20,6 +20,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.cartpole import sweep
 import dm_env
 from dm_env import specs
 import numpy as np
@@ -77,6 +78,9 @@ class Cartpole(dm_env.Environment):
     # Updating internal state
     self._raw_return = 0.
     self._state = np.zeros((1, 5))
+
+    # Public attributes.
+    self.bsuite_num_episodes = sweep.NUM_EPISODES
 
   def reset(self):
     self._reset_next_step = False

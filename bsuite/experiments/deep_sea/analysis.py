@@ -20,6 +20,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.deep_sea import sweep
 from bsuite.utils import plotting
 import numpy as np
 import pandas as pd
@@ -27,7 +28,6 @@ import plotnine as gg
 
 from typing import Text, Sequence
 
-EPISODE = 10000
 TAGS = ('exploration',)
 
 
@@ -46,7 +46,7 @@ def find_solution(df_in: pd.DataFrame,
   # Check data has the necessary columns for deep sea
   df = df_in.copy()
   _check_data(df)
-  df = df[df.episode <= EPISODE]
+  df = df[df.episode <= sweep.NUM_EPISODES]
 
   # Parse the variables that you are aggregating over
   if sweep_vars is None:

@@ -19,6 +19,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.cartpole import sweep
 from bsuite.utils import plotting
 import pandas as pd
 import plotnine as gg
@@ -26,7 +27,6 @@ import plotnine as gg
 from typing import Sequence, Text
 
 BASE_REGRET = 1000
-EPISODE = 1000
 TAGS = ('basic', 'generalization')
 
 
@@ -34,7 +34,7 @@ def score(df: pd.DataFrame) -> float:
   """Output a single score for cartpole."""
   cp_df = cartpole_preprocess(df_in=df)
   return plotting.ave_regret_score(
-      cp_df, baseline_regret=BASE_REGRET, episode=EPISODE)
+      cp_df, baseline_regret=BASE_REGRET, episode=sweep.NUM_EPISODES)
 
 
 def cartpole_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
@@ -49,9 +49,7 @@ def plot_learning(df: pd.DataFrame,
   """Simple learning curves for cartpole."""
   df = cartpole_preprocess(df)
   p = plotting.plot_regret_learning(
-      df, sweep_vars=sweep_vars, max_episode=EPISODE)
+      df, sweep_vars=sweep_vars, max_episode=sweep.NUM_EPISODES)
   p += gg.geom_hline(gg.aes(yintercept=BASE_REGRET),
                      linetype='dashed', alpha=0.4, size=1.75)
   return p
-
-

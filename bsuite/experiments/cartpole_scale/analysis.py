@@ -26,7 +26,6 @@ import plotnine as gg
 
 from typing import Sequence, Text
 
-EPISODE = cartpole_noise_analysis.EPISODE
 score = cartpole_noise_analysis.score
 TAGS = ('scale', 'generalization')
 

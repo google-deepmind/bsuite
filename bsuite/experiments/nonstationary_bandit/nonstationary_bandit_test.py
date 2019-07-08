@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.bandit_noise."""
+"""Tests for bsuite.experiments.nonstationary_bandit."""
 
 from __future__ import absolute_import
 from __future__ import division

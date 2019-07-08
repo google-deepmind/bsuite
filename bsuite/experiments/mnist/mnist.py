@@ -24,6 +24,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.mnist import sweep
 from bsuite.utils import auto_reset_environment
 from bsuite.utils import datasets
 
@@ -57,6 +58,8 @@ class MNISTBandit(auto_reset_environment.Base):
 
     self._total_regret = 0.
     self._optimal_return = 1.
+
+    self.bsuite_num_episodes = sweep.NUM_EPISODES
 
   def _reset(self):
     """Agent gets an MNIST image to 'classify' using its next action."""

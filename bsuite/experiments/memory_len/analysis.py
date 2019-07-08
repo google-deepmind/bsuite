@@ -20,6 +20,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.memory_len import sweep
 from bsuite.utils import plotting
 import numpy as np
 import pandas as pd
@@ -27,7 +28,6 @@ import plotnine as gg
 
 from typing import Text, Sequence
 
-EPISODE = 10000
 TAGS = ('memory',)
 PERFECTION_THRESH = 0.5
 
@@ -43,7 +43,7 @@ def score(df: pd.DataFrame, group_col: Text = 'memory_length') -> float:
   """Output a single score for memory_len."""
   return_list = []  # Loop to handle partially-finished runs.
   for _, sub_df in df.groupby(group_col):
-    max_eps = np.minimum(sub_df.episode.max(), EPISODE)
+    max_eps = np.minimum(sub_df.episode.max(), sweep.NUM_EPISODES)
     ave_perfection = (
         sub_df.loc[sub_df.episode == max_eps, 'total_perfect'].mean() / max_eps)
     return_list.append(ave_perfection)
@@ -60,7 +60,7 @@ def plot_learning(df: pd.DataFrame,
       group_col=group_col,
       sweep_vars=sweep_vars,
       regret_col='perfection_regret',
-      max_episode=EPISODE,
+      max_episode=sweep.NUM_EPISODES,
   )
   return p + gg.ylab('average % of imperfect episodes')
 
@@ -73,10 +73,11 @@ def plot_scale(df: pd.DataFrame,
   p = plotting.plot_regret_ave_scaling(
       df_in=df,
       group_col=group_col,
-      episode=EPISODE,
+      episode=sweep.NUM_EPISODES,
       regret_thresh=0.5,
       sweep_vars=sweep_vars,
       regret_col='perfection_regret'
   )
-  p += gg.ylab('% of imperfect episodes after {} episodes'.format(EPISODE))
+  p += gg.ylab(
+      '% of imperfect episodes after {} episodes'.format(sweep.NUM_EPISODES))
   return p

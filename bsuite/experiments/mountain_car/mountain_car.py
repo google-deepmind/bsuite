@@ -26,6 +26,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.mountain_car import sweep
 from bsuite.utils import auto_reset_environment
 
 import dm_env
@@ -52,6 +53,7 @@ class MountainCar(auto_reset_environment.Base):
     self._raw_return = 0.
     self._position = 0.
     self._velocity = 0.
+    self.bsuite_num_episodes = sweep.NUM_EPISODES
     self._reset()
 
   def _get_observation(self):

@@ -13,11 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Sweep definition for bandit experiment."""
+"""Sweep definition for nonstationary bandit experiment."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
+NUM_EPISODES = 10000
 
 _settings = []
 for gamma in [0.5, 0.75, 0.9, 0.95, 0.99]:

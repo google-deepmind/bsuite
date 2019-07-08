@@ -20,6 +20,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.catch import sweep
 import dm_env
 from dm_env import specs
 import numpy as np
@@ -60,6 +61,7 @@ class Catch(dm_env.Environment):
     self._paddle_y = None
     self._reset_next_step = True
     self._total_regret = 0.
+    self.bsuite_num_episodes = sweep.NUM_EPISODES
 
   def reset(self) -> dm_env.TimeStep:
     """Returns the first `TimeStep` of a new episode."""

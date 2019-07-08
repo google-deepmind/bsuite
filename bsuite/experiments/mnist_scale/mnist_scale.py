@@ -13,23 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Simple diagnostic bandit_scale challenge.
-
-Observation is a single pixel of 0 - this is an indep arm bandit problem!
-Rewards are np.linspace(0, 1, 11) with no noise, but rescaled.
-"""
+"""MNIST bandit with reward scaling."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from bsuite.experiments.bandit import bandit
+from bsuite.experiments.mnist import mnist
+from bsuite.experiments.mnist_scale import sweep
 from bsuite.utils import wrappers
 
 
 def load(reward_scale, seed):
   """Load a bandit_scale experiment with the prescribed settings."""
-  return wrappers.RewardScale(
-      env=bandit.SimpleBandit(seed=seed),
+  env = wrappers.RewardScale(
+      env=mnist.MNISTBandit(seed=seed),
       reward_scale=reward_scale,
       seed=seed)
+  env.bsuite_num_episodes = sweep.NUM_EPISODES
+  return env

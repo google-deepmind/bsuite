@@ -17,17 +17,19 @@
 
 from __future__ import absolute_import
 from __future__ import division
-# Standard __future__ imports.
 from __future__ import print_function
 
 from bsuite.experiments.deep_sea import deep_sea
+from bsuite.experiments.deep_sea_stochastic import sweep
 
 
 def load(size):
   """Load a deep sea experiment with the prescribed settings."""
-  return deep_sea.DeepSea(
+  env = deep_sea.DeepSea(
       size=size,
       deterministic=False,
       seed=73,
   )
+  env.bsuite_num_episodes = sweep.NUM_EPISODES
+  return env
 

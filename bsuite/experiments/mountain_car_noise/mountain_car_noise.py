@@ -13,19 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Catch reinforcement learning environment."""
+"""Mountain car noise reinforcement learning environment."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.mountain_car import mountain_car
+from bsuite.experiments.mountain_car_noise import sweep
 from bsuite.utils import wrappers
 
 
 def load(noise_scale, seed):
   """Load a mountain_car experiment with the prescribed settings."""
-  return wrappers.RewardNoise(
+  env = wrappers.RewardNoise(
       env=mountain_car.MountainCar(seed=seed),
       noise_scale=noise_scale,
       seed=seed)
+  env.bsuite_num_episodes = sweep.NUM_EPISODES
+  return env

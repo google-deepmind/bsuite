@@ -19,6 +19,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from bsuite.experiments.mnist import sweep as mnist_sweep
+
+NUM_EPISODES = mnist_sweep.NUM_EPISODES
+
 _settings = []
 for scale in [0.001, 0.03, 1.0, 30., 1000.]:
   for seed in range(4):

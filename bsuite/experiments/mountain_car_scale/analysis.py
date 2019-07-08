@@ -26,7 +26,6 @@ import plotnine as gg
 
 from typing import Sequence, Text
 
-EPISODE = mc_noise_analysis.EPISODE
 TAGS = ('scale', 'credit_assignment', 'generalization')
 score = mc_noise_analysis.score
 

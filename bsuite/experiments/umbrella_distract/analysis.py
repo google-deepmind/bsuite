@@ -20,13 +20,13 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.umbrella_distract import sweep
 from bsuite.experiments.umbrella_length import analysis as umbrella_length_analysis
 from bsuite.utils import plotting
 import pandas as pd
 import plotnine as gg
 from typing import Sequence, Text
 
-EPISODE = umbrella_length_analysis.EPISODE
 TAGS = ('credit_assignment', 'noise')
 
 
@@ -41,7 +41,7 @@ def plot_learning(df: pd.DataFrame,
       df_in=df,
       group_col='n_distractor',
       sweep_vars=sweep_vars,
-      max_episode=EPISODE,
+      max_episode=sweep.NUM_EPISODES,
   )
 
 
@@ -51,7 +51,7 @@ def plot_scale(df: pd.DataFrame,
   return plotting.plot_regret_ave_scaling(
       df_in=df,
       group_col='n_distractor',
-      episode=EPISODE,
+      episode=sweep.NUM_EPISODES,
       regret_thresh=0.5,
       sweep_vars=sweep_vars,
   )

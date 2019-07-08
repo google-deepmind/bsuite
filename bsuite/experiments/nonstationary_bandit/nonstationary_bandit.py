@@ -24,6 +24,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.nonstationary_bandit import sweep
 from bsuite.utils import auto_reset_environment
 import dm_env
 from dm_env import specs
@@ -47,6 +48,8 @@ class NonstationaryBandit(auto_reset_environment.Base):
     self._prior_failure = prior_failure
     self._posterior_success = np.array([prior_success for _ in range(num_arm)])
     self._posterior_failure = np.array([prior_failure for _ in range(num_arm)])
+
+    self.bsuite_num_episodes = sweep.NUM_EPISODES
 
     self._rng = np.random.RandomState(seed)
     self._probs = np.zeros(num_arm)

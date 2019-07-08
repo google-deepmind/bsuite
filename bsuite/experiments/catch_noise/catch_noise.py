@@ -20,12 +20,15 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.experiments.catch import catch
+from bsuite.experiments.catch_noise import sweep
 from bsuite.utils import wrappers
 
 
 def load(noise_scale, seed):
   """Load a catch experiment with the prescribed settings."""
-  return wrappers.RewardNoise(
+  env = wrappers.RewardNoise(
       env=catch.Catch(seed=seed),
       noise_scale=noise_scale,
       seed=seed)
+  env.bsuite_num_episodes = sweep.NUM_EPISODES
+  return env

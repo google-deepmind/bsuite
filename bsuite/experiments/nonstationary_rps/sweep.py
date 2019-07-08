@@ -13,11 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Sweep definition for bandit experiment."""
+"""Sweep definition for nonstationary rock-paper-scissors experiment."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
+NUM_EPISODES = 10000
 
 _settings = []
 for winning_update in [0.01, 0.03, 0.1, 0.3, 0.9]:

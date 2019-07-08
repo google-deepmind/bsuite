@@ -19,4 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from bsuite.experiments.cartpole import sweep as cartpole_sweep
+
+NUM_EPISODES = cartpole_sweep.NUM_EPISODES
+
 SETTINGS = tuple({'seed': n, 'height_threshold': n / 20} for n in range(20))

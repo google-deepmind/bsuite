@@ -39,6 +39,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.deep_sea import sweep
 from bsuite.utils import auto_reset_environment
 
 import dm_env
@@ -78,6 +79,9 @@ class DeepSea(auto_reset_environment.Base):
     self._bad_episode = False
     self._total_bad_episodes = 0
     self._reset()
+
+    # bsuite experiment length.
+    self.bsuite_num_episodes = sweep.NUM_EPISODES
 
   def _get_observation(self):
     obs = np.zeros(shape=(self._size, self._size), dtype=np.float32)

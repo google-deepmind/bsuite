@@ -23,6 +23,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from bsuite.experiments.bandit import sweep
 from bsuite.utils import auto_reset_environment
 import dm_env
 from dm_env import specs
@@ -48,6 +49,7 @@ class SimpleBandit(auto_reset_environment.Base):
 
     self._total_regret = 0.
     self._optimal_return = 1.
+    self.bsuite_num_episodes = sweep.NUM_EPISODES
 
   def _get_observation(self):
     return np.zeros(shape=(1, 1), dtype=np.float32)
