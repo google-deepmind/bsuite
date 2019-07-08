@@ -26,7 +26,6 @@ from bsuite import bsuite
 from bsuite.baselines import experiment
 from bsuite.baselines.popart_dqn import popart_dqn
 
-import sonnet as snt
 import tensorflow as tf
 
 flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite identifier')
@@ -51,19 +50,13 @@ FLAGS = flags.FLAGS
 
 def main(argv):
   del argv  # Unused.
+
   env = bsuite.load_from_id(FLAGS.bsuite_id)
-  num_actions = env.action_spec().num_values
-  output_sizes = [FLAGS.num_units] * FLAGS.num_hidden_layers
-
-  torso = snt.Sequential([
-      snt.BatchFlatten(), snt.nets.MLP(output_sizes, activate_final=True)])
-  head = snt.Linear(num_actions)
-
-  agent = popart_dqn.PopArtDQN(
+  agent = popart_dqn.default_agent(
       obs_spec=env.observation_spec(),
       action_spec=env.action_spec(),
-      torso=torso,
-      head=head,
+      num_hidden_layers=FLAGS.num_hidden_layers,
+      num_units=FLAGS.num_units,
       batch_size=FLAGS.batch_size,
       agent_discount=FLAGS.agent_discount,
       replay_capacity=FLAGS.replay_capacity,

@@ -36,7 +36,9 @@ FLAGS = flags.FLAGS
 def main(argv):
   del argv  # Unused.
   env = bsuite.load_from_id(FLAGS.bsuite_id)
-  agent = random.Random(action_spec=env.action_spec(), seed=FLAGS.seed)
+  agent = random.default_agent(obs_spec=env.observation_spec(),
+                               action_spec=env.action_spec(),
+                               seed=FLAGS.seed)
   FLAGS.alsologtostderr = True
   experiment.run(agent, env, num_episodes=FLAGS.num_episodes)
 

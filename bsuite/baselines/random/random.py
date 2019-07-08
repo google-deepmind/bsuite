@@ -49,3 +49,9 @@ class Random(base.Agent):
     del timestep
     del action
     del new_timestep
+
+
+def default_agent(obs_spec: specs.Array, action_spec: specs.DiscreteArray,
+                  **kwargs) -> Random:
+  del obs_spec  # for compatibility
+  return Random(action_spec=action_spec, **kwargs)

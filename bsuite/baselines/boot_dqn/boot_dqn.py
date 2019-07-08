@@ -197,3 +197,26 @@ def make_ensemble(num_ensemble: int,
     prior_network = BatchFlattenMLP(output_sizes)
     ensemble.append(NetworkWithPrior(network, prior_network, prior_scale))
   return ensemble
+
+
+def default_agent(obs_spec: dm_env.specs.Array,
+                  action_spec: dm_env.specs.DiscreteArray) -> BootstrappedDqn:
+  ensemble = make_ensemble(
+      num_ensemble=16,
+      num_hidden_layers=2,
+      num_units=256,
+      num_actions=action_spec.num_values,
+      prior_scale=1.)
+
+  return BootstrappedDqn(
+      obs_spec=obs_spec,
+      action_spec=action_spec,
+      ensemble=ensemble,
+      batch_size=32,
+      agent_discount=.99,
+      replay_capacity=16384,
+      min_replay_size=128,
+      sgd_period=16,
+      optimizer=tf.train.AdamOptimizer(learning_rate=1e-3),
+      epsilon_fn=lambda x: 0.05,
+      seed=42)

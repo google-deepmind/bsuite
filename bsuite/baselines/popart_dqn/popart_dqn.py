@@ -187,3 +187,39 @@ class PopArtDQN(base.Agent):
   @property
   def nu(self):
     return self._nu
+
+
+def default_agent(obs_spec: specs.Array,
+                  action_spec: specs.DiscreteArray,
+                  num_hidden_layers: int = 2,
+                  num_units: int = 256,
+                  **kwargs) -> PopArtDQN:
+  """Initialize a PopArt-DQN agent with default parameters."""
+
+  params = {
+      'batch_size': 32,
+      'agent_discount': .99,
+      'replay_capacity': 16384,
+      'min_replay_size': 128,
+      'update_period': 16,
+      'optimizer': tf.train.AdamOptimizer(learning_rate=1e-3),
+      'popart_step_size': 1e-4,
+      'popart_lb': 1e-4,
+      'popart_ub': 1e4,
+      'epsilon': 0.05,
+      'seed': 42,
+  }
+  params.update(kwargs)
+
+  num_actions = action_spec.num_values
+  output_sizes = [num_units] * num_hidden_layers
+  torso = snt.Sequential([
+      snt.BatchFlatten(), snt.nets.MLP(output_sizes, activate_final=True)])
+  head = snt.Linear(num_actions)
+
+  return PopArtDQN(
+      obs_spec=obs_spec,
+      action_spec=action_spec,
+      torso=torso,
+      head=head,
+      **params)
