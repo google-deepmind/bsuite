@@ -41,7 +41,7 @@ class DQN(base.Agent):
   def __init__(
       self,
       obs_spec: specs.Array,
-      action_spec: specs.BoundedArray,
+      action_spec: specs.DiscreteArray,
       online_network: snt.AbstractModule,
       target_network: snt.AbstractModule,
       batch_size: int,
@@ -58,7 +58,7 @@ class DQN(base.Agent):
 
     # DQN configuration and hyperparameters.
     self._action_spec = action_spec
-    self._num_actions = action_spec.maximum - action_spec.minimum + 1
+    self._num_actions = action_spec.num_values
     self._agent_discount = agent_discount
     self._batch_size = batch_size
     self._sgd_period = sgd_period
@@ -131,3 +131,45 @@ class DQN(base.Agent):
     # Do a batch of SGD.
     minibatch = self._replay.sample(self._batch_size)
     self._sgd_fn(*minibatch)
+
+
+def default_agent(obs_spec: specs.Array,
+                  action_spec: specs.DiscreteArray,
+                  num_hidden_layers: int = 2,
+                  num_units: int = 20,
+                  **kwargs):
+  """Initialize a DQN agent with default parameters."""
+
+  params = {
+      'batch_size': 32,
+      'agent_discount': .99,
+      'replay_capacity': int(1e4),
+      'min_replay_size': 100,
+      'sgd_period': 1,
+      'target_update_period': 1,
+      'optimizer': tf.train.AdamOptimizer(learning_rate=1e-3),
+      'epsilon': 0.05,
+      'seed': 42,
+  }
+  params.update(kwargs)
+
+  num_actions = action_spec.num_values
+  output_sizes = [num_units] * num_hidden_layers + [num_actions]
+
+  online_network = snt.Sequential([
+      snt.BatchFlatten(),
+      snt.nets.MLP(output_sizes),
+  ])
+
+  target_network = snt.Sequential([
+      snt.BatchFlatten(),
+      snt.nets.MLP(output_sizes),
+  ])
+
+  # pylint: disable=unexpected-keyword-arg
+  return DQN(
+      obs_spec=obs_spec,
+      action_spec=action_spec,
+      online_network=online_network,
+      target_network=target_network,
+      **params)
