@@ -136,17 +136,17 @@ class DQN(base.Agent):
 def default_agent(obs_spec: specs.Array,
                   action_spec: specs.DiscreteArray,
                   num_hidden_layers: int = 2,
-                  num_units: int = 20,
+                  num_units: int = 256,
                   **kwargs):
   """Initialize a DQN agent with default parameters."""
 
   params = {
       'batch_size': 32,
       'agent_discount': .99,
-      'replay_capacity': int(1e4),
-      'min_replay_size': 100,
-      'sgd_period': 1,
-      'target_update_period': 1,
+      'replay_capacity': 16384,
+      'min_replay_size': 128,
+      'sgd_period': 8,
+      'target_update_period': 32,
       'optimizer': tf.train.AdamOptimizer(learning_rate=1e-3),
       'epsilon': 0.05,
       'seed': 42,
