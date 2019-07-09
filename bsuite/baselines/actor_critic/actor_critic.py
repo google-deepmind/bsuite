@@ -148,7 +148,7 @@ def default_agent(obs_spec: specs.Array,
   params.update(kwargs)
 
   num_actions = action_spec.num_values
-  units_per_hidden_layer = [num_units] * num_hidden_layers + [num_actions]
+  units_per_hidden_layer = [num_units] * num_hidden_layers
 
   network = PolicyValueNet(units_per_hidden_layer, num_actions)
 
