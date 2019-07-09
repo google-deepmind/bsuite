@@ -17,6 +17,7 @@
 
 Reference: "Simple Statistical Gradient-Following Algorithms for Connectionist
             Reinforcement Learning" (Williams, 1992).
+
 Link: http://www-anw.cs.umass.edu/~barto/courses/cs687/williams92simple.pdf.
 """
 
@@ -52,7 +53,6 @@ class ActorCritic(base.Agent):
       seed: int,
   ):
     """A simple actor-critic agent."""
-
     tf.set_random_seed(seed)
     self._sequence_length = sequence_length
     self._count = 0
@@ -68,14 +68,12 @@ class ActorCritic(base.Agent):
 
     placeholders = [
         tf.placeholder(shape=(self._sequence_length, 1) + shape, dtype=dtype)
-        for shape, dtype in zip(shapes, dtypes)
-    ]
+        for shape, dtype in zip(shapes, dtypes)]
     observations, actions, rewards, discounts = placeholders
 
     self.arrays = [
         np.zeros(shape=(self._sequence_length, 1) + shape, dtype=dtype)
-        for shape, dtype in zip(shapes, dtypes)
-    ]
+        for shape, dtype in zip(shapes, dtypes)]
 
     # Build actor and critic losses.
     logits, values = snt.BatchApply(network)(observations)
