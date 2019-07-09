@@ -133,14 +133,14 @@ class PolicyValueNet(snt.AbstractModule):
 
 def default_agent(obs_spec: specs.Array,
                   action_spec: specs.DiscreteArray,
-                  num_hidden_layers: int = 1,
+                  num_hidden_layers: int = 2,
                   num_units: int = 256,
                   **kwargs):
   """Initialize a DQN agent with default parameters."""
 
   params = {
       'agent_discount': .99,
-      'sequence_length': 36,
+      'sequence_length': 32,
       'td_lambda': 0.9,
       'optimizer': tf.train.AdamOptimizer(learning_rate=1e-2),
       'seed': 42,
