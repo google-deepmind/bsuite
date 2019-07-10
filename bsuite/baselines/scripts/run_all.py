@@ -28,10 +28,9 @@ from absl import flags
 from bsuite import bsuite
 from bsuite import sweep
 from bsuite.baselines import experiment
-
 from bsuite.baselines.random import random
-
 from bsuite.utils import sqlite_logging
+from bsuite.utils import timer
 
 flags.DEFINE_string('db_path', None, 'sqlite database path for results')
 flags.DEFINE_integer('processes', None, 'number of processes')
@@ -42,6 +41,7 @@ FLAGS = flags.FLAGS
 _MAX_DB_INDEX = 100000
 
 
+@timer.time_run
 def run(args):
   """Runs an agent against a single bsuite environment."""
   bsuite_id, num_episodes, db_path = args
@@ -76,7 +76,10 @@ def main(argv):
   db_path = _get_database_path()
   args = [(s, FLAGS.num_episodes, db_path) for s in sweep.SWEEP]
   pool = multiprocessing.Pool(FLAGS.processes)
-  pool.map(run, args)
+  envname_and_duration = pool.map(run, args)
+  df = timer.extract_df(envname_and_duration)
+  csv_path = db_path.split('.')[0] + '_durations.csv'
+  df.to_csv(csv_path)
 
 if __name__ == '__main__':
   app.run(main)
