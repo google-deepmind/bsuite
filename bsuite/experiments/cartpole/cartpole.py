@@ -33,7 +33,8 @@ class Cartpole(dm_env.Environment):
   https://webdocs.cs.ualberta.ca/~sutton/papers/barto-sutton-anderson-83.pdf
 
   The observation is a vector representing:
-    `(x, x_dot, theta, theta_dot, time_elapsed)`
+    `(x, x_dot, sin(theta), sin(theta)_dot, cos(theta), cos(theta)_dot,
+      time_elapsed)`
   All components are normalized to the [-1, +1] range.
 
   The actions are discrete, and there are three available: `stay`, `left`,
@@ -138,7 +139,7 @@ class Cartpole(dm_env.Environment):
       return dm_env.transition(reward=reward, observation=self.observation)
 
   def observation_spec(self):
-    return specs.Array(shape=(1, 5), dtype=np.float32, name='state')
+    return specs.Array(shape=(1, 7), dtype=np.float32, name='state')
 
   def action_spec(self):
     return specs.DiscreteArray(dtype=np.int, num_values=3, name='action')
@@ -146,12 +147,15 @@ class Cartpole(dm_env.Environment):
   @property
   def observation(self) -> np.ndarray:
     """Approximately normalize output."""
-    obs = self._state.copy()
-    obs[0, 0] /= self._width_threshold
-    obs[0, 1] /= self._width_threshold
-    obs[0, 2] /= np.pi
-    obs[0, 3] /= np.pi
-    obs[0, 4] /= self._max_time
+    x, x_dot, theta, theta_dot, time_elapsed = self._state[0, :]
+    obs = np.zeros((1, 7), dtype=np.float32)
+    obs[0, 0] = x / self._width_threshold
+    obs[0, 1] = x_dot / self._width_threshold
+    obs[0, 2] = np.sin(theta)
+    obs[0, 3] = np.cos(theta) * theta_dot / np.pi
+    obs[0, 4] = np.cos(theta)
+    obs[0, 5] = - np.sin(theta) * theta_dot / np.pi
+    obs[0, 6] = time_elapsed / self._max_time
     return obs
 
   def bsuite_info(self):
