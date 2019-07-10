@@ -29,13 +29,13 @@ from typing import List, Tuple, Text
 def time_run(func):
   """Meant for wrapping bsuite.baselines.scripts.run_all.run."""
   @functools.wraps(func)
-  def wrapper(*args) -> Tuple[Text, float]:
+  def wrapper(*args) -> Tuple[Text, float, Any]:
     bsuite_id = args[0][0]
     environment_name = bsuite_id.split('/')[0]
     t1 = time.time()
-    func(*args)
+    func_result = func(*args)
     t2 = time.time()
-    return environment_name, t2 - t1
+    return environment_name, t2 - t1, func_result
   return wrapper
 
 
