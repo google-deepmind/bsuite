@@ -27,11 +27,10 @@ import plotnine as gg
 
 from typing import Text, Sequence
 
-_SOLVED_STEPS = 20
-_WORST_STEPS = 1000
+_SOLVED_STEPS = 25
 NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('basic', 'generalization', 'credit_assignment')
-BASE_REGRET = _WORST_STEPS - _SOLVED_STEPS
+BASE_REGRET = 415  # Regret of the random policy empirically
 
 
 def score(df: pd.DataFrame) -> float:
