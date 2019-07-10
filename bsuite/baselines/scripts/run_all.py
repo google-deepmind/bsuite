@@ -28,6 +28,10 @@ from absl import flags
 from bsuite import bsuite
 from bsuite import sweep
 from bsuite.baselines import experiment
+from bsuite.baselines.actor_critic import actor_critic
+from bsuite.baselines.boot_dqn import boot_dqn
+from bsuite.baselines.dqn import dqn
+from bsuite.baselines.popart_dqn import popart_dqn
 from bsuite.baselines.random import random
 from bsuite.utils import sqlite_logging
 from bsuite.utils import timer
@@ -35,24 +39,35 @@ from bsuite.utils import timer
 flags.DEFINE_string('db_path', None, 'sqlite database path for results')
 flags.DEFINE_integer('processes', None, 'number of processes')
 flags.DEFINE_integer('num_episodes', 10000, 'number of episodes to run')
+flags.DEFINE_enum('agent', 'random',
+                  ['random', 'actor_critic', 'boot_dqn', 'dqn', 'popart_dqn'],
+                  'which agent to run')
 
 FLAGS = flags.FLAGS
 
 _MAX_DB_INDEX = 100000
 
+_AGENTS = {
+    'actor_critic': actor_critic.default_agent,
+    'boot_dqn': boot_dqn.default_agent,
+    'dqn': dqn.default_agent,
+    'popart_dqn': popart_dqn.default_agent,
+    'random': random.default_agent,
+}
+
 
 @timer.time_run
 def run(args):
   """Runs an agent against a single bsuite environment."""
-  bsuite_id, num_episodes, db_path = args
+  bsuite_id, num_episodes, db_path, agent_name = args
   print('Running {} and saving results to {}'.format(bsuite_id, db_path))
   experiment_name, setting_id = bsuite_id.split(sweep.SEPARATOR)
   raw_env = bsuite.load_from_id(bsuite_id)
   env = sqlite_logging.wrap_environment(
       raw_env, db_path, experiment_name, setting_id)
 
-  # We can replace this with any agent.
-  agent = random.Random(action_spec=env.action_spec())
+  agent = _AGENTS[agent_name](obs_spec=env.observation_spec(),
+                              action_spec=env.action_spec())
 
   experiment.run(agent, env, num_episodes=num_episodes)
 
@@ -74,7 +89,7 @@ def _get_database_path():
 def main(argv):
   del argv  # Unused.
   db_path = _get_database_path()
-  args = [(s, FLAGS.num_episodes, db_path) for s in sweep.SWEEP]
+  args = [(s, FLAGS.num_episodes, db_path, FLAGS.agent) for s in sweep.SWEEP]
   pool = multiprocessing.Pool(FLAGS.processes)
   envname_and_duration = pool.map(run, args)
   df = timer.extract_df(envname_and_duration)
