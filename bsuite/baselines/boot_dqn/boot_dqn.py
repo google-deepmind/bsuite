@@ -201,6 +201,8 @@ def make_ensemble(num_ensemble: int,
 
 def default_agent(obs_spec: dm_env.specs.Array,
                   action_spec: dm_env.specs.DiscreteArray) -> BootstrappedDqn:
+  """Initialize a Bootstrapped DQN agent with default parameters."""
+
   ensemble = make_ensemble(
       num_ensemble=16,
       num_hidden_layers=2,
