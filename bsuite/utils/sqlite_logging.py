@@ -23,6 +23,7 @@ import string
 import sys
 import traceback
 
+from absl import logging
 from bsuite.utils import wrappers
 import dm_env
 import six
@@ -131,15 +132,15 @@ class Logger(object):
     try:
       with self._connection:
         self._connection.execute(create_statement)
-        print('Created table {} with definition:'.format(self._experiment_name))
-        print(create_statement)
+        logging.info('Created table %s with definition:\n%s',
+                     self._experiment_name, create_statement)
     except sqlite3.OperationalError:
       # There are several possible reasons for this error, e.g. malformed SQL.
       # We only want to ignore the error if the table already exists.
       exception_info = sys.exc_info()
       message = ''.join(traceback.format_exception(*exception_info))
       if 'already exists' in message:
-        print('Table {} already exists.'.format(self._experiment_name))
+        logging.info('Table %s already exists.', self._experiment_name)
       else:
         six.reraise(*exception_info)
 
