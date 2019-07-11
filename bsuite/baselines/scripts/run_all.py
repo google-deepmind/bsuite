@@ -37,7 +37,7 @@ from bsuite.utils import sqlite_logging
 
 flags.DEFINE_string('db_path', None, 'sqlite database path for results')
 flags.DEFINE_integer('processes', None, 'number of processes')
-flags.DEFINE_integer('num_episodes', 10000, 'number of episodes to run')
+flags.DEFINE_integer('num_episodes', -1, 'number of episodes to run')
 flags.DEFINE_enum('agent', 'random',
                   ['random', 'actor_critic', 'boot_dqn', 'dqn', 'popart_dqn'],
                   'which agent to run')
@@ -66,6 +66,9 @@ def run(args):
 
   agent = _AGENTS[agent_name](obs_spec=env.observation_spec(),
                               action_spec=env.action_spec())
+
+  if num_episodes < 0:
+    num_episodes = env.bsuite_num_episodes  # pytype: disable=attribute-error.
 
   experiment.run(agent, env, num_episodes=num_episodes)
 
