@@ -30,34 +30,37 @@ import tensorflow as tf
 flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite identifier')
 flags.DEFINE_integer('seed', 42, 'seed for random number generation')
 flags.DEFINE_integer('num_episodes', 10000, 'number of episodes to run')
-flags.DEFINE_integer('num_hidden_layers', 1, 'number of hidden layers')
-flags.DEFINE_integer('num_units', 256, 'number of units per hidden layer')
+flags.DEFINE_integer('num_hidden_layers', 2, 'number of hidden layers')
+flags.DEFINE_integer('num_units', 20, 'number of units per hidden layer')
 flags.DEFINE_float('learning_rate', 3e-3, 'the learning rate')
 flags.DEFINE_integer('sequence_length', 36, 'mumber of transitions to batch')
 flags.DEFINE_float('td_lambda', 0.9, 'mixing parameter for boostrapping')
-flags.DEFINE_float('discount', .99, 'discounting on the agent side')
+flags.DEFINE_float('agent_discount', .99, 'discounting on the agent side')
 flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
 
 FLAGS = flags.FLAGS
+FLAGS.alsologtostderr = True
 
 
 def main(argv):
   del argv  # Unused.
   env = bsuite.load_from_id(FLAGS.bsuite_id)
+
   num_actions = env.action_spec().num_values
-  units_per_layer = [FLAGS.num_units] * FLAGS.num_hidden_layers
+  hidden_sizes = [FLAGS.num_units] * FLAGS.num_hidden_layers
+  network = actor_critic_rnn.PolicyValueRNN(hidden_sizes, num_actions)
 
   agent = actor_critic_rnn.ActorCriticRNN(
       obs_spec=env.observation_spec(),
       action_spec=env.action_spec(),
-      network=actor_critic_rnn.PolicyValueRNN(units_per_layer, num_actions),
+      network=network,
       optimizer=tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate),
       sequence_length=FLAGS.sequence_length,
       td_lambda=FLAGS.td_lambda,
-      discount=FLAGS.discount,
-      seed=FLAGS.seed)
+      agent_discount=FLAGS.agent_discount,
+      seed=FLAGS.seed,
+  )
 
-  FLAGS.alsologtostderr = True
   experiment.run(
       agent, env, num_episodes=FLAGS.num_episodes, verbose=FLAGS.verbose)
 

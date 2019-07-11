@@ -23,6 +23,7 @@ from absl.testing import absltest
 from bsuite import bsuite
 from bsuite.baselines import experiment
 from bsuite.baselines.actor_critic import actor_critic
+from bsuite.baselines.actor_critic_rnn import actor_critic_rnn
 from bsuite.baselines.boot_dqn import boot_dqn
 from bsuite.baselines.dqn import dqn
 from bsuite.baselines.popart_dqn import popart_dqn
@@ -41,11 +42,17 @@ class AgentsTest(absltest.TestCase):
     self._num_actions = self._env.action_spec().num_values
 
   def test_actor_critic_feedforward(self):
-    net = actor_critic.PolicyValueNet([10], self._num_actions)
-    agent = actor_critic.ActorCritic(
-        obs_spec=self._obs_spec, action_spec=self._action_spec,
-        network=net, optimizer=tf.train.AdamOptimizer(0.01),
-        sequence_length=9, td_lambda=.9, agent_discount=.99, seed=42)
+    agent = actor_critic_rnn.default_agent(
+        obs_spec=self._obs_spec,
+        action_spec=self._action_spec,
+    )
+    experiment.run(agent, self._env, num_episodes=5)
+
+  def test_actor_critic_recurrent(self):
+    agent = actor_critic.default_agent(
+        obs_spec=self._obs_spec,
+        action_spec=self._action_spec,
+    )
     experiment.run(agent, self._env, num_episodes=5)
 
   def test_boot_dqn(self):

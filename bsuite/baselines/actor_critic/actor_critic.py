@@ -53,6 +53,7 @@ class ActorCritic(base.Agent):
       seed: int,
   ):
     """A simple actor-critic agent."""
+    del action_spec  # unused
     tf.set_random_seed(seed)
     self._sequence_length = sequence_length
     self._count = 0
@@ -130,28 +131,19 @@ class PolicyValueNet(snt.AbstractModule):
 
 
 def default_agent(obs_spec: specs.Array,
-                  action_spec: specs.DiscreteArray,
-                  num_hidden_layers: int = 2,
-                  num_units: int = 256,
-                  **kwargs):
+                  action_spec: specs.DiscreteArray):
   """Initialize a DQN agent with default parameters."""
-
-  params = {
-      'agent_discount': .99,
-      'sequence_length': 32,
-      'td_lambda': 0.9,
-      'optimizer': tf.train.AdamOptimizer(learning_rate=1e-2),
-      'seed': 42,
-  }
-  params.update(kwargs)
-
-  num_actions = action_spec.num_values
-  units_per_hidden_layer = [num_units] * num_hidden_layers
-
-  network = PolicyValueNet(units_per_hidden_layer, num_actions)
-
+  network = PolicyValueNet(
+      hidden_sizes=[20, 20],
+      num_actions=action_spec.num_values,
+  )
   return ActorCritic(
       obs_spec=obs_spec,
       action_spec=action_spec,
       network=network,
-      **params)
+      optimizer=tf.train.AdamOptimizer(learning_rate=1e-3),
+      sequence_length=32,
+      td_lambda=0.9,
+      agent_discount=0.99,
+      seed=42,
+  )

@@ -31,7 +31,7 @@ flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite identifier')
 flags.DEFINE_integer('seed', 42, 'seed for random number generation')
 flags.DEFINE_integer('num_episodes', 10000, 'number of episodes to run')
 flags.DEFINE_integer('num_hidden_layers', 2, 'number of hidden layers')
-flags.DEFINE_integer('num_units', 256, 'number of units per hidden layer')
+flags.DEFINE_integer('num_units', 20, 'number of units per hidden layer')
 flags.DEFINE_float('learning_rate', 1e-2, 'the learning rate')
 flags.DEFINE_integer('sequence_length', 32, 'mumber of transitions to batch')
 flags.DEFINE_float('td_lambda', 0.9, 'mixing parameter for boostrapping')
@@ -39,24 +39,28 @@ flags.DEFINE_float('agent_discount', .99, 'discounting on the agent side')
 flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
 
 FLAGS = flags.FLAGS
+FLAGS.alsologtostderr = True
 
 
 def main(argv):
   del argv  # Unused.
   env = bsuite.load_from_id(FLAGS.bsuite_id)
-  agent = actor_critic.default_agent(
+
+  hidden_sizes = [FLAGS.num_units] * FLAGS.num_hiddden_layers
+  network = actor_critic.PolicyValueNet(
+      hidden_sizes=hidden_sizes,
+      num_actions=env.action_spec().num_values,
+  )
+  agent = actor_critic.ActorCritic(
       obs_spec=env.observation_spec(),
       action_spec=env.action_spec(),
-      num_hidden_layers=FLAGS.num_hidden_layers,
-      num_units=FLAGS.num_units,
-      agent_discount=FLAGS.agent_discount,
+      network=network,
+      optimizer=tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate),
       sequence_length=FLAGS.sequence_length,
       td_lambda=FLAGS.td_lambda,
-      optimizer=tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate),
+      agent_discount=FLAGS.agent_discount,
       seed=FLAGS.seed,
   )
-
-  FLAGS.alsologtostderr = True
   experiment.run(
       agent, env, num_episodes=FLAGS.num_episodes, verbose=FLAGS.verbose)
 

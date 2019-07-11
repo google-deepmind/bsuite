@@ -54,10 +54,11 @@ class ActorCriticRNN(base.Agent):
       optimizer: tf.train.Optimizer,
       sequence_length: int,
       td_lambda: float,
-      discount: float,
+      agent_discount: float,
       seed: int,
   ):
     """A recurrent actor-critic agent."""
+    del action_spec  # unused
     tf.set_random_seed(seed)
     self._sequence_length = sequence_length
     self._num_transitions_in_buffer = 0
@@ -86,8 +87,11 @@ class ActorCriticRNN(base.Agent):
     values, bootstrap_value = tree.map_structure(
         lambda t: tf.squeeze(t, axis=-1), (values, bootstrap_value))
     critic_loss, (advantages, _) = trfl.td_lambda(
-        state_values=values, rewards=rewards, pcontinues=discount * discounts,
-        bootstrap_value=bootstrap_value, lambda_=td_lambda)
+        state_values=values,
+        rewards=rewards,
+        pcontinues=agent_discount * discounts,
+        bootstrap_value=bootstrap_value,
+        lambda_=td_lambda)
     actor_loss = trfl.discrete_policy_gradient_loss(logits, actions, advantages)
 
     # Updates.
@@ -188,3 +192,22 @@ class PolicyValueRNN(snt.RNNCore):
   def initial_state(self, *args, **kwargs):
     """Creates the core initial state."""
     return self._core.initial_state(*args, **kwargs)
+
+
+def default_agent(obs_spec: specs.Array,
+                  action_spec: specs.DiscreteArray):
+  """Initialize a DQN agent with default parameters."""
+  network = PolicyValueRNN(
+      hidden_sizes=[20, 20],
+      num_actions=action_spec.num_values,
+  )
+  return ActorCriticRNN(
+      obs_spec=obs_spec,
+      action_spec=action_spec,
+      network=network,
+      optimizer=tf.train.AdamOptimizer(learning_rate=1e-3),
+      sequence_length=32,
+      td_lambda=0.9,
+      agent_discount=0.99,
+      seed=42,
+  )
