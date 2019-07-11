@@ -54,8 +54,11 @@ from bsuite.experiments.nonstationary_rps import nonstationary_rps
 from bsuite.experiments.umbrella_distract import umbrella_distract
 from bsuite.experiments.umbrella_length import umbrella_length
 
+from bsuite.utils import sqlite_logging
+
 import dm_env
-from typing import Any, Mapping, Text
+from typing import Any, Mapping, Text, Tuple
+
 
 # Mapping from experiment name to environment constructor or load function.
 # Each constructor or load function accepts keyword arguments as defined in
@@ -90,20 +93,58 @@ EXPERIMENT_NAME_TO_ENVIRONMENT = dict(
     umbrella_length=umbrella_length.UmbrellaChain,
 )
 
-# Any experiments that log by step count rather than the default episode count.
-LOG_BY_STEP = frozenset([])
+
+def unpack_bsuite_id(bsuite_id: Text) -> Tuple[Text, int]:
+  """Returns the experiment name and setting index given a bsuite_id."""
+  parts = bsuite_id.split(sweep.SEPARATOR)
+  assert len(parts) == 2
+  experiment_name = parts[0]
+  setting_index = int(parts[1])
+  return experiment_name, setting_index
 
 
-def load(name: Text, kwargs: Mapping[Text, Any],
-         log_stats: bool = False) -> dm_env.Environment:
-  """Configure and load bsuite environment via simple interface."""
-  del log_stats  # Not yet implemented.
-  return EXPERIMENT_NAME_TO_ENVIRONMENT[name](**kwargs)
+def load(experiment_name: Text,
+         kwargs: Mapping[Text, Any]) -> dm_env.Environment:
+  """Returns a bsuite environment given an experiment name and settings."""
+  return EXPERIMENT_NAME_TO_ENVIRONMENT[experiment_name](**kwargs)
 
 
-def load_from_id(bsuite_id: Text, log_stats: bool = True) -> dm_env.Environment:
-  """Load bsuite environment from bsuite_id."""
-
+def load_from_id(bsuite_id: Text) -> dm_env.Environment:
+  """Returns a bsuite environment given a bsuite_id."""
   kwargs = sweep.SETTINGS[bsuite_id]
-  name = bsuite_id.split(sweep.SEPARATOR)[0]
-  return load(name, kwargs, log_stats)
+  experiment_name, _ = unpack_bsuite_id(bsuite_id)
+  return load(experiment_name, kwargs)
+
+
+def load_and_record_to_sqlite(bsuite_id: Text,
+                              db_path: Text) -> dm_env.Environment:
+  """Returns a bsuite environment that saves results to an SQLite database.
+
+  The returned environment will automatically save the results required for
+  the analysis notebook when stepping through the environment.
+
+  To load the results, specify the file path in the provided notebook, or to
+  manually inspect the results use:
+
+  ```python
+  from bsuite.utils import sqlite_load
+
+  results_df, sweep_vars = sqlite_load.load_bsuite('/path/to/database.db')
+  ```
+
+  Args:
+    bsuite_id: The bsuite id identifying the environment to return. For example,
+      "catch/0" or "deep_sea/3".
+    db_path: Path to the database file for this set of results. The file will be
+      created if it does not already exist. When generating results using
+      multiple different processes, specify the *same* db_path for every
+      bsuite_id.
+
+  Returns:
+    A bsuite environment determined by the bsuite_id.
+  """
+  raw_env = load_from_id(bsuite_id)
+  experiment_name, setting_index = unpack_bsuite_id(bsuite_id)
+  return sqlite_logging.wrap_environment(
+      raw_env, db_path=db_path, experiment_name=experiment_name,
+      setting_index=setting_index)

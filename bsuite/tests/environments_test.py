@@ -48,7 +48,7 @@ class EnvironmentsTest(parameterized.TestCase):
 
   @parameterized.parameters(*_reduced_names_and_kwargs())
   def test_environment(self, name, settings):
-    env = bsuite.load(name, settings, log_stats=False)
+    env = bsuite.load(name, settings)
     self.assertGreater(env.action_spec().num_values, 0)
     self.assertGreater(env.bsuite_num_episodes, 0)
 

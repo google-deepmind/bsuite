@@ -39,7 +39,7 @@ class SqliteLoggerTest(parameterized.TestCase):
     connection = sqlite3.connect(':memory:')
     logger = sqlite_logging.Logger(db_path='unused',
                                    experiment_name='test',
-                                   setting_id=1,
+                                   setting_index=1,
                                    connection=connection)
 
     num_writes = 10
@@ -73,7 +73,7 @@ class SqliteLoggerTest(parameterized.TestCase):
     experiment_name = 'test--'
     logger = sqlite_logging.Logger(db_path=':memory:',
                                    experiment_name=experiment_name,
-                                   setting_id=1,
+                                   setting_index=1,
                                    skip_name_validation=True)
 
     data = dict(
@@ -91,7 +91,7 @@ class SqliteLoggerTest(parameterized.TestCase):
 
     logger_1 = sqlite_logging.Logger(db_path='unused',
                                      experiment_name='test',
-                                     setting_id=1,
+                                     setting_index=1,
                                      connection=connection)
 
     data = dict(
@@ -105,7 +105,7 @@ class SqliteLoggerTest(parameterized.TestCase):
 
     logger_2 = sqlite_logging.Logger(db_path='unused',
                                      experiment_name='test',
-                                     setting_id=1,
+                                     setting_index=1,
                                      connection=connection)
 
     data = dict(
@@ -121,7 +121,7 @@ class SqliteLoggerTest(parameterized.TestCase):
     with self.assertRaises(ValueError):
       sqlite_logging.Logger(db_path=':memory:',
                             experiment_name='test--',
-                            setting_id=1)
+                            setting_index=1)
 
 
 if __name__ == '__main__':

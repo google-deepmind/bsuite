@@ -33,7 +33,6 @@ from bsuite.baselines.boot_dqn import boot_dqn
 from bsuite.baselines.dqn import dqn
 from bsuite.baselines.popart_dqn import popart_dqn
 from bsuite.baselines.random import random
-from bsuite.utils import sqlite_logging
 
 flags.DEFINE_string('db_path', None, 'sqlite database path for results')
 flags.DEFINE_integer('processes', None, 'number of processes')
@@ -59,10 +58,7 @@ def run(args):
   """Runs an agent against a single bsuite environment."""
   bsuite_id, num_episodes, db_path, agent_name = args
   print('Running {} and saving results to {}'.format(bsuite_id, db_path))
-  experiment_name, setting_id = bsuite_id.split(sweep.SEPARATOR)
-  raw_env = bsuite.load_from_id(bsuite_id)
-  env = sqlite_logging.wrap_environment(
-      raw_env, db_path, experiment_name, setting_id)
+  env = bsuite.load_and_record_to_sqlite(bsuite_id, db_path)
 
   agent = _AGENTS[agent_name](obs_spec=env.observation_spec(),
                               action_spec=env.action_spec())

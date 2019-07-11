@@ -32,10 +32,10 @@ import sqlite3
 _NUM_WRITES = 10
 
 
-def generate_results(experiment_name, setting_id, connection):
+def generate_results(experiment_name, setting_index, connection):
   logger = sqlite_logging.Logger(db_path='unused',
                                  experiment_name=experiment_name,
-                                 setting_id=setting_id,
+                                 setting_index=setting_index,
                                  connection=connection)
 
   steps_per_episode = 7
@@ -63,9 +63,9 @@ class SqliteLoadTest(absltest.TestCase):
     connection = sqlite3.connect(':memory:')
 
     generate_results(
-        experiment_name='catch', setting_id=1, connection=connection)
+        experiment_name='catch', setting_index=1, connection=connection)
     generate_results(
-        experiment_name='catch', setting_id=2, connection=connection)
+        experiment_name='catch', setting_index=2, connection=connection)
 
     df = sqlite_load.load_one_result_set(db_path='unused',
                                          connection=connection)

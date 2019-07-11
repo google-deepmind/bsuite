@@ -37,10 +37,10 @@ _STEP_KEY = 'steps'
 def wrap_environment(env: dm_env.Environment,
                      db_path: Text,
                      experiment_name: Text,
-                     setting_id: int,
+                     setting_index: int,
                      log_by_step: bool = False) -> dm_env.Environment:
   """Returns a wrapped environment that logs using SQLite."""
-  logger = Logger(db_path, experiment_name, setting_id)
+  logger = Logger(db_path, experiment_name, setting_index)
   return wrappers.Logging(env, logger, log_by_step=log_by_step)
 
 
@@ -64,7 +64,7 @@ class Logger(object):
   def __init__(self,
                db_path: Text,
                experiment_name: Text,
-               setting_id: int,
+               setting_index: int,
                connection: sqlite3.Connection = None,
                skip_name_validation: bool = False):
     """Initializes a new SQLite logger.
@@ -73,8 +73,8 @@ class Logger(object):
       db_path: Path to the database file. The logger will create the file on the
         first write if it does not exist.
       experiment_name: The name of the bsuite experiment, e.g. 'deep_sea'.
-      setting_id: The index of the corresponding environment setting as defined
-        in each experiment's sweep.py file.
+      setting_index: The index of the corresponding environment setting as
+        defined in each experiment's sweep.py file.
       connection: Optional connection, for testing purposes. If supplied,
         `db_path` will be ignored.
       skip_name_validation: Optionally, disable validation of `experiment_name`.
@@ -87,7 +87,7 @@ class Logger(object):
       self._connection = connection
 
     self._experiment_name = experiment_name
-    self._setting_id = setting_id
+    self._setting_index = setting_index
     self._sure_that_table_exists = False
     self._insert_statement = None
     self._keys = None
@@ -100,7 +100,7 @@ class Logger(object):
       # Create a parameterized insert statement.
       placeholders = ', '.join(['?'] * len(data))
       self._insert_statement = 'insert into {} values ({}, {})'.format(
-          self._experiment_name, self._setting_id, placeholders)
+          self._experiment_name, self._setting_index, placeholders)
 
     with self._connection:
       self._connection.execute(self._insert_statement,
@@ -123,10 +123,10 @@ class Logger(object):
 
     create_statement = '''
     create table {} (
-      setting_id integer not null,
+      setting_index integer not null,
       steps integer not null,
       {},
-      primary key (setting_id, steps)
+      primary key (setting_index, steps)
     );'''.format(self._experiment_name, column_declaration)
 
     try:

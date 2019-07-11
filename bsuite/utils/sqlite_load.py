@@ -28,7 +28,7 @@ import six
 import sqlite3
 from typing import Mapping, Sequence, Text, Union
 
-_CATEGORICAL_COLUMNS = ('setting_id',)
+_CATEGORICAL_COLUMNS = ('setting_index',)
 
 
 def join_metadata(df: pd.DataFrame) -> pd.DataFrame:
@@ -79,8 +79,9 @@ def load_one_result_set(db_path: Text,
   dataframes = []
   for table_name in table_names:
     dataframe = pd.read_sql_query('select * from ' + table_name[0], connection)
-    dataframe['bsuite_id'] = [table_name[0] + sweep.SEPARATOR + str(setting_id)
-                              for setting_id in dataframe.setting_id]
+    dataframe['bsuite_id'] = [
+        table_name[0] + sweep.SEPARATOR + str(setting_index)
+        for setting_index in dataframe.setting_index]
     dataframes.append(dataframe)
 
   df = pd.concat(dataframes, sort=False)
