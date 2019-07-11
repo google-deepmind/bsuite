@@ -94,10 +94,12 @@ class MemoryChain(auto_reset_environment.Base):
       else:
         reward = -1.
         self._episode_mistakes += 1
+        self._total_regret += 2.
       return dm_env.transition(reward=reward, observation=observation)
 
   def _reset(self):
     self._timestep = 0
+    self._episode_mistakes = 0
     self._context = self._rng.binomial(1, 0.5, self._num_bits)
     observation = self._get_observation()
     return dm_env.restart(observation)
