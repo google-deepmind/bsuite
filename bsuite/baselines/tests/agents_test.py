@@ -49,14 +49,10 @@ class AgentsTest(absltest.TestCase):
     experiment.run(agent, self._env, num_episodes=5)
 
   def test_boot_dqn(self):
-    ensemble = boot_dqn.make_ensemble(
-        num_ensemble=2, num_hidden_layers=2, num_units=10,
-        num_actions=self._num_actions, prior_scale=1.)
-    agent = boot_dqn.BootstrappedDqn(
-        obs_spec=self._obs_spec, action_spec=self._action_spec,
-        ensemble=ensemble, batch_size=5, agent_discount=.99,
-        replay_capacity=20, min_replay_size=5, sgd_period=1,
-        optimizer=tf.train.AdamOptimizer(0.01))
+    agent = boot_dqn.default_agent(
+        obs_spec=self._obs_spec,
+        action_spec=self._action_spec,
+    )
     experiment.run(agent, self._env, num_episodes=5)
 
   def test_dqn(self):
