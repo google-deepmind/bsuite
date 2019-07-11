@@ -134,41 +134,29 @@ class DQN(base.Agent):
 
 
 def default_agent(obs_spec: specs.Array,
-                  action_spec: specs.DiscreteArray,
-                  num_hidden_layers: int = 2,
-                  num_units: int = 256,
-                  **kwargs):
+                  action_spec: specs.DiscreteArray):
   """Initialize a DQN agent with default parameters."""
-
-  params = {
-      'batch_size': 32,
-      'agent_discount': .99,
-      'replay_capacity': 16384,
-      'min_replay_size': 128,
-      'sgd_period': 8,
-      'target_update_period': 32,
-      'optimizer': tf.train.AdamOptimizer(learning_rate=1e-3),
-      'epsilon': 0.05,
-      'seed': 42,
-  }
-  params.update(kwargs)
-
-  num_actions = action_spec.num_values
-  output_sizes = [num_units] * num_hidden_layers + [num_actions]
-
+  hidden_units = [20, 20]
   online_network = snt.Sequential([
       snt.BatchFlatten(),
-      snt.nets.MLP(output_sizes),
+      snt.nets.MLP(hidden_units + [action_spec.num_values]),
   ])
-
   target_network = snt.Sequential([
       snt.BatchFlatten(),
-      snt.nets.MLP(output_sizes),
+      snt.nets.MLP(hidden_units + [action_spec.num_values]),
   ])
-
   return DQN(
       obs_spec=obs_spec,
       action_spec=action_spec,
       online_network=online_network,
       target_network=target_network,
-      **params)
+      batch_size=32,
+      agent_discount=0.99,
+      replay_capacity=10000,
+      min_replay_size=100,
+      sgd_period=4,
+      target_update_period=32,
+      optimizer=tf.train.AdamOptimizer(learning_rate=1e-3),
+      epsilon=0.05,
+      seed=42
+  )
