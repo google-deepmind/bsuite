@@ -48,7 +48,7 @@ class ActorCritic(base.Agent):
       network: snt.AbstractModule,
       optimizer: tf.train.Optimizer,
       sequence_length: int,
-      td_lambda: int,
+      td_lambda: float,
       agent_discount: float,
       seed: int,
   ):

@@ -16,8 +16,13 @@
 """A simple implementation of Bootstrapped DQN with prior networks.
 
 References:
-1. https://arxiv.org/abs/1703.07608
-2. https://arxiv.org/abs/1602.04621
+1. "Deep Exploration via Bootstrapped DQN" (Osband et al., 2016)
+2. "Deep Exploration via Randomized Value Functions" (Osband et al., 2017)
+3. "Randomized Prior Functions for Deep RL" (Osband et al, 2018)
+
+Links:
+1. https://arxiv.org/abs/1602.04621
+2. https://arxiv.org/abs/1703.07608
 3. https://arxiv.org/abs/1806.03335
 
 This implementation is potentially inefficient, in that it does not parallelize
