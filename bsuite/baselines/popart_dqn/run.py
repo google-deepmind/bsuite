@@ -25,6 +25,7 @@ from absl import flags
 from bsuite import bsuite
 from bsuite.baselines import experiment
 from bsuite.baselines.popart_dqn import popart_dqn
+import sonnet as snt
 
 import tensorflow as tf
 
@@ -34,9 +35,10 @@ flags.DEFINE_integer('num_hidden_layers', 2, 'number of hidden layers')
 flags.DEFINE_integer('num_units', 256, 'number of units per hidden layer')
 flags.DEFINE_integer('batch_size', 32, 'size of batches sampled from replay')
 flags.DEFINE_float('agent_discount', .99, 'discounting on the agent side')
-flags.DEFINE_integer('replay_capacity', 16384, 'size of the replay buffer')
-flags.DEFINE_integer('min_replay_size', 128, 'min replay size before training.')
-flags.DEFINE_integer('update_period', 16, 'steps between online net updates')
+flags.DEFINE_integer('replay_capacity', 10000, 'size of the replay buffer')
+flags.DEFINE_integer('min_replay_size', 100, 'min replay size before training.')
+flags.DEFINE_integer('update_period', 4, 'steps between online net updates')
+flags.DEFINE_integer('target_update_period', 32, 'period of target net updates')
 flags.DEFINE_float('learning_rate', 1e-3, 'learning rate for optimizer')
 flags.DEFINE_float('popart_step_size', 1e-4, 'step size for stats updates')
 flags.DEFINE_float('popart_lb', 1e-4, 'lower bound on standard deviation')
@@ -50,24 +52,27 @@ FLAGS = flags.FLAGS
 
 def main(argv):
   del argv  # Unused.
-
   env = bsuite.load_from_id(FLAGS.bsuite_id)
-  agent = popart_dqn.default_agent(
-      obs_spec=env.observation_spec(),
-      action_spec=env.action_spec(),
-      num_hidden_layers=FLAGS.num_hidden_layers,
-      num_units=FLAGS.num_units,
-      batch_size=FLAGS.batch_size,
-      agent_discount=FLAGS.agent_discount,
+
+  hidden_units = [FLAGS.num_units] * FLAGS.num_hidden_layers
+  torso = snt.Sequential([
+      snt.BatchFlatten(), snt.nets.MLP(hidden_units, activate_final=True)])
+  head = snt.Linear(env.action_spec().num_values)
+  target_torso = snt.Sequential([
+      snt.BatchFlatten(), snt.nets.MLP(hidden_units, activate_final=True)])
+  target_head = snt.Linear(env.action_spec().num_values)
+
+  agent = popart_dqn.PopArtDQN(
+      obs_spec=env.observation_spec(), action_spec=env.action_spec(),
+      torso=torso, head=head,
+      target_torso=target_torso, target_head=target_head,
+      batch_size=FLAGS.batch_size, agent_discount=FLAGS.agent_discount,
       replay_capacity=FLAGS.replay_capacity,
-      min_replay_size=FLAGS.min_replay_size,
-      update_period=FLAGS.update_period,
+      min_replay_size=FLAGS.min_replay_size, update_period=FLAGS.update_period,
+      target_update_period=FLAGS.target_update_period,
       optimizer=tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate),
-      popart_step_size=FLAGS.popart_step_size,
-      popart_lb=FLAGS.popart_lb,
-      popart_ub=FLAGS.popart_ub,
-      epsilon=FLAGS.epsilon,
-      seed=FLAGS.seed)
+      popart_step_size=FLAGS.popart_step_size, popart_lb=FLAGS.popart_lb,
+      popart_ub=FLAGS.popart_ub, epsilon=FLAGS.epsilon, seed=FLAGS.seed)
 
   FLAGS.alsologtostderr = True
   experiment.run(
