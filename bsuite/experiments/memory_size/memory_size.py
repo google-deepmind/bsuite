@@ -32,9 +32,9 @@ from bsuite.experiments.memory_size import sweep
 
 
 def load(num_bits):
-  """Load a deep sea experiment with the prescribed settings."""
+  """Memory Chain environment, with variable number of bits."""
   env = memory_len.MemoryChain(
-      memory_length=30,
+      memory_length=5,
       num_bits=num_bits,
       seed=73,
   )
