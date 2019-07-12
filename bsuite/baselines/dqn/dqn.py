@@ -85,18 +85,17 @@ class DQN(base.Agent):
     q_t = target_network(o_t)
     loss = trfl.qlearning(q_tm1, a_tm1, r_t, agent_discount * d_t, q_t).loss
 
-    sgd_op = self._optimizer.minimize(loss)
-    periodic_target_update_op = trfl.periodic_target_update(
-        target_variables=target_network.variables,
-        source_variables=online_network.variables,
-        update_period=target_update_period)
-
-    with tf.control_dependencies([sgd_op, periodic_target_update_op]):
-      loss = tf.reduce_mean(loss)
+    train_op = self._optimizer.minimize(loss)
+    with tf.control_dependencies([train_op]):
+      train_op = trfl.periodic_target_update(
+          target_variables=target_network.variables,
+          source_variables=online_network.variables,
+          update_period=target_update_period)
 
     # Make session and callables.
     session = tf.Session()
-    self._sgd_fn = session.make_callable(loss, [o_tm1, a_tm1, r_t, d_t, o_t])
+    self._sgd_fn = session.make_callable(
+        train_op, [o_tm1, a_tm1, r_t, d_t, o_t])
     self._value_fn = session.make_callable(q, [o])
     session.run(tf.global_variables_initializer())
 
