@@ -109,3 +109,10 @@ UMBRELLA_LENGTH = _parse_sweep(umbrella_length_sweep)
 
 # Tuple containing all bsuite_id. Used for hyperparameter sweeps.
 SWEEP = tuple(_SWEEP)
+
+
+def num_episodes(bsuite_id: Text) -> int:
+  """Returns the number of episodes needed for the corresponding experiment."""
+  experiment_name = bsuite_id.split(SEPARATOR)[0]
+  module = globals()[experiment_name + '_sweep']
+  return module.NUM_EPISODES
