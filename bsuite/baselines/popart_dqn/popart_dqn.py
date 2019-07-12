@@ -181,7 +181,7 @@ class PopArtDQN(base.Agent):
         *minibatch)  # learn.
 
     if self._total_steps % self._target_update_period:
-      self._target_update_fn()  # updte target net vars
+      self._target_update_fn()  # update target net vars
       self._target_mu = self.mu  # update target mean
       self._target_nu = self.nu  # update target shift
 
