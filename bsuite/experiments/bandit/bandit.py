@@ -52,7 +52,7 @@ class SimpleBandit(auto_reset_environment.Base):
     self.bsuite_num_episodes = sweep.NUM_EPISODES
 
   def _get_observation(self):
-    return np.zeros(shape=(1, 1), dtype=np.float32)
+    return np.ones(shape=(1, 1), dtype=np.float32)
 
   def _reset(self):
     observation = self._get_observation()
