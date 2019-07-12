@@ -198,7 +198,7 @@ def default_agent(obs_spec: specs.Array,
                   action_spec: specs.DiscreteArray):
   """Initialize a DQN agent with default parameters."""
   network = PolicyValueRNN(
-      hidden_sizes=[20, 20],
+      hidden_sizes=[64, 64],
       num_actions=action_spec.num_values,
   )
   return ActorCriticRNN(
