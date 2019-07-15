@@ -15,7 +15,7 @@
 # ============================================================================
 """Downloads and loads MNIST dataset without tensorflow.
 
-Adaped from third_party/py/jax/examples/datasets.py.
+Adaped from https://github.com/google/jax/blob/master/examples/datasets.py
 """
 
 from __future__ import absolute_import
