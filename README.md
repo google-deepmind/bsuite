@@ -5,10 +5,9 @@
 bsuite is a collection of carefully-designed experiments that investigate core
 capabilities of a reinforcement learning (RL) agent with two main objectives.
 
-- First, to collect clear, informative and scalable problems that capture key
-  issues in the design of efficient and general learning algorithms.
-- Second, to study agent behavior through their performance on these shared
-  benchmarks.
+1. To collect clear, informative and scalable problems that capture key issues
+   in the design of efficient and general learning algorithms.
+2. To study agent behavior through their performance on these shared benchmarks.
 
 This library automates evaluation and analysis of any agent on these benchmarks.
 It serves to facilitate reproducible, and accessible, research on the core
