@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""MNIST bandit with noise."""
+"""MNIST bandit with noisy rewards."""
 
 from __future__ import absolute_import
 from __future__ import division

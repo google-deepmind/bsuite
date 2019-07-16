@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Catch reinforcement learning environment."""
+"""Stochastic Deep Sea environment."""
 
 from __future__ import absolute_import
 from __future__ import division

@@ -26,8 +26,7 @@ from bsuite.utils import environment_test
 import numpy as np
 
 
-class CartpoleInterfaceTest(
-    environment_test.EnvironmentTestMixin, absltest.TestCase):
+class InterfaceTest(environment_test.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
     return cartpole.Cartpole(seed=22)

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Sweep definition for a balancing experiment in Cartpole."""
+"""Sweep definition for a swing up experiment in Cartpole."""
 
 from __future__ import absolute_import
 from __future__ import division

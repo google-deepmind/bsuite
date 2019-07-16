@@ -26,7 +26,7 @@ from bsuite.utils import environment_test
 import numpy as np
 
 
-class BanditNoiseInterfaceTest(
+class InterfaceTest(
     environment_test.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):

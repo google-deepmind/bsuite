@@ -27,8 +27,7 @@ from bsuite.utils import environment_test
 import numpy as np
 
 
-class MountainCarInterfaceTest(
-    environment_test.EnvironmentTestMixin, absltest.TestCase):
+class InterfaceTest(environment_test.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
     return mountain_car.MountainCar(2)

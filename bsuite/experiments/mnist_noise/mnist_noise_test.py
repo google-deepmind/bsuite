@@ -13,30 +13,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.bandit_noise."""
+"""Tests for bsuite.experiments.mnist."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# Internal dependencies.
 from absl.testing import absltest
-from bsuite.experiments.bandit_noise import bandit_noise
+from bsuite.experiments.mnist_noise import mnist_noise
 from bsuite.utils import environment_test
+
 import numpy as np
 
 
 class InterfaceTest(environment_test.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
-    return bandit_noise.load(1., 42)
+    return mnist_noise.load(noise_scale=2.0, seed=101)
 
   def make_action_sequence(self):
-    valid_actions = range(11)
+    num_actions = self.environment.action_spec().num_values
     rng = np.random.RandomState(42)
 
     for _ in range(100):
-      yield rng.choice(valid_actions)
+      yield rng.randint(num_actions)
 
 if __name__ == '__main__':
   absltest.main()

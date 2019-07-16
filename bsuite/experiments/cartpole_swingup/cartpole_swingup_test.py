@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.cartpole."""
+"""Tests for bsuite.experiments.cartpole_swingup."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -26,8 +26,7 @@ from bsuite.utils import environment_test
 import numpy as np
 
 
-class CartpoleInterfaceTest(
-    environment_test.EnvironmentTestMixin, absltest.TestCase):
+class InterfaceTest(environment_test.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
     return cartpole_swingup.load(seed=42, height_threshold=0.8)

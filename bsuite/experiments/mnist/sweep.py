@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Sweep definition for bandit experiment."""
+"""Sweep definition for mnist bandit experiment."""
 
 from __future__ import absolute_import
 from __future__ import division

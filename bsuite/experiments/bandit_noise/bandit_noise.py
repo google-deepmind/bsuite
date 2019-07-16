@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Simple diagnostic reward_noise challenge.
+"""Simple diagnostic bandit_noise challenge.
 
 Observation is a single pixel of 0 - this is an independent arm bandit problem!
 Rewards are np.linspace(0, 1, 11) with some level of reward noise.

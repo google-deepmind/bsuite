@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Cartpole reinforcement learning environment."""
+"""Cartpole environment with scaled rewards."""
 
 from __future__ import absolute_import
 from __future__ import division

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.catch."""
+"""Tests for bsuite.experiments.catch_noise."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -26,8 +26,7 @@ from bsuite.utils import environment_test
 import numpy as np
 
 
-class CatchInterfaceTest(
-    environment_test.EnvironmentTestMixin, absltest.TestCase):
+class InterfaceTest(environment_test.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
     return catch_noise.load(1., 22)

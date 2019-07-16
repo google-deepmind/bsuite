@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.deep_sea_stochastic."""
+"""Tests for bsuite.experiments.hierarchy_sea."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -26,8 +26,7 @@ from bsuite.utils import environment_test
 import numpy as np
 
 
-class CatchInterfaceTest(
-    environment_test.EnvironmentTestMixin, absltest.TestCase):
+class InterfaceTest(environment_test.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
     return hierarchy_sea.HierarchySea(num_hierarchy=10, num_mapping=2)

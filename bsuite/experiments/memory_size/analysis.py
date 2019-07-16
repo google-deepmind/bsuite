@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Analysis for memory size environments."""
+"""Analysis for memory_len experiment."""
 
 from __future__ import absolute_import
 from __future__ import division

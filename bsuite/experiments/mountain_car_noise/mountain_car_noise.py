@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Mountain car noise reinforcement learning environment."""
+"""Mountain car environment with noisy rewards."""
 
 from __future__ import absolute_import
 from __future__ import division

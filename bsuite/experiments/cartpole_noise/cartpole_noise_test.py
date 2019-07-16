@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.cartpole with noise."""
+"""Tests for bsuite.experiments.cartpole_noise."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -26,8 +26,7 @@ from bsuite.utils import environment_test
 import numpy as np
 
 
-class CartpoleNoiseInterfaceTest(
-    environment_test.EnvironmentTestMixin, absltest.TestCase):
+class InterfaceTest(environment_test.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
     return cartpole_noise.load(1., 22)

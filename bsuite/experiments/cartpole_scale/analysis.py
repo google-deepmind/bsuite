@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Analysis for cartpole scale environments."""
+"""Analysis for cartpole_scale environments."""
 
 from __future__ import absolute_import
 from __future__ import division

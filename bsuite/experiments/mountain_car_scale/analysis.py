@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Analysis for mountain_car scale environments."""
+"""Analysis for mountain_car_scale experiment."""
 
 from __future__ import absolute_import
 from __future__ import division
