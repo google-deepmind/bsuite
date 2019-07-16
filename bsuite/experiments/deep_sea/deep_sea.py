@@ -66,7 +66,7 @@ class DeepSea(auto_reset_environment.Base):
     if randomize_actions:
       self._action_mapping = self._rng.binomial(1, 0.5, [size, size])
     else:
-      self._action_mapping = np.ones(size)
+      self._action_mapping = np.ones([size, size])
 
     if not self._deterministic:  # action 'right' only succeeds (1 - 1/N)
       optimal_no_cost = (1 - 1 / self._size) ** (self._size - 1)
