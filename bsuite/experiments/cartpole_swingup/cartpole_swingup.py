@@ -31,6 +31,8 @@ def load(seed: int, height_threshold: float):
       seed=seed,
       height_threshold=height_threshold,
       initial_theta=np.pi,
-      move_cost=0.)
+      x_reward_threshold=1.0,
+      theta_dot_threshold=1.0,
+      move_cost=0.1)
   env.bsuite_num_episodes = sweep.NUM_EPISODES
   return env
