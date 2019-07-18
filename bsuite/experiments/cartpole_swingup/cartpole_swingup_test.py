@@ -29,7 +29,7 @@ import numpy as np
 class InterfaceTest(environment_test.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
-    return cartpole_swingup.load(seed=42, height_threshold=0.8)
+    return cartpole_swingup.CartpoleSwingup(seed=42, height_threshold=0.8)
 
   def make_action_sequence(self):
     valid_actions = [0, 1, 2]
