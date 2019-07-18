@@ -43,8 +43,6 @@ from bsuite.experiments.catch_scale import sweep as catch_scale_sweep
 from bsuite.experiments.deep_sea import sweep as deep_sea_sweep
 from bsuite.experiments.deep_sea_stochastic import sweep as deep_sea_stochastic_sweep
 from bsuite.experiments.discounting_chain import sweep as discounting_chain_sweep
-from bsuite.experiments.hierarchy_sea import sweep as hierarchy_sea_sweep
-from bsuite.experiments.hierarchy_sea_explore import sweep as hierarchy_sea_explore_sweep
 from bsuite.experiments.memory_len import sweep as memory_len_sweep
 from bsuite.experiments.memory_size import sweep as memory_size_sweep
 from bsuite.experiments.mnist import sweep as mnist_sweep
@@ -53,8 +51,6 @@ from bsuite.experiments.mnist_scale import sweep as mnist_scale_sweep
 from bsuite.experiments.mountain_car import sweep as mountain_car_sweep
 from bsuite.experiments.mountain_car_noise import sweep as mountain_car_noise_sweep
 from bsuite.experiments.mountain_car_scale import sweep as mountain_car_scale_sweep
-from bsuite.experiments.nonstationary_bandit import sweep as nonstationary_bandit_sweep
-from bsuite.experiments.nonstationary_rps import sweep as nonstationary_rps_sweep
 from bsuite.experiments.umbrella_distract import sweep as umbrella_distract_sweep
 from bsuite.experiments.umbrella_length import sweep as umbrella_length_sweep
 
@@ -92,8 +88,6 @@ CATCH_SCALE = _parse_sweep(catch_scale_sweep)
 DEEP_SEA = _parse_sweep(deep_sea_sweep)
 DEEP_SEA_STOCHASTIC = _parse_sweep(deep_sea_stochastic_sweep)
 DISCOUNTING_CHAIN = _parse_sweep(discounting_chain_sweep)
-HIERARCHY_SEA = _parse_sweep(hierarchy_sea_sweep)
-HIERARCHY_SEA_EXPLORE = _parse_sweep(hierarchy_sea_explore_sweep)
 MEMORY_LEN = _parse_sweep(memory_len_sweep)
 MEMORY_SIZE = _parse_sweep(memory_size_sweep)
 MNIST = _parse_sweep(mnist_sweep)
@@ -102,8 +96,6 @@ MNIST_SCALE = _parse_sweep(mnist_scale_sweep)
 MOUNTAIN_CAR = _parse_sweep(mountain_car_sweep)
 MOUNTAIN_CAR_NOISE = _parse_sweep(mountain_car_noise_sweep)
 MOUNTAIN_CAR_SCALE = _parse_sweep(mountain_car_scale_sweep)
-NONSTATIONARY_BANDIT = _parse_sweep(nonstationary_bandit_sweep)
-NONSTATIONARY_RPS = _parse_sweep(nonstationary_rps_sweep)
 UMBRELLA_DISTRACT = _parse_sweep(umbrella_distract_sweep)
 UMBRELLA_LENGTH = _parse_sweep(umbrella_length_sweep)
 

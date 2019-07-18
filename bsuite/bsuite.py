@@ -39,8 +39,6 @@ from bsuite.experiments.catch_scale import catch_scale
 from bsuite.experiments.deep_sea import deep_sea
 from bsuite.experiments.deep_sea_stochastic import deep_sea_stochastic
 from bsuite.experiments.discounting_chain import discounting_chain
-from bsuite.experiments.hierarchy_sea import hierarchy_sea
-from bsuite.experiments.hierarchy_sea_explore import hierarchy_sea_explore
 from bsuite.experiments.memory_len import memory_len
 from bsuite.experiments.memory_size import memory_size
 from bsuite.experiments.mnist import mnist
@@ -49,8 +47,6 @@ from bsuite.experiments.mnist_scale import mnist_scale
 from bsuite.experiments.mountain_car import mountain_car
 from bsuite.experiments.mountain_car_noise import mountain_car_noise
 from bsuite.experiments.mountain_car_scale import mountain_car_scale
-from bsuite.experiments.nonstationary_bandit import nonstationary_bandit
-from bsuite.experiments.nonstationary_rps import nonstationary_rps
 from bsuite.experiments.umbrella_distract import umbrella_distract
 from bsuite.experiments.umbrella_length import umbrella_length
 
@@ -77,8 +73,6 @@ EXPERIMENT_NAME_TO_ENVIRONMENT = dict(
     deep_sea=deep_sea.DeepSea,
     deep_sea_stochastic=deep_sea_stochastic.load,
     discounting_chain=discounting_chain.DiscountingChain,
-    hierarchy_sea=hierarchy_sea.HierarchySea,
-    hierarchy_sea_explore=hierarchy_sea_explore.load,
     memory_len=memory_len.MemoryChain,
     memory_size=memory_size.load,
     mnist=mnist.MNISTBandit,
@@ -87,8 +81,6 @@ EXPERIMENT_NAME_TO_ENVIRONMENT = dict(
     mountain_car=mountain_car.MountainCar,
     mountain_car_noise=mountain_car_noise.load,
     mountain_car_scale=mountain_car_scale.load,
-    nonstationary_bandit=nonstationary_bandit.NonstationaryBandit,
-    nonstationary_rps=nonstationary_rps.NonstationaryRPS,
     umbrella_distract=umbrella_distract.load,
     umbrella_length=umbrella_length.UmbrellaChain,
 )

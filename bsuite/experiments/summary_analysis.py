@@ -35,8 +35,6 @@ from bsuite.experiments.catch_scale import analysis as catch_scale_analysis
 from bsuite.experiments.deep_sea import analysis as deep_sea_analysis
 from bsuite.experiments.deep_sea_stochastic import analysis as deep_sea_stochastic_analysis
 from bsuite.experiments.discounting_chain import analysis as discounting_chain_analysis
-from bsuite.experiments.hierarchy_sea import analysis as hierarchy_sea_analysis
-from bsuite.experiments.hierarchy_sea_explore import analysis as hierarchy_sea_explore_analysis
 from bsuite.experiments.memory_len import analysis as memory_len_analysis
 from bsuite.experiments.memory_size import analysis as memory_size_analysis
 from bsuite.experiments.mnist import analysis as mnist_analysis
@@ -45,8 +43,6 @@ from bsuite.experiments.mnist_scale import analysis as mnist_scale_analysis
 from bsuite.experiments.mountain_car import analysis as mountain_car_analysis
 from bsuite.experiments.mountain_car_noise import analysis as mountain_car_noise_analysis
 from bsuite.experiments.mountain_car_scale import analysis as mountain_car_scale_analysis
-from bsuite.experiments.nonstationary_bandit import analysis as nonstationary_bandit_analysis
-from bsuite.experiments.nonstationary_rps import analysis as nonstationary_rps_analysis
 from bsuite.experiments.umbrella_distract import analysis as umbrella_distract_analysis
 from bsuite.experiments.umbrella_length import analysis as umbrella_length_analysis
 
@@ -87,8 +83,6 @@ BSUITE_INFO = dict(
     deep_sea=_parse_bsuite(deep_sea_analysis),
     deep_sea_stochastic=_parse_bsuite(deep_sea_stochastic_analysis),
     discounting_chain=_parse_bsuite(discounting_chain_analysis),
-    hierarchy_sea=_parse_bsuite(hierarchy_sea_analysis),
-    hierarchy_sea_explore=_parse_bsuite(hierarchy_sea_explore_analysis),
     memory_len=_parse_bsuite(memory_len_analysis),
     memory_size=_parse_bsuite(memory_size_analysis),
     mnist=_parse_bsuite(mnist_analysis),
@@ -97,8 +91,6 @@ BSUITE_INFO = dict(
     mountain_car=_parse_bsuite(mountain_car_analysis),
     mountain_car_noise=_parse_bsuite(mountain_car_noise_analysis),
     mountain_car_scale=_parse_bsuite(mountain_car_scale_analysis),
-    nonstationary_bandit=_parse_bsuite(nonstationary_bandit_analysis),
-    nonstationary_rps=_parse_bsuite(nonstationary_rps_analysis),
     umbrella_distract=_parse_bsuite(umbrella_distract_analysis),
     umbrella_length=_parse_bsuite(umbrella_length_analysis),
 )
