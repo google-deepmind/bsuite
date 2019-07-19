@@ -37,8 +37,8 @@ def memory_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
   """Preprocess data for memory environments = regret relative to random."""
   df = df_in.copy()
   df['perfection_regret'] = df.episode - df.total_perfect
-  if df.bsuite_env == 'memory_len':  # Then we know it is a single bit.
-    df['num_bits'] = df['num_bits'].fillna(1.)
+  # If the environment is 'memory_len' then we know it is a single bit.
+  df.loc[df.bsuite_env == 'memory_len', 'num_bits'] = 1
   df['base_rate'] = 1 - 0.5 ** df.num_bits
   df['regret_ratio'] = df.perfection_regret / df.base_rate
   return df
