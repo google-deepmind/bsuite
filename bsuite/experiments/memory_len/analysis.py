@@ -30,25 +30,30 @@ from typing import Text, Sequence
 
 NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('memory',)
-PERFECTION_THRESH = 0.5
+LEARNING_THRESH = 0.75
 
 
 def memory_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
-  """Preprocess data for memory environments."""
+  """Preprocess data for memory environments = regret relative to random."""
   df = df_in.copy()
   df['perfection_regret'] = df.episode - df.total_perfect
+  if df.bsuite_env == 'memory_len':  # Then we know it is a single bit.
+    df['num_bits'] = df['num_bits'].fillna(1.)
+  df['base_rate'] = 1 - 0.5 ** df.num_bits
+  df['regret_ratio'] = df.perfection_regret / df.base_rate
   return df
 
 
 def score(df: pd.DataFrame, group_col: Text = 'memory_length') -> float:
   """Output a single score for memory_len."""
-  return_list = []  # Loop to handle partially-finished runs.
+  df = memory_preprocess(df_in=df)
+  regret_list = []  # Loop to handle partially-finished runs.
   for _, sub_df in df.groupby(group_col):
     max_eps = np.minimum(sub_df.episode.max(), sweep.NUM_EPISODES)
     ave_perfection = (
-        sub_df.loc[sub_df.episode == max_eps, 'total_perfect'].mean() / max_eps)
-    return_list.append(ave_perfection)
-  return np.mean(np.array(return_list) > PERFECTION_THRESH)
+        sub_df.loc[sub_df.episode == max_eps, 'regret_ratio'].mean() / max_eps)
+    regret_list.append(ave_perfection)
+  return np.mean(np.array(regret_list) < LEARNING_THRESH)
 
 
 def plot_learning(df: pd.DataFrame,
@@ -60,10 +65,10 @@ def plot_learning(df: pd.DataFrame,
       df_in=df,
       group_col=group_col,
       sweep_vars=sweep_vars,
-      regret_col='perfection_regret',
+      regret_col='regret_ratio',
       max_episode=sweep.NUM_EPISODES,
   )
-  return p + gg.ylab('average % of imperfect episodes')
+  return p + gg.ylab('average % of imperfect episodes compare to random.')
 
 
 def plot_scale(df: pd.DataFrame,
@@ -75,10 +80,9 @@ def plot_scale(df: pd.DataFrame,
       df_in=df,
       group_col=group_col,
       episode=sweep.NUM_EPISODES,
-      regret_thresh=0.5,
+      regret_thresh=LEARNING_THRESH,
       sweep_vars=sweep_vars,
-      regret_col='perfection_regret'
+      regret_col='regret_ratio'
   )
-  p += gg.ylab(
-      '% of imperfect episodes after {} episodes'.format(sweep.NUM_EPISODES))
-  return p
+  return p + gg.ylab('% imperfect episodes after {} episodes compared to random'
+                     .format(sweep.NUM_EPISODES))
