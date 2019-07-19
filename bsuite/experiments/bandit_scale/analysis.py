@@ -28,8 +28,11 @@ import plotnine as gg
 from typing import Sequence, Text
 
 NUM_EPISODES = sweep.NUM_EPISODES
-score = bandit_noise_analysis.score
 TAGS = ('scale',)
+
+
+def score(df: pd.DataFrame) -> float:
+  return bandit_noise_analysis.score(df, scaling_var='reward_scale')
 
 
 def plot_learning(df: pd.DataFrame,

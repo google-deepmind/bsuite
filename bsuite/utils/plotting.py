@@ -30,7 +30,7 @@ import numpy as np
 import pandas as pd
 import plotnine as gg
 
-from typing import Sequence, Text
+from typing import Callable, Sequence, Text
 
 style.use('seaborn-poster')
 style.use('ggplot')
@@ -47,6 +47,17 @@ def ave_regret_score(df: pd.DataFrame,
   mean_regret = df.loc[df.episode == n_eps, regret_column].mean() / n_eps
   unclipped_score = (baseline_regret - mean_regret) / baseline_regret
   return np.clip(unclipped_score, 0, 1)
+
+
+def score_by_scaling(df: pd.DataFrame,
+                     score_fn: Callable[[pd.DataFrame], float],
+                     scaling_var: Text,
+                     n_std: float = 1.) -> float:
+  """Apply scoring function over scaling_var, output mean - n_std * std."""
+  scores = []
+  for _, sub_df in df.groupby(scaling_var):
+    scores.append(score_fn(sub_df))
+  return np.clip(np.mean(scores) - n_std * np.std(scores), 0, 1)
 
 
 def facet_sweep_plot(base_plot: gg.ggplot,

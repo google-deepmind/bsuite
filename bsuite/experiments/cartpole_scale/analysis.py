@@ -28,8 +28,11 @@ import plotnine as gg
 from typing import Sequence, Text
 
 NUM_EPISODES = sweep.NUM_EPISODES
-score = cartpole_noise_analysis.score
 TAGS = ('scale', 'generalization')
+
+
+def score(df: pd.DataFrame) -> float:
+  return cartpole_noise_analysis.score(df, scaling_var='reward_scale')
 
 
 def plot_learning(df: pd.DataFrame,

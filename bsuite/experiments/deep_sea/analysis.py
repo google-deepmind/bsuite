@@ -47,7 +47,7 @@ def find_solution(df_in: pd.DataFrame,
   # Check data has the necessary columns for deep sea
   df = df_in.copy()
   _check_data(df)
-  df = df[df.episode <= sweep.NUM_EPISODES]
+  df = df[df.episode <= NUM_EPISODES]
 
   # Parse the variables that you are aggregating over
   if sweep_vars is None:
@@ -72,8 +72,8 @@ def find_solution(df_in: pd.DataFrame,
   plt_df.reset_index(inplace=True)
 
   # Add a column to see if the experiment has finished 10k episodes
-  n_eps = 10000
-  finish_df = (df.groupby(sweep_vars)['episode'].max() >= n_eps).reset_index()
+  finish_df = (
+      df.groupby(sweep_vars)['episode'].max() >= NUM_EPISODES).reset_index()
   finish_df.rename(columns={'episode': 'finished'}, inplace=True)
   plt_df = plt_df.merge(finish_df, on=sweep_vars)
   plt_df.loc[plt_df.solved, 'finished'] = True  # If solved -> finished
@@ -150,7 +150,7 @@ def plot_scaling(plt_df: pd.DataFrame,
   p += gg.xlab('deep sea problem size')
   p += gg.ylab('#episodes until < 90% bad episodes')
   if with_baseline:
-    max_steps = np.minimum(10000, plt_df.episode.max())
+    max_steps = np.minimum(NUM_EPISODES, plt_df.episode.max())
     p += gg.coord_cartesian(ylim=(0, max_steps))
   return plotting.facet_sweep_plot(p, sweep_vars)
 
@@ -161,7 +161,7 @@ def plot_scaling_log(plt_df: pd.DataFrame,
   """Plot scaling of learning time against exponential baseline."""
   p = _base_scaling(plt_df, sweep_vars, with_baseline)
   p += gg.scale_x_log10(breaks=[5, 10, 20, 50])
-  p += gg.scale_y_log10(breaks=[100, 300, 1000, 3000, 10000])
+  p += gg.scale_y_log10(breaks=[100, 300, 1000, 3000, 10000, 30000])
   p += gg.xlab('deep sea problem size (log scale)')
   p += gg.ylab('#episodes until < 90% bad episodes (log scale)')
   return plotting.facet_sweep_plot(p, sweep_vars)

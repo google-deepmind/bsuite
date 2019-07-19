@@ -29,8 +29,16 @@ import plotnine as gg
 from typing import Sequence, Text
 
 NUM_EPISODES = sweep.NUM_EPISODES
-score = catch_analysis.score
-TAGS = ('noise',)
+TAGS = ('noise', 'credit_assignment')
+
+
+def score(df: pd.DataFrame, scaling_var='noise_scale') -> float:
+  """Output a single score for experiment = mean - std over scaling_var."""
+  return plotting.score_by_scaling(
+      df=df,
+      score_fn=catch_analysis.score,
+      scaling_var=scaling_var,
+  )
 
 
 def plot_learning(df: pd.DataFrame,
