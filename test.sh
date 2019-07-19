@@ -5,16 +5,12 @@ cd ~/
 
 rm -rf bsuite_env/
 rm -rf bsuite/
-rm -rf dm_env/
 
 sudo apt-get install python3-pip
 sudo pip3 install virtualenv
 
 virtualenv -p /usr/bin/python3.6 bsuite_env
 source bsuite_env/bin/activate
-
-git clone sso://team/dm-env-owners/dm_env
-pip3 install dm_env/
 
 git clone sso://team/deepmind-eng/bsuite
 pip3 install bsuite/
@@ -29,4 +25,3 @@ env.reset()"
 deactivate
 rm -rf bsuite_env/
 rm -rf bsuite/
-rm -rf dm_env/

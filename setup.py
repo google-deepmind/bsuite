@@ -32,7 +32,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'absl-py',
-        # 'dm_env',
+        'dm_env',
         'matplotlib',
         'numpy',
         'pandas',
