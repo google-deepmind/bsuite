@@ -22,6 +22,7 @@ from __future__ import print_function
 
 from bsuite.experiments.mnist import sweep
 from bsuite.utils import plotting
+import numpy as np
 import pandas as pd
 import plotnine as gg
 from typing import Text, Sequence
@@ -32,9 +33,17 @@ TAGS = ('basic', 'generalization')
 
 
 def score(df: pd.DataFrame) -> float:
-  """Output a single score for bandit experiment."""
-  return plotting.ave_regret_score(
+  """Output a single score = 50% regret, 50% "final accuracy"."""
+  regret_score = plotting.ave_regret_score(
       df, baseline_regret=BASE_REGRET, episode=sweep.NUM_EPISODES)
+
+  final_df = df.copy()
+  final_df['ave_return'] = (
+      final_df.total_return.diff() / final_df.episode.diff())
+  final_df = final_df[final_df.episode > 0.9 * NUM_EPISODES]
+  # Convert (+1, -1) average return --> (+1, 0) accuracy score
+  acc_score = np.mean(final_df.ave_return + 1) * 0.5
+  return 0.5 * (regret_score + acc_score)
 
 
 def plot_learning(df: pd.DataFrame,
