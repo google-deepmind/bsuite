@@ -92,7 +92,11 @@ class Cartpole(dm_env.Environment):
     self._reset_next_step = True
     self._rng = np.random.RandomState(seed)
     self._init_fn = lambda: self._rng.uniform(low=-init_range, high=init_range)
+
+    # Logging info
     self._raw_return = 0.
+    self._best_episode = 0.
+    self._episode_return = 0.
 
     # Reward/episode logic
     self._height_threshold = height_threshold
@@ -121,6 +125,7 @@ class Cartpole(dm_env.Environment):
         theta_dot=self._init_fn(),
         time_elapsed=0.,
     )
+    self._episode_return = 0
     return dm_env.restart(self.observation)
 
   def step(self, action):
@@ -139,6 +144,8 @@ class Cartpole(dm_env.Environment):
                  and np.abs(self._state.x) < self._x_threshold)
     reward = 1. if is_reward else 0.
     self._raw_return += reward
+    self._episode_return += reward
+    self._best_episode = max(self._episode_return, self._best_episode)
 
     if self._state.time_elapsed > self._max_time or not is_reward:
       self._reset_next_step = True
@@ -165,4 +172,5 @@ class Cartpole(dm_env.Environment):
     return obs
 
   def bsuite_info(self):
-    return dict(raw_return=self._raw_return)
+    return dict(raw_return=self._raw_return,
+                best_episode=self._best_episode)

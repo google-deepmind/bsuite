@@ -29,19 +29,21 @@ import plotnine as gg
 from typing import Text, Sequence
 
 NUM_EPISODES = sweep.NUM_EPISODES
-REWARD_THRESH = 10
+BASE_REGRET = 500
+GOOD_EPISODE = 50
 TAGS = ('exploration', 'generalization')
 
 
 def score(df: pd.DataFrame) -> float:
-  """Percentage of heights for which the agent receives positive return."""
-  return_list = []  # Loop to handle partially-finished runs.
+  """Output a single score for swingup = 50% regret, 50% does a swingup."""
+  scores = []
   for _, sub_df in df.groupby('height_threshold'):
-    max_eps = np.minimum(sub_df.episode.max(), sweep.NUM_EPISODES)
-    ave_return = (
-        sub_df.loc[sub_df.episode == max_eps, 'total_return'].mean() / max_eps)
-    return_list.append(ave_return)
-  return np.mean(np.array(return_list) > REWARD_THRESH)
+    regret_score = plotting.ave_regret_score(
+        sub_df, baseline_regret=BASE_REGRET, episode=sweep.NUM_EPISODES)
+    swingup_score = np.mean(
+        sub_df.groupby('seed')['best_episode'].max() > GOOD_EPISODE)
+    scores.append(0.5 * (regret_score + swingup_score))
+  return np.mean(scores)
 
 
 def cp_swingup_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:

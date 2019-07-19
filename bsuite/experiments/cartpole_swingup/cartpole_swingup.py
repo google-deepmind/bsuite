@@ -38,7 +38,7 @@ class CartpoleSwingup(dm_env.Environment):
 
   def __init__(self,
                height_threshold: float = 0.5,
-               theta_dot_threshold: float = 10.,
+               theta_dot_threshold: float = 1.,
                x_reward_threshold: float = 1.,
                move_cost: float = 0.1,
                x_threshold: float = 3.,
@@ -113,7 +113,7 @@ class CartpoleSwingup(dm_env.Environment):
       self._total_upright += 1
     self._raw_return += reward
     self._episode_return += reward
-    self._best_episode = np.maximum(self._episode_return, self._best_episode)
+    self._best_episode = max(self._episode_return, self._best_episode)
 
     is_end_of_episode = (self._state.time_elapsed > self._max_time
                          or np.abs(self._state.x) > self._x_threshold)

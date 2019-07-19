@@ -21,6 +21,7 @@ from __future__ import print_function
 
 from bsuite.experiments.cartpole import sweep
 from bsuite.utils import plotting
+import numpy as np
 import pandas as pd
 import plotnine as gg
 
@@ -28,14 +29,21 @@ from typing import Sequence, Text
 
 NUM_EPISODES = sweep.NUM_EPISODES
 BASE_REGRET = 1000
-TAGS = ('basic', 'generalization')
+GOOD_EPISODE = 500
+TAGS = ('basic', 'credit_assignment', 'generalization')
 
 
 def score(df: pd.DataFrame) -> float:
-  """Output a single score for cartpole."""
+  """Output a single score for cartpole = 50% regret, 50% has a good run."""
   cp_df = cartpole_preprocess(df_in=df)
-  return plotting.ave_regret_score(
+  regret_score = plotting.ave_regret_score(
       cp_df, baseline_regret=BASE_REGRET, episode=sweep.NUM_EPISODES)
+
+  # Give 50% of score if your "best" episode > GOOD_EPISODE threshold.
+  solve_score = np.mean(
+      cp_df.groupby('seed')['best_episode'].max() > GOOD_EPISODE)
+
+  return 0.5 * (regret_score + solve_score)
 
 
 def cartpole_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
