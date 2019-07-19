@@ -28,7 +28,7 @@ from typing import Sequence, Text
 
 NUM_EPISODES = sweep.NUM_EPISODES
 BASE_REGRET = 1.6
-TAGS = ('basic',)
+TAGS = ('basic', 'credit_assignment')
 
 
 def score(df: pd.DataFrame) -> float:
