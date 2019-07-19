@@ -100,6 +100,7 @@ def plot_regret_learning(df_in: pd.DataFrame,
   """Plots the average regret through time, grouped by group_var."""
   df = df_in.copy()
   df['average_regret'] = df[regret_col] / df.episode
+  df = df[df.episode <= max_episode]
   if group_col is None:
     p = _plot_regret_single(df)
   else:
@@ -140,6 +141,7 @@ def plot_regret_group_nosmooth(df_in: pd.DataFrame,
   """Plots the average regret through time without smoothing."""
   df = df_in.copy()
   df['average_regret'] = df[regret_col] / df.episode
+  df = df[df.episode <= max_episode]
   group_name = group_col.replace('_', ' ')
   df[group_name] = df[group_col]
   p = (gg.ggplot(df)
