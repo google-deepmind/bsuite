@@ -78,6 +78,7 @@ class DeepSea(auto_reset_environment.Base):
     self._row = 0
     self._bad_episode = False
     self._total_bad_episodes = 0
+    self._denoised_return = 0
     self._reset()
 
     # bsuite experiment length.
@@ -104,6 +105,7 @@ class DeepSea(auto_reset_environment.Base):
     # Reward calculation
     if self._column == self._size - 1 and action_right:
       reward += 1.
+      self._denoised_return += 1.
     if not self._deterministic:  # Noisy rewards on the 'end' of chain.
       if self._row == self._size - 1 and self._column in [0, self._size - 1]:
         reward += np.random.randn()
@@ -134,6 +136,7 @@ class DeepSea(auto_reset_environment.Base):
     return specs.DiscreteArray(2, name='action')
 
   def bsuite_info(self):
-    return dict(total_bad_episodes=self._total_bad_episodes)
+    return dict(total_bad_episodes=self._total_bad_episodes,
+                denoised_return=self._denoised_return)
 
 

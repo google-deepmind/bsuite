@@ -21,9 +21,4 @@ from __future__ import print_function
 
 NUM_EPISODES = 10000
 
-_log_spaced = []
-_log_spaced.extend(range(5, 11))
-_log_spaced.extend([12, 14, 17, 20, 25])
-_log_spaced.extend(range(30, 55, 5))
-
-SETTINGS = tuple({'size': n} for n in _log_spaced)
+SETTINGS = tuple({'size': n} for n in range(10, 51, 2))

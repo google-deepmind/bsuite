@@ -23,10 +23,5 @@ from bsuite.experiments.deep_sea import sweep as deep_sea_sweep
 
 NUM_EPISODES = deep_sea_sweep.NUM_EPISODES
 
-_log_spaced = []
-_log_spaced.extend(range(5, 11))
-_log_spaced.extend([12, 14, 17, 20, 25])
-_log_spaced.extend(range(30, 55, 5))
-
-SETTINGS = tuple({'size': n} for n in _log_spaced)
+SETTINGS = tuple({'size': n} for n in range(10, 51, 2))
 

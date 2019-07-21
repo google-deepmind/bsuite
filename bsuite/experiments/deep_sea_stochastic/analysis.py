@@ -29,7 +29,9 @@ from __future__ import print_function
 from bsuite.experiments.deep_sea import analysis as deep_sea_analysis
 from bsuite.experiments.deep_sea_stochastic import sweep
 
+import numpy as np
 import pandas as pd
+import plotnine as gg
 
 from typing import Text, Sequence
 
@@ -47,4 +49,14 @@ def find_solution(df_in: pd.DataFrame,
   """Find first solution episode, with harsher thresh for stochastic domain."""
   df = df_in.copy()
   df = df[df.episode >= 100]
-  return deep_sea_analysis.find_solution(df, sweep_vars, thresh=0.5)
+  return deep_sea_analysis.find_solution(df, sweep_vars, thresh=0.8)
+
+
+def plot_seeds(df: pd.DataFrame,
+               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+  """Plot the returns through time individually by run."""
+  return deep_sea_analysis.plot_seeds(
+      df_in=df,
+      sweep_vars=sweep_vars,
+      yintercept=np.exp(-1)
+  ) + gg.ylab('average episodic return (excluding additive noise)')

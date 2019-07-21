@@ -42,7 +42,7 @@ def _check_data(df: pd.DataFrame) -> None:
 def find_solution(df_in: pd.DataFrame,
                   sweep_vars: Sequence[Text] = None,
                   merge: bool = True,
-                  thresh: float = 0.75) -> pd.DataFrame:
+                  thresh: float = 0.8) -> pd.DataFrame:
   """Find first episode that gets below thresh regret by sweep_vars."""
   # Check data has the necessary columns for deep sea
   df = df_in.copy()
@@ -90,12 +90,9 @@ def score(df: pd.DataFrame,
           forgiveness: float = 100.) -> float:
   """Outputs a single score for deep sea selection."""
   plt_df = find_solution(df)
-
   beat_dither = (plt_df.solved
                  & (plt_df.episode < 2 ** plt_df['size'] + forgiveness))
-  beat_poly = (plt_df.solved
-               & (plt_df.episode < 2 * plt_df['size'] ** 3 + forgiveness))
-  return 0.5 * np.mean(beat_dither) + 0.5 * np.mean(beat_poly)
+  return np.mean(beat_dither)
 
 
 def _make_baseline(plt_df: pd.DataFrame,
@@ -174,7 +171,7 @@ def plot_regret(df_in: pd.DataFrame,
   df = df[df['size'].isin([10, 20, 30, 40, 50])]
   df['avg_bad'] = df.total_bad_episodes / df.episode
   df['size'] = df['size'].astype('category')
-  p = (gg.ggplot(df)
+  p = (gg.ggplot(df[df.episode <= NUM_EPISODES])
        + gg.aes('episode', 'avg_bad', group='size', colour='size')
        + gg.geom_line(size=2, alpha=0.75)
        + gg.geom_hline(
@@ -184,3 +181,20 @@ def plot_regret(df_in: pd.DataFrame,
        + gg.scale_colour_manual(values=plotting.FIVE_COLOURS)
       )
   return plotting.facet_sweep_plot(p, sweep_vars)
+
+
+def plot_seeds(df_in: pd.DataFrame,
+               sweep_vars: Sequence[Text] = None,
+               yintercept: float = 0.99) -> gg.ggplot:
+  """Plot the returns through time individually by run."""
+  df = df_in.copy()
+  df['average_return'] = df.denoised_return.diff() / df.episode.diff()
+  p = plotting.plot_individual_returns(
+      df_in=df[df.episode > 0.01 * NUM_EPISODES],  # First episodes very noisy
+      max_episode=NUM_EPISODES,
+      return_column='average_return',
+      colour_var='size',
+      yintercept=yintercept,
+      sweep_vars=sweep_vars,
+  )
+  return p + gg.ylab('average episodic return')
