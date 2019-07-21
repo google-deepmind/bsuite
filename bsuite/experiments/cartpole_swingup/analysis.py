@@ -29,28 +29,34 @@ import plotnine as gg
 from typing import Text, Sequence
 
 NUM_EPISODES = sweep.NUM_EPISODES
-BASE_REGRET = 500
-GOOD_EPISODE = 50
+BASE_REGRET = 700
+GOOD_EPISODE = 500
 TAGS = ('exploration', 'generalization')
-
-
-def score(df: pd.DataFrame) -> float:
-  """Output a single score for swingup = 50% regret, 50% does a swingup."""
-  scores = []
-  for _, sub_df in df.groupby('height_threshold'):
-    regret_score = plotting.ave_regret_score(
-        sub_df, baseline_regret=BASE_REGRET, episode=sweep.NUM_EPISODES)
-    swingup_score = np.mean(
-        sub_df.groupby('seed')['best_episode'].max() > GOOD_EPISODE)
-    scores.append(0.5 * (regret_score + swingup_score))
-  return np.mean(scores)
 
 
 def cp_swingup_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
   """Preprocess data for cartpole swingup."""
   df = df_in.copy()
-  df['perfection_regret'] = df.episode * sweep.NUM_EPISODES - df.total_return
+  df = df[df.episode <= NUM_EPISODES]
+  df['perfection_regret'] = df.episode * BASE_REGRET - df.total_return
   return df
+
+
+def score(df: pd.DataFrame) -> float:
+  """Output a single score for swingup = 50% regret, 50% does a swingup."""
+  df = cp_swingup_preprocess(df_in=df)
+  scores = []
+  for _, sub_df in df.groupby('height_threshold'):
+    regret_score = plotting.ave_regret_score(
+        sub_df,
+        baseline_regret=BASE_REGRET,
+        episode=NUM_EPISODES,
+        regret_column='perfection_regret'
+    )
+    swingup_score = np.mean(
+        sub_df.groupby('seed')['best_episode'].max() > GOOD_EPISODE)
+    scores.append(0.5 * (regret_score + swingup_score))
+  return np.mean(scores)
 
 
 def plot_learning(df: pd.DataFrame,
@@ -69,14 +75,37 @@ def plot_learning(df: pd.DataFrame,
 
 def plot_scale(df: pd.DataFrame,
                sweep_vars: Sequence[Text] = None) -> gg.ggplot:
-  """Plots the average return through time by cartpole swingup."""
+  """Plots the best episode observed by height_threshold."""
   df = cp_swingup_preprocess(df_in=df)
-  p = plotting.plot_regret_ave_scaling(
-      df_in=df,
-      group_col='height_threshold',
-      episode=sweep.NUM_EPISODES,
-      regret_thresh=0.5,
+
+  group_vars = ['height_threshold']
+  if sweep_vars:
+    group_vars += sweep_vars
+  plt_df = df.groupby(group_vars)['best_episode'].max().reset_index()
+
+  p = (gg.ggplot(plt_df)
+       + gg.aes(x='factor(height_threshold)', y='best_episode',
+                colour='best_episode > {}'.format(GOOD_EPISODE))
+       + gg.geom_point(size=5, alpha=0.8)
+       + gg.scale_colour_manual(values=['#d73027', '#313695'])
+       + gg.geom_hline(gg.aes(yintercept=0.0), alpha=0)  # axis hack
+       + gg.scale_x_discrete(breaks=[0, 0.25, 0.5, 0.75, 1.0])
+       + gg.ylab('best return in first {} episodes'.format(NUM_EPISODES))
+       + gg.xlab('height threshold')
+      )
+  return plotting.facet_sweep_plot(p, sweep_vars)
+
+
+def plot_seeds(df_in: pd.DataFrame,
+               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+  """Plot the returns through time individually by run."""
+  df = df_in.copy()
+  df['average_return'] = df.raw_return.diff() / df.episode.diff()
+  p = plotting.plot_individual_returns(
+      df_in=df[df.episode > 1],
+      max_episode=NUM_EPISODES,
+      return_column='average_return',
+      colour_var='height_threshold',
       sweep_vars=sweep_vars,
-      regret_col='perfection_regret'
   )
-  return p + gg.scale_x_discrete(breaks=[0, 0.25, 0.5, 0.75, 1.0])
+  return p + gg.ylab('average episodic return (removing noise)')
