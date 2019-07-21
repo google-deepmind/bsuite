@@ -184,10 +184,9 @@ def bsuite_bar_plot(df_in: pd.DataFrame,
   p = (gg.ggplot(df)
        + gg.aes(x='clean_env', y='score', colour='type', fill='type')
        + gg.geom_bar(position='dodge', stat='identity')
-       + gg.ylim(0, 1)
-       + gg.xlab('challenge')
+       + gg.geom_hline(yintercept=1., linetype='dashed', alpha=0.5)
+       + gg.xlab('experiment')
        + gg.theme(axis_text_x=gg.element_text(angle=25, hjust=1))
-       + gg.ylab('score')
       )
   if not all(df.finished):  # add a layer of alpha for unfinished jobs
     p += gg.aes(alpha='finished')
@@ -199,36 +198,62 @@ def bsuite_bar_plot(df_in: pd.DataFrame,
     n_hypers = df[sweep_vars].drop_duplicates().shape[0]
   else:
     n_hypers = 1
-  return p + gg.theme(figure_size=(16, 4 * n_hypers + 1))
+  return p + gg.theme(figure_size=(14, 3 * n_hypers + 1))
 
 
-def bsuite_bar_plot_compare(df_in: pd.DataFrame,
-                            sweep_vars: Sequence[Text] = None) -> gg.ggplot:
-  """Output bar plot of bsuite data."""
+def _clean_bar_plot_data(df_in: pd.DataFrame,
+                         sweep_vars: Sequence[Text] = None) -> pd.DataFrame:
+  """Clean the summary data for bar plot comparison of agents."""
   df = df_in.copy()
   env_categories = df.sort_values('type').bsuite_env.drop_duplicates().values
   df['env'] = pd.Categorical(
       df.bsuite_env, categories=env_categories, ordered=True)
 
-  df['agent'] = (df[sweep_vars].astype(str)
-                 .apply(lambda x: x.name + '=' + x, axis=0)
-                 .apply(lambda x: '\n'.join(x), axis=1)  # pylint:disable=unnecessary-lambda
-                )
+  if sweep_vars is not None:
+    df['agent'] = (df[sweep_vars].astype(str)
+                   .apply(lambda x: x.name + '=' + x, axis=0)
+                   .apply(lambda x: '\n'.join(x), axis=1)  # pylint:disable=unnecessary-lambda
+                  )
+  else:
+    df['agent'] = 'agent'
+  return df
 
+
+def _bar_plot_compare(df: pd.DataFrame) -> gg.ggplot:
+  """Bar plot of buite score data, comparing agents on each experiment."""
   p = (gg.ggplot(df)
        + gg.aes(x='agent', y='score', colour='agent', fill='agent')
        + gg.geom_bar(position='dodge', stat='identity')
-       + gg.ylim(0, 1)
-       + gg.xlab('agent')
-       + gg.theme(axis_text_x=gg.element_text(angle=45, hjust=1))
-       + gg.ylab('score')
-       + gg.theme(axis_text_x=gg.element_blank(), figure_size=(21, 16))
+       + gg.geom_hline(yintercept=1., linetype='dashed', alpha=0.5)
+       + gg.theme(axis_text_x=gg.element_text(angle=25, hjust=1))
       )
   if not all(df.finished):  # add a layer of alpha for unfinished jobs
     p += gg.aes(alpha='finished')
     p += gg.scale_alpha_discrete([0.3, 1.0])
+  return p
 
-  p += gg.facet_wrap(['env', 'type'], labeller='label_both')
+
+def bsuite_bar_plot_compare(df_in: pd.DataFrame,
+                            sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+  """Output bar plot of bsuite data, comparing agents on each experiment."""
+  df = _clean_bar_plot_data(df_in, sweep_vars)
+  p = _bar_plot_compare(df)
+  p += gg.facet_wrap('env', labeller='label_both')
+  p += gg.theme(figure_size=(16, 12))
+  return p
+
+
+def plot_single_experiment(summary_df: pd.DataFrame,
+                           bsuite_env: Text,
+                           sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+  """Compare score for just one experiment."""
+  df = _clean_bar_plot_data(
+      summary_df[summary_df.bsuite_env == bsuite_env], sweep_vars)
+  n_agent = len(df.agent.unique())
+  p = _bar_plot_compare(df)
+  p += gg.theme(figure_size=(min(4 + n_agent, 14), 6))
+  p += gg.ggtitle('bsuite score for {} experiment'.format(bsuite_env))
+  print('tags={}'.format(df.tags.iloc[0]))
   return p
 
 
