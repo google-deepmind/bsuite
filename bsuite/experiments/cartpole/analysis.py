@@ -63,3 +63,20 @@ def plot_learning(df: pd.DataFrame,
   p += gg.geom_hline(gg.aes(yintercept=BASE_REGRET),
                      linetype='dashed', alpha=0.4, size=1.75)
   return p
+
+
+def plot_seeds(df_in: pd.DataFrame,
+               sweep_vars: Sequence[Text] = None,
+               colour_var: Text = None) -> gg.ggplot:
+  """Plot the returns through time individually by run."""
+  df = df_in.copy()
+  df['average_return'] = df.raw_return.diff() / df.episode.diff()
+  p = plotting.plot_individual_returns(
+      df_in=df,
+      max_episode=NUM_EPISODES,
+      return_column='average_return',
+      colour_var=colour_var,
+      yintercept=BASE_REGRET,
+      sweep_vars=sweep_vars,
+  )
+  return p + gg.ylab('average episodic return')

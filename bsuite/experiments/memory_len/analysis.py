@@ -86,3 +86,19 @@ def plot_scale(df: pd.DataFrame,
   )
   return p + gg.ylab('% imperfect episodes after {} episodes compared to random'
                      .format(sweep.NUM_EPISODES))
+
+
+def plot_seeds(df_in: pd.DataFrame,
+               sweep_vars: Sequence[Text] = None,
+               colour_var: Text = 'memory_length') -> gg.ggplot:
+  """Plot the returns through time individually by run."""
+  df = df_in.copy()
+  df['average_return'] = df.total_return.diff() / df.episode.diff()
+  p = plotting.plot_individual_returns(
+      df_in=df[df.episode > 10],
+      max_episode=NUM_EPISODES,
+      return_column='average_return',
+      colour_var=colour_var,
+      sweep_vars=sweep_vars,
+  )
+  return p + gg.ylab('average episodic return')

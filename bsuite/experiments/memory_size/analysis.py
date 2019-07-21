@@ -43,3 +43,12 @@ def plot_learning(df: pd.DataFrame,
 def plot_scale(df: pd.DataFrame,
                sweep_vars: Sequence[Text] = None) -> gg.ggplot:
   return memory_len_analysis.plot_scale(df, sweep_vars, 'num_bits')
+
+
+def plot_seeds(df: pd.DataFrame,
+               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+  return memory_len_analysis.plot_seeds(
+      df_in=df[df.episode > 100],
+      sweep_vars=sweep_vars,
+      colour_var='num_bits',
+  )

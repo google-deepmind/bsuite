@@ -56,3 +56,9 @@ def plot_scale(df: pd.DataFrame,
       regret_thresh=0.5,
       sweep_vars=sweep_vars,
   )
+
+
+def plot_seeds(df_in: pd.DataFrame,
+               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+  """Plot the returns through time individually by run."""
+  return umbrella_length_analysis.plot_seeds(df_in, sweep_vars, 'n_distractor')

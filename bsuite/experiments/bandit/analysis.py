@@ -55,3 +55,20 @@ def bandit_learning_format(plot: gg.ggplot) -> gg.ggplot:
       gg.aes(yintercept=BASE_REGRET), linetype='dashed', alpha=0.4, size=1.75)
   plot += gg.coord_cartesian(ylim=(0, 1))
   return plot
+
+
+def plot_seeds(df_in: pd.DataFrame,
+               sweep_vars: Sequence[Text] = None,
+               colour_var: Text = None) -> gg.ggplot:
+  """Plot the returns through time individually by run."""
+  df = df_in.copy()
+  df['average_return'] = 1.0 - (df.total_regret.diff() / df.episode.diff())
+  p = plotting.plot_individual_returns(
+      df_in=df,
+      max_episode=NUM_EPISODES,
+      return_column='average_return',
+      colour_var=colour_var,
+      yintercept=1.,
+      sweep_vars=sweep_vars,
+  )
+  return p + gg.ylab('average episodic return')

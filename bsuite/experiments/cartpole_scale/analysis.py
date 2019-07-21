@@ -20,6 +20,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.cartpole import analysis as cartpole_analysis
 from bsuite.experiments.cartpole_noise import analysis as cartpole_noise_analysis
 from bsuite.experiments.cartpole_scale import sweep
 import pandas as pd
@@ -43,3 +44,13 @@ def plot_learning(df: pd.DataFrame,
 def plot_average(df: pd.DataFrame,
                  sweep_vars: Sequence[Text] = None) -> gg.ggplot:
   return cartpole_noise_analysis.plot_average(df, sweep_vars, 'reward_scale')
+
+
+def plot_seeds(df: pd.DataFrame,
+               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+  """Plot the performance by individual work unit."""
+  return cartpole_analysis.plot_seeds(
+      df_in=df,
+      sweep_vars=sweep_vars,
+      colour_var='reward_scale'
+  ) + gg.ylab('average episodic return (after rescaling)')

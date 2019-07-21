@@ -20,6 +20,7 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.experiments.mnist import analysis as mnist_analysis
 from bsuite.experiments.mnist_noise import analysis as mnist_noise_analysis
 from bsuite.experiments.mnist_scale import sweep
 import pandas as pd
@@ -43,3 +44,13 @@ def plot_learning(df: pd.DataFrame,
 def plot_average(df: pd.DataFrame,
                  sweep_vars: Sequence[Text] = None) -> gg.ggplot:
   return mnist_noise_analysis.plot_average(df, sweep_vars, 'reward_scale')
+
+
+def plot_seeds(df: pd.DataFrame,
+               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+  """Plot the performance by individual work unit."""
+  return mnist_analysis.plot_seeds(
+      df_in=df,
+      sweep_vars=sweep_vars,
+      colour_var='reward_scale'
+  )

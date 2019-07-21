@@ -69,3 +69,13 @@ def plot_average(df: pd.DataFrame,
   p += gg.geom_hline(gg.aes(yintercept=cartpole_analysis.BASE_REGRET),
                      linetype='dashed', alpha=0.4, size=1.75)
   return p
+
+
+def plot_seeds(df: pd.DataFrame,
+               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+  """Plot the performance by individual work unit."""
+  return cartpole_analysis.plot_seeds(
+      df_in=df,
+      sweep_vars=sweep_vars,
+      colour_var='noise_scale'
+  ) + gg.ylab('average episodic return (removing noise)')

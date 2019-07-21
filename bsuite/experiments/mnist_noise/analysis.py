@@ -70,3 +70,13 @@ def plot_average(df: pd.DataFrame,
                      linetype='dashed', alpha=0.4, size=1.75)
   p += gg.coord_cartesian(ylim=(0, 1))
   return p
+
+
+def plot_seeds(df: pd.DataFrame,
+               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+  """Plot the performance by individual work unit."""
+  return mnist_analysis.plot_seeds(
+      df_in=df,
+      sweep_vars=sweep_vars,
+      colour_var='noise_scale'
+  ) + gg.ylab('average accuracy (removing noise)')

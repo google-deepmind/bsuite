@@ -39,7 +39,7 @@ def score(df: pd.DataFrame) -> float:
 
   final_df = df.copy()
   final_df['ave_return'] = (
-      final_df.total_return.diff() / final_df.episode.diff())
+      1.0 - (final_df.total_regret.diff() / final_df.episode.diff()))
   final_df = final_df[final_df.episode > 0.9 * NUM_EPISODES]
   # Convert (+1, -1) average return --> (+1, 0) accuracy score
   acc_score = np.mean(final_df.ave_return + 1) * 0.5
@@ -54,3 +54,21 @@ def plot_learning(df: pd.DataFrame,
   p += gg.geom_hline(gg.aes(yintercept=BASE_REGRET),
                      linetype='dashed', alpha=0.4, size=1.75)
   return p
+
+
+def plot_seeds(df_in: pd.DataFrame,
+               sweep_vars: Sequence[Text] = None,
+               colour_var: Text = None) -> gg.ggplot:
+  """Plot the accuracy through time individually by run."""
+  df = df_in.copy()
+  df['average_return'] = 1.0 - (df.total_regret.diff() / df.episode.diff())
+  df['average_accuracy'] = (df.average_return + 1) / 2
+  p = plotting.plot_individual_returns(
+      df_in=df[df.episode >= 100],
+      max_episode=NUM_EPISODES,
+      return_column='average_accuracy',
+      colour_var=colour_var,
+      yintercept=1.,
+      sweep_vars=sweep_vars,
+  )
+  return p + gg.ylab('average accuracy')

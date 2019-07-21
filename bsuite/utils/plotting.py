@@ -51,13 +51,14 @@ def ave_regret_score(df: pd.DataFrame,
 
 def score_by_scaling(df: pd.DataFrame,
                      score_fn: Callable[[pd.DataFrame], float],
-                     scaling_var: Text,
-                     n_std: float = 1.) -> float:
-  """Apply scoring function over scaling_var, output mean - n_std * std."""
+                     scaling_var: Text) -> float:
+  """Apply scoring function based on mean and std."""
   scores = []
   for _, sub_df in df.groupby(scaling_var):
     scores.append(score_fn(sub_df))
-  return np.clip(np.mean(scores) - n_std * np.std(scores), 0, 1)
+  mean_score = np.clip(np.mean(scores), 0, 1)
+  lcb_score = np.clip(np.mean(scores) - np.std(scores), 0, 1)
+  return 0.5 * (mean_score + lcb_score)
 
 
 def facet_sweep_plot(base_plot: gg.ggplot,
@@ -206,3 +207,42 @@ def plot_regret_ave_scaling(df_in: pd.DataFrame,
        + gg.geom_hline(gg.aes(yintercept=0.0), alpha=0)  # axis hack
       )
   return facet_sweep_plot(p, sweep_vars)
+
+
+def _make_unique_group_col(df: pd.DataFrame,
+                           sweep_vars: Sequence[Text] = None) -> None:
+  """Adds a unique_group column based on sweep_vars + bsuite_id."""
+  unique_vars = ['bsuite_id']
+  if sweep_vars:
+    unique_vars += sweep_vars
+  unique_group = (df[unique_vars].astype(str)
+                  .apply(lambda x: x.name + '=' + x, axis=0)
+                  .apply(lambda x: '\n'.join(x), axis=1)  # pylint:disable=unnecessary-lambda
+                 )
+  return unique_group
+
+
+def plot_individual_returns(df_in: pd.DataFrame,
+                            max_episode: int,
+                            return_column: Text = 'episode_return',
+                            colour_var: Text = None,
+                            yintercept: float = None,
+                            sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+  """Plot individual learning curves: one curve per sweep setting."""
+  df = df_in.copy()
+  df['unique_group'] = _make_unique_group_col(df, sweep_vars)
+  p = (gg.ggplot(df)
+       + gg.aes(x='episode', y=return_column, group='unique_group')
+       + gg.coord_cartesian(xlim=(0, max_episode))
+      )
+  if colour_var:
+    p += gg.geom_line(gg.aes(colour=colour_var), size=1.1, alpha=0.75)
+    if len(df[colour_var].unique()) <= 5:
+      df[colour_var] = df[colour_var].astype('category')
+      p += gg.scale_colour_manual(values=FIVE_COLOURS)
+  else:
+    p += gg.geom_line(size=1.1, alpha=0.75, colour='#313695')
+  if yintercept:
+    p += gg.geom_hline(
+        yintercept=yintercept, alpha=0.5, size=2, linetype='dashed')
+  return facet_sweep_plot(p, sweep_vars, tall_plot=True)
