@@ -173,16 +173,47 @@ def ave_score_by_tag(score_df: pd.DataFrame,
 # Summary plots
 
 
+def _gen_ordered_experiments() -> Sequence[Text]:
+  """Provides a list of ordered experiments for bar plot."""
+  basics = ['bandit', 'mnist', 'catch', 'cartpole', 'mountain_car']
+  noise = [env + '_noise' for env in basics]
+  scale = [env + '_scale' for env in basics]
+  explore = ['deep_sea', 'deep_sea_stochastic', 'cartpole_swingup']
+  credit = ['umbrella_length', 'umbrella_distract', 'discounting_chain']
+  memory = ['memory_len', 'memory_size']
+  return basics + noise + scale + explore + credit + memory
+
+_ORDERED_EXPERIMENTS = _gen_ordered_experiments()
+_ORDERED_TYPES = [
+    'basic', 'noise', 'scale', 'exploration', 'credit_assignment', 'memory']
+
+
+def _clean_bar_plot_data(df_in: pd.DataFrame,
+                         sweep_vars: Sequence[Text] = None) -> pd.DataFrame:
+  """Clean the summary data for bar plot comparison of agents."""
+  df = df_in.copy()
+  df['env'] = pd.Categorical(
+      df.bsuite_env, categories=_ORDERED_EXPERIMENTS, ordered=True)
+  df['type'] = pd.Categorical(
+      df['type'], categories=_ORDERED_TYPES, ordered=True)
+
+  if sweep_vars:
+    df['agent'] = (df[sweep_vars].astype(str)
+                   .apply(lambda x: x.name + '=' + x, axis=0)
+                   .apply(lambda x: '\n'.join(x), axis=1)  # pylint:disable=unnecessary-lambda
+                  )
+  else:
+    df['agent'] = 'bsuite_agent'
+  return df
+
+
 def bsuite_bar_plot(df_in: pd.DataFrame,
                     sweep_vars: Sequence[Text] = None) -> gg.ggplot:
   """Output bar plot of bsuite data."""
-  df = df_in.copy()
-  env_categories = df.sort_values('type').bsuite_env.drop_duplicates().values
-  df['clean_env'] = pd.Categorical(
-      df.bsuite_env, categories=env_categories, ordered=True)
+  df = _clean_bar_plot_data(df_in, sweep_vars)
 
   p = (gg.ggplot(df)
-       + gg.aes(x='clean_env', y='score', colour='type', fill='type')
+       + gg.aes(x='env', y='score', colour='type', fill='type')
        + gg.geom_bar(position='dodge', stat='identity')
        + gg.geom_hline(yintercept=1., linetype='dashed', alpha=0.5)
        + gg.xlab('experiment')
@@ -199,24 +230,6 @@ def bsuite_bar_plot(df_in: pd.DataFrame,
   else:
     n_hypers = 1
   return p + gg.theme(figure_size=(14, 3 * n_hypers + 1))
-
-
-def _clean_bar_plot_data(df_in: pd.DataFrame,
-                         sweep_vars: Sequence[Text] = None) -> pd.DataFrame:
-  """Clean the summary data for bar plot comparison of agents."""
-  df = df_in.copy()
-  env_categories = df.sort_values('type').bsuite_env.drop_duplicates().values
-  df['env'] = pd.Categorical(
-      df.bsuite_env, categories=env_categories, ordered=True)
-
-  if sweep_vars is not None:
-    df['agent'] = (df[sweep_vars].astype(str)
-                   .apply(lambda x: x.name + '=' + x, axis=0)
-                   .apply(lambda x: '\n'.join(x), axis=1)  # pylint:disable=unnecessary-lambda
-                  )
-  else:
-    df['agent'] = 'agent'
-  return df
 
 
 def _bar_plot_compare(df: pd.DataFrame) -> gg.ggplot:
@@ -251,7 +264,8 @@ def plot_single_experiment(summary_df: pd.DataFrame,
       summary_df[summary_df.bsuite_env == bsuite_env], sweep_vars)
   n_agent = len(df.agent.unique())
   p = _bar_plot_compare(df)
-  p += gg.theme(figure_size=(min(4 + n_agent, 14), 6))
+  plot_width = min(2 + n_agent, 12)
+  p += gg.theme(figure_size=(plot_width, 6))
   p += gg.ggtitle('bsuite score for {} experiment'.format(bsuite_env))
   print('tags={}'.format(df.tags.iloc[0]))
   return p
