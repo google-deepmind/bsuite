@@ -30,7 +30,7 @@ from typing import Text, Sequence
 
 NUM_EPISODES = sweep.NUM_EPISODES
 BASE_REGRET = 700
-GOOD_EPISODE = 500
+GOOD_EPISODE = 100
 TAGS = ('exploration', 'generalization')
 
 
@@ -54,7 +54,7 @@ def score(df: pd.DataFrame) -> float:
         regret_column='perfection_regret'
     )
     swingup_score = np.mean(
-        sub_df.groupby('seed')['best_episode'].max() > GOOD_EPISODE)
+        sub_df.groupby('bsuite_id')['best_episode'].max() > GOOD_EPISODE)
     scores.append(0.5 * (regret_score + swingup_score))
   return np.mean(scores)
 
@@ -108,4 +108,4 @@ def plot_seeds(df_in: pd.DataFrame,
       colour_var='height_threshold',
       sweep_vars=sweep_vars,
   )
-  return p + gg.ylab('average episodic return (removing noise)')
+  return p + gg.ylab('average episodic return')
