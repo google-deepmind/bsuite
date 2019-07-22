@@ -32,13 +32,13 @@ import tensorflow as tf
 flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite identifier')
 flags.DEFINE_integer('num_episodes', 10000, 'number of episodes to run')
 flags.DEFINE_integer('num_hidden_layers', 2, 'number of hidden layers')
-flags.DEFINE_integer('num_units', 20, 'number of units per hidden layer')
+flags.DEFINE_integer('num_units', 50, 'number of units per hidden layer')
 flags.DEFINE_integer('batch_size', 32, 'size of batches sampled from replay')
 flags.DEFINE_float('agent_discount', .99, 'discounting on the agent side')
-flags.DEFINE_integer('replay_capacity', 10000, 'size of the replay buffer')
-flags.DEFINE_integer('min_replay_size', 100, 'min replay size before training.')
-flags.DEFINE_integer('sgd_period', 4, 'steps between online net updates')
-flags.DEFINE_integer('target_update_period', 32,
+flags.DEFINE_integer('replay_capacity', 100000, 'size of the replay buffer')
+flags.DEFINE_integer('min_replay_size', 128, 'min replay size before training.')
+flags.DEFINE_integer('sgd_period', 1, 'steps between online net updates')
+flags.DEFINE_integer('target_update_period', 4,
                      'steps between target net updates')
 flags.DEFINE_float('learning_rate', 1e-3, 'learning rate for optimizer')
 flags.DEFINE_float('epsilon', 0.05, 'fraction of exploratory random actions')

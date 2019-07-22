@@ -62,7 +62,8 @@ class BootstrappedDqn(base.Agent):
       sgd_period: int,
       target_update_period: int,
       optimizer: tf.train.Optimizer,
-      mask_prob: float = 0.5,
+      mask_prob: float,
+      noise_scale: float,
       epsilon_fn: Callable[[int], float] = lambda _: 0.,
       seed: int = None,
   ):
@@ -78,6 +79,7 @@ class BootstrappedDqn(base.Agent):
     self._epsilon_fn = epsilon_fn
     self._replay = replay.Replay(capacity=replay_capacity)
     self._mask_prob = mask_prob
+    self._noise_scale = noise_scale
     self._rng = np.random.RandomState(seed)
     tf.set_random_seed(seed)
 
@@ -90,13 +92,14 @@ class BootstrappedDqn(base.Agent):
     # Making the tensorflow graph
     session = tf.Session()
 
-    # Placeholders for tf graph = (obs, action, reward, discount, obs, mask)
+    # Placeholders = (obs, action, reward, discount, next_obs, mask, noise)
     o_tm1 = tf.placeholder(shape=(None,) + obs_spec.shape, dtype=obs_spec.dtype)
     a_tm1 = tf.placeholder(shape=(None,), dtype=action_spec.dtype)
     r_t = tf.placeholder(shape=(None,), dtype=tf.float32)
     d_t = tf.placeholder(shape=(None,), dtype=tf.float32)
     o_t = tf.placeholder(shape=(None,) + obs_spec.shape, dtype=obs_spec.dtype)
     m_t = tf.placeholder(shape=(None, self._num_ensemble), dtype=tf.float32)
+    z_t = tf.placeholder(shape=(None, self._num_ensemble), dtype=tf.float32)
 
     losses = []
     value_fns = []
@@ -105,11 +108,12 @@ class BootstrappedDqn(base.Agent):
       model = self._ensemble[k]
       target_model = self._target_ensemble[k]
       q_values = model(o_tm1)
-      target_value = tf.reduce_max(target_model(o_t), axis=-1)
 
       train_value = trfl.batched_index(q_values, a_tm1)
-      target_y = r_t + agent_discount * d_t * tf.stop_gradient(target_value)
+      target_value = tf.stop_gradient(tf.reduce_max(target_model(o_t), axis=-1))
+      target_y = r_t + z_t[:, k] + agent_discount * d_t * target_value
       loss = tf.square(train_value - target_y) * m_t[:, k]
+
       value_fn = session.make_callable(q_values, [o_tm1])
       target_update = trfl.update_target_variables(
           target_variables=target_model.get_all_variables(),
@@ -122,8 +126,8 @@ class BootstrappedDqn(base.Agent):
 
     sgd_op = optimizer.minimize(tf.stack(losses))
     self._value_fns = value_fns
-    self._sgd_step = session.make_callable(sgd_op,
-                                           [o_tm1, a_tm1, r_t, d_t, o_t, m_t])
+    self._sgd_step = session.make_callable(
+        sgd_op, [o_tm1, a_tm1, r_t, d_t, o_t, m_t, z_t])
     self._update_target_nets = session.make_callable(target_updates)
     session.run(tf.global_variables_initializer())
 
@@ -148,13 +152,14 @@ class BootstrappedDqn(base.Agent):
       self._active_head = np.random.randint(self._num_ensemble)
 
     if not old_step.last():
-      self._replay.add(TransitionWithMask(
+      self._replay.add(TransitionWithMaskAndNoise(
           o_tm1=old_step.observation,
           a_tm1=action,
           r_t=new_step.reward,
           d_t=new_step.discount,
           o_t=new_step.observation,
-          m_t=self._rng.binomial(1, self._mask_prob, self._num_ensemble)
+          m_t=self._rng.binomial(1, self._mask_prob, self._num_ensemble),
+          z_t=self._rng.randn(self._num_ensemble) * self._noise_scale,
       ))
 
     if self._replay.size < self._min_replay_size:
@@ -168,8 +173,9 @@ class BootstrappedDqn(base.Agent):
       self._update_target_nets()
 
 
-TransitionWithMask = collections.namedtuple(
-    'TransitionWithMask', ['o_tm1', 'a_tm1', 'r_t', 'd_t', 'o_t', 'm_t'])
+TransitionWithMaskAndNoise = collections.namedtuple(
+    'TransitionWithMaskAndNoise',
+    ['o_tm1', 'a_tm1', 'r_t', 'd_t', 'o_t', 'm_t', 'z_t'])
 
 
 class BatchFlattenMLP(snt.AbstractModule):
@@ -206,8 +212,8 @@ class NetworkWithPrior(snt.AbstractModule):
 def make_ensemble(num_actions: int,
                   num_ensemble: int = 16,
                   num_hidden_layers: int = 2,
-                  num_units: int = 20,
-                  prior_scale: float = 1.) -> Sequence[snt.AbstractModule]:
+                  num_units: int = 50,
+                  prior_scale: float = 3.) -> Sequence[snt.AbstractModule]:
   """Convenience function to make an ensemble from flags."""
   output_sizes = [num_units] * num_hidden_layers + [num_actions]
   ensemble = []
@@ -231,10 +237,12 @@ def default_agent(obs_spec: dm_env.specs.Array,
       batch_size=32,
       agent_discount=.99,
       replay_capacity=10000,
-      min_replay_size=100,
-      sgd_period=4,
-      target_update_period=32,
+      min_replay_size=128,
+      sgd_period=1,
+      target_update_period=4,
       optimizer=tf.train.AdamOptimizer(learning_rate=1e-3),
-      epsilon_fn=lambda x: 0.0,
+      mask_prob=0.5,
+      noise_scale=0.0,
+      epsilon_fn=lambda t: 10 / (10 + t),
       seed=42,
       )

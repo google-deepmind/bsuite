@@ -135,7 +135,7 @@ class DQN(base.Agent):
 def default_agent(obs_spec: specs.Array,
                   action_spec: specs.DiscreteArray):
   """Initialize a DQN agent with default parameters."""
-  hidden_units = [20, 20]
+  hidden_units = [50, 50]
   online_network = snt.Sequential([
       snt.BatchFlatten(),
       snt.nets.MLP(hidden_units + [action_spec.num_values]),
@@ -153,8 +153,8 @@ def default_agent(obs_spec: specs.Array,
       agent_discount=0.99,
       replay_capacity=10000,
       min_replay_size=100,
-      sgd_period=4,
-      target_update_period=32,
+      sgd_period=1,
+      target_update_period=4,
       optimizer=tf.train.AdamOptimizer(learning_rate=1e-3),
       epsilon=0.05,
       seed=42
