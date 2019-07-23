@@ -103,3 +103,9 @@ Our baselines additionally depend on [TensorFlow](http://tensorflow.org) and
 [Sonnet](https://github.com/deepmind/sonnet). These dependencies are not
 installed by default, since bsuite is independent of any machine learning
 library.
+
+## Bsuite Report
+
+You can generate a short PDF report summarizing how different algorithms compare
+along the dimensions considered by Bsuite by simply running
+`pdflatex bsuite/reports/bsuite_report.tex`.
