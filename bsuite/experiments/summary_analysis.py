@@ -175,7 +175,7 @@ def ave_score_by_tag(score_df: pd.DataFrame,
 
 def _gen_ordered_experiments() -> Sequence[Text]:
   """Provides a list of ordered experiments for bar plot."""
-  basics = ['bandit', 'mnist', 'catch', 'cartpole', 'mountain_car']
+  basics = ['bandit', 'mnist', 'catch', 'mountain_car', 'cartpole']
   noise = [env + '_noise' for env in basics]
   scale = [env + '_scale' for env in basics]
   explore = ['deep_sea', 'deep_sea_stochastic', 'cartpole_swingup']
