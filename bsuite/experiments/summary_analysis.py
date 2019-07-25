@@ -317,3 +317,4 @@ def bsuite_radar_plot(summary_data: pd.DataFrame,
 
   plt.yticks([0, 0.25, 0.5, 0.75, 1])
   ax.grid(True)
+  return fig
