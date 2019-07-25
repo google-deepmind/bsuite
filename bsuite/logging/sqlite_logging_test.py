@@ -25,7 +25,7 @@ import random
 
 from absl.testing import absltest
 from absl.testing import parameterized
-from bsuite.utils import sqlite_logging
+from bsuite.logging import sqlite_logging
 import sqlite3
 
 

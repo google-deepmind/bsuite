@@ -21,23 +21,19 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
-import glob
-import os
-
 from bsuite import sweep
-from bsuite.utils import csv_logging
 import pandas as pd
 import six
-from typing import Mapping, Sequence, Text, Union
+from typing import Callable, Mapping, Sequence, Text, Union
 
 
 def join_metadata(df: pd.DataFrame) -> pd.DataFrame:
-  """Returns a DataFrame containing sweep metadata joined to the input."""
+  """Returns a DataFrame with bsuite sweep metadata joined on bsuite_id."""
   # Assume we are loading in the settings via sweep.py, without any changes.
+  assert 'bsuite_id' in df.columns
   metadata = sweep.SETTINGS
 
   data = []
-
   for bsuite_id, env_kwargs in metadata.items():
     # Add environment and id to dataframe.
     bsuite_env = bsuite_id.split(sweep.SEPARATOR)[0]
@@ -49,56 +45,40 @@ def join_metadata(df: pd.DataFrame) -> pd.DataFrame:
   return pd.merge(df, bsuite_df, on='bsuite_id')
 
 
-def load_one_result_set(results_dir: Text) -> pd.DataFrame:
-  """Returns a pandas DataFrame of bsuite results."""
-  data = []
-  for file_path in glob.glob(os.path.join(results_dir, '*.csv')):
-    _, name = os.path.split(file_path)
-    # Rough and ready error-checking for only bsuite csv files.
-    if not name.startswith(csv_logging.BSUITE_PREFIX):
-      print('Warning - we recommend you use a fresh folder for bsuite results.')
-      continue
-
-    # Then we will assume that the file is actually a bsuite file
-    df = pd.read_csv(file_path)
-    file_bsuite_id = name.strip('.csv').split('=')[1]
-    bsuite_id = file_bsuite_id.replace(
-        csv_logging.SAFE_SEPARATOR, sweep.SEPARATOR)
-    df['bsuite_id'] = bsuite_id
-    df['results_dir'] = results_dir
-    data.append(df)
-  df = pd.concat(data, sort=False)
-  return join_metadata(df)
-
-DirCollection = Union[Text, Sequence[Text], Mapping[Text, Text]]
+PathCollection = Union[Text, Sequence[Text], Mapping[Text, Text]]
+SingleLoadFn = Callable[[Text], pd.DataFrame]
 
 
-def load_bsuite(results_dirs: DirCollection) -> pd.DataFrame:
+def load_multiple_runs(path_collection: PathCollection,
+                       single_load_fn: SingleLoadFn) -> pd.DataFrame:
   """Returns a pandas DataFrame of bsuite results.
 
   Args:
-    results_dirs: Paths to one or more directories with bsuite results.
+    path_collection: Paths to one or more locations of bsuite results.
       be given as one of:
         - A sequence (e.g. list, tuple) of paths
         - a mapping from agent or algorithm name to path.
         - A string containing a single path.
+    single_load_fn: A function that takes in a single path (as specified in the
+      path_collection and loads the bsuite results for one agent run).
 
   Returns:
     A tuple of:
       - A pandas DataFrame containing the bsuite results.
-      - A list of column names to group by, used by the provided notebook.
+      - A list of column names to group by, used in ipython notebook provided.
         When grouping by these columns, each group corresponds to one set of
         results.
   """
-  # Convert any inputs to mapping format.
-  if isinstance(results_dirs, six.string_types):
-    results_dirs = {results_dirs: results_dirs}
-  if not isinstance(results_dirs, collections.Mapping):
-    results_dirs = {path: path for path in results_dirs}
+  # Convert any inputs to dictionary format.
+  if isinstance(path_collection, six.string_types):
+    path_collection = {path_collection: path_collection}
+  if not isinstance(path_collection, collections.Mapping):
+    path_collection = {path: path for path in path_collection}
 
+  # Loop through multiple bsuite runs, and apply single_load_fn to each.
   data = []
-  for name, path in results_dirs.items():
-    df = load_one_result_set(results_dir=path)
+  for name, path in path_collection.items():
+    df = single_load_fn(path)
     df['agent_name'] = name
     data.append(df)
 

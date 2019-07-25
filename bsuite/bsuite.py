@@ -50,8 +50,8 @@ from bsuite.experiments.mountain_car_scale import mountain_car_scale
 from bsuite.experiments.umbrella_distract import umbrella_distract
 from bsuite.experiments.umbrella_length import umbrella_length
 
-from bsuite.utils import csv_logging
-from bsuite.utils import sqlite_logging
+from bsuite.logging import csv_logging
+from bsuite.logging import sqlite_logging
 
 import dm_env
 from typing import Any, Mapping, Text, Tuple

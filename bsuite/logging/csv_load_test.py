@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.utils.sqlite_load."""
+"""Tests for bsuite.utils.csv_load."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -24,28 +24,20 @@ import random
 # Internal dependencies.
 
 from absl.testing import absltest
-from bsuite.utils import sqlite_load
-from bsuite.utils import sqlite_logging
+from bsuite.logging import csv_load
+from bsuite.logging import csv_logging
 
-import sqlite3
 
 _NUM_WRITES = 10
 
 
-def generate_results(experiment_name, setting_index, connection):
-  logger = sqlite_logging.Logger(db_path='unused',
-                                 experiment_name=experiment_name,
-                                 setting_index=setting_index,
-                                 connection=connection)
-
+def generate_results(bsuite_id, results_dir):
+  logger = csv_logging.Logger(bsuite_id, results_dir)
   steps_per_episode = 7
-
   total_return = 0.0
-
   for i in range(_NUM_WRITES):
     episode_return = random.random()
     total_return += episode_return
-
     data = dict(
         steps=i * steps_per_episode,
         episode=i,
@@ -57,18 +49,14 @@ def generate_results(experiment_name, setting_index, connection):
     logger.write(data)
 
 
-class SqliteLoadTest(absltest.TestCase):
+class CsvLoadTest(absltest.TestCase):
 
   def test_logger(self):
-    connection = sqlite3.connect(':memory:')
+    results_dir = self.create_tempdir().full_path
+    generate_results(bsuite_id='catch/0', results_dir=results_dir)
+    generate_results(bsuite_id='catch/1', results_dir=results_dir)
 
-    generate_results(
-        experiment_name='catch', setting_index=1, connection=connection)
-    generate_results(
-        experiment_name='catch', setting_index=2, connection=connection)
-
-    df = sqlite_load.load_one_result_set(db_path='unused',
-                                         connection=connection)
+    df = csv_load.load_one_result_set(results_dir=results_dir)
     self.assertLen(df, _NUM_WRITES * 2)
 
     # Check that sweep metadata is joined correctly.
