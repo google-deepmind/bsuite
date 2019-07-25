@@ -139,15 +139,21 @@ def load_and_record_to_sqlite(bsuite_id: Text,
   raw_env = load_from_id(bsuite_id)
   experiment_name, setting_index = unpack_bsuite_id(bsuite_id)
   return sqlite_logging.wrap_environment(
-      raw_env, db_path=db_path, experiment_name=experiment_name,
-      setting_index=setting_index)
+      env=raw_env,
+      db_path=db_path,
+      experiment_name=experiment_name,
+      setting_index=setting_index,
+  )
 
 
 def load_and_record_to_csv(bsuite_id: Text,
-                           results_dir: Text) -> dm_env.Environment:
+                           results_dir: Text,
+                           overwrite: bool = False) -> dm_env.Environment:
   """Returns a bsuite environment that saves results to csv."""
   raw_env = load_from_id(bsuite_id)
   return csv_logging.wrap_environment(
       env=raw_env,
       bsuite_id=bsuite_id,
-      results_dir=results_dir)
+      results_dir=results_dir,
+      overwrite=overwrite,
+  )

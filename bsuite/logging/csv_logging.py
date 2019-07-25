@@ -35,9 +35,10 @@ BSUITE_PREFIX = 'bsuite_id='
 def wrap_environment(env: dm_env.Environment,
                      bsuite_id: Text,
                      results_dir: Text,
+                     overwrite: bool = False,
                      log_by_step: bool = False) -> dm_env.Environment:
   """Returns a wrapped environment that logs using csv."""
-  logger = Logger(bsuite_id, results_dir)
+  logger = Logger(bsuite_id, results_dir, overwrite)
   return wrappers.Logging(env, logger, log_by_step=log_by_step)
 
 
