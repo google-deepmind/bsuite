@@ -26,6 +26,6 @@ NUM_EPISODES = memory_len_sweep.NUM_EPISODES
 _log_spaced = []
 _log_spaced.extend(range(1, 11))
 _log_spaced.extend([12, 14, 17, 20, 25])
-_log_spaced.extend(range(30, 105, 10))
+_log_spaced.extend(range(30, 50, 10))
 
 SETTINGS = tuple({'num_bits': n} for n in _log_spaced)

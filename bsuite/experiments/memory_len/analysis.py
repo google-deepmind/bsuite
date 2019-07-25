@@ -37,9 +37,9 @@ def memory_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
   """Preprocess data for memory environments = regret relative to random."""
   df = df_in.copy()
   df['perfection_regret'] = df.episode - df.total_perfect
-  # If the environment is 'memory_len' then we know it is a single bit.
-  df.loc[df.bsuite_env == 'memory_len', 'num_bits'] = 1
-  df['base_rate'] = 1 - 0.5 ** df.num_bits
+  # a random agent always has 50% chance on each episode
+  # independently from memory length and number of bits.
+  df['base_rate'] = 0.5
   df['regret_ratio'] = df.perfection_regret / df.base_rate
   return df
 
@@ -68,13 +68,13 @@ def plot_learning(df: pd.DataFrame,
       regret_col='regret_ratio',
       max_episode=sweep.NUM_EPISODES,
   )
-  return p + gg.ylab('average % of imperfect episodes compare to random.')
+  return p + gg.ylab('average % of correct episodes compared to random.')
 
 
 def plot_scale(df: pd.DataFrame,
                sweep_vars: Sequence[Text] = None,
                group_col: Text = 'memory_length') -> gg.ggplot:
-  """Plots the average return through time by memory_length."""
+  """Plots the regret_ratio through time by memory_length."""
   df = memory_preprocess(df_in=df)
   p = plotting.plot_regret_ave_scaling(
       df_in=df,
@@ -84,7 +84,7 @@ def plot_scale(df: pd.DataFrame,
       sweep_vars=sweep_vars,
       regret_col='regret_ratio'
   )
-  return p + gg.ylab('% imperfect episodes after {} episodes compared to random'
+  return p + gg.ylab('% correct episodes after {} episodes compared to random'
                      .format(sweep.NUM_EPISODES))
 
 

@@ -34,7 +34,7 @@ from bsuite.experiments.memory_size import sweep
 def load(num_bits):
   """Memory Chain environment, with variable number of bits."""
   env = memory_len.MemoryChain(
-      memory_length=5,
+      memory_length=2,
       num_bits=num_bits,
       seed=73,
   )
