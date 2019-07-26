@@ -20,34 +20,33 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
-from absl import logging
-
 from bsuite.baselines import base
-import dm_env
-import numpy as np
-import pandas as pd
+from bsuite.logging import terminal_logging
 
-from typing import Sequence
+import dm_env
 
 
 def run(agent: base.Agent,
         environment: dm_env.Environment,
-        num_episodes: int = None,
-        verbose: bool = False) -> pd.DataFrame:
-  """Runs an agent on an environment and returns basic performance data."""
-  if num_episodes is None:
-    num_episodes = float('inf')
+        num_episodes: int,
+        verbose: bool = False) -> None:
+  """Runs an agent on an environment.
 
-  results = []
-  episode = 1
-  total_return = 0
-  while episode <= num_episodes:
-    # Reset the environment.
-    timestep = environment.reset()
-    episode_len = 0
-    episode_return = 0
+  Note that for bsuite environments, logging is handled internally.
 
+  Args:
+    agent: The agent to train and evaluate.
+    environment: The environment to train on.
+    num_episodes: Number of episodes to train for.
+    verbose: Whether to also log to terminal.
+  """
+
+  if verbose:
+    environment = terminal_logging.wrap_environment(environment, log_every=True)
+
+  for _ in range(num_episodes):
     # Run an episode.
+    timestep = environment.reset()
     while not timestep.last():
       # Generate an action from the agent's policy.
       action = agent.policy(timestep)
@@ -60,31 +59,3 @@ def run(agent: base.Agent,
 
       # Book-keeping.
       timestep = new_timestep
-      episode_len += 1
-      episode_return += new_timestep.reward
-
-    # Collect and log the results.
-    total_return += episode_return
-    result = {
-        'episode': episode,
-        'episode_len': episode_len,
-        'episode_return': episode_return,
-        'total_return': total_return,
-    }
-    if verbose:
-      logging.info(result)
-    if logarithmic_logging(episode):  # Only log at exponential intervals.
-      results.append(result)
-    episode += 1
-
-  return pd.DataFrame(results)
-
-
-def logarithmic_logging(episode: int, ratios: Sequence[float] = None) -> bool:
-  """Returns `True` only at specific ratios of 10**exponent."""
-  if ratios is None:
-    ratios = [1., 1.2, 1.4, 1.7, 2., 2.5, 3., 4., 5., 6., 7., 8., 9., 10.]
-  exponent = np.floor(np.log10(np.maximum(1, episode)))
-  special_vals = [10**exponent * ratio for ratio in ratios]
-  do_log = any([episode == val for val in special_vals])
-  return do_log

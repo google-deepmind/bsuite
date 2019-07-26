@@ -87,7 +87,7 @@ class WrapperTest(absltest.TestCase):
     ]
     expected_episode_return = 6
     fake_env = FakeEnvironment(timesteps)
-    env = wrappers.Logging(env=fake_env, logger=mock_logger, log_debug=True)
+    env = wrappers.Logging(env=fake_env, logger=mock_logger, log_every=True)
 
     num_episodes = 5
 

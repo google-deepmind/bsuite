@@ -20,12 +20,11 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
-
 from bsuite import sweep
 from bsuite.logging import logging_utils
 import pandas as pd
 import sqlite3
-from typing import Text
+from typing import List, Tuple, Text
 
 
 def load_one_result_set(db_path: Text,
@@ -60,7 +59,9 @@ def load_one_result_set(db_path: Text,
   return logging_utils.join_metadata(df)
 
 
-def load_bsuite(results_dirs: logging_utils.PathCollection) -> pd.DataFrame:
+def load_bsuite(
+    results_dirs: logging_utils.PathCollection
+) -> Tuple[pd.DataFrame, List[Text]]:
   """Returns a pandas DataFrame of bsuite results."""
   return logging_utils.load_multiple_runs(
       path_collection=results_dirs,

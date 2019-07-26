@@ -20,8 +20,11 @@ from __future__ import division
 # Standard __future__ imports.
 from __future__ import print_function
 
+from bsuite.logging import base
+
 import dm_env
 from dm_env import specs
+
 import numpy as np
 from skimage import transform
 from typing import Sequence
@@ -37,9 +40,9 @@ class Logging(dm_env.Environment):
 
   def __init__(self,
                env: dm_env.Environment,
-               logger,
+               logger: base.Logger,
                log_by_step: bool = False,
-               log_debug: bool = False):
+               log_every: bool = False):
     """Initializes the logging wrapper.
 
     Args:
@@ -47,12 +50,12 @@ class Logging(dm_env.Environment):
       logger: An object that records a row of data. This must have a `write`
         method that accepts a dictionary mapping from column name to value.
       log_by_step: Whether to log based on step or episode count (default).
-      log_debug: Forces logging at each step or episode, e.g. for debugging.
+      log_every: Forces logging at each step or episode, e.g. for debugging.
     """
     self._env = env
     self._logger = logger
     self._log_by_step = log_by_step
-    self._log_debug = log_debug
+    self._log_every = log_every
 
     # Accumulating throughout experiment.
     self._steps = 0
@@ -91,11 +94,11 @@ class Logging(dm_env.Environment):
 
     # Log statistics periodically, either by step or by episode.
     if self._log_by_step:
-      if _logarithmic_logging(self._steps) or self._log_debug:
+      if _logarithmic_logging(self._steps) or self._log_every:
         self._log_bsuite_data()
 
     elif timestep.last():
-      if _logarithmic_logging(self._episode) or self._log_debug:
+      if _logarithmic_logging(self._episode) or self._log_every:
         self._log_bsuite_data()
 
     # Perform bookkeeping at the end of episodes.
@@ -122,7 +125,11 @@ class Logging(dm_env.Environment):
 
   @property
   def raw_env(self):
-    return self._env
+    # Recursively unwrap until we reach the true 'raw' env.
+    wrapped = self._env
+    if hasattr(wrapped, 'raw_env'):
+      return wrapped.raw_env
+    return wrapped
 
   def __getattr__(self, attr):
     """Delegate attribute access to underlying environment."""
@@ -141,7 +148,7 @@ def _logarithmic_logging(episode: int, ratios: Sequence[float] = None) -> bool:
 class ImageObservation(dm_env.Environment):
   """Environment wrapper to convert observations to an image-like format."""
 
-  def __init__(self, env, shape):
+  def __init__(self, env: dm_env.Environment, shape: Sequence[int]):
     self._env = env
     self._shape = shape
 
@@ -167,7 +174,8 @@ class ImageObservation(dm_env.Environment):
     return getattr(self._env, attr)
 
 
-def _small_state_to_image(shape, observation):
+def _small_state_to_image(shape: Sequence[int],
+                          observation: np.ndarray) -> np.ndarray:
   """Converts a small state into an image-like format."""
   result = np.empty(shape=shape, dtype=observation.dtype)
   size = observation.size
@@ -194,7 +202,8 @@ def _small_state_to_image(shape, observation):
   return result
 
 
-def _interpolate_to_image(shape, observation):
+def _interpolate_to_image(shape: Sequence[int],
+                          observation: np.ndarray) -> np.ndarray:
   """Converts observation to desired shape using an interpolation."""
   result = np.empty(shape=shape, dtype=observation.dtype)
   if len(observation.shape) == 1:
@@ -208,7 +217,7 @@ def _interpolate_to_image(shape, observation):
   return result
 
 
-def to_image(shape, observation):
+def to_image(shape: Sequence[int], observation: np.ndarray) -> np.ndarray:
   """Converts a bsuite observation into an image-like format.
 
   Example usage, converting a 3-element array into a stacked Atari-like format:
@@ -231,20 +240,24 @@ def to_image(shape, observation):
   elif len(observation.shape) <= 2:
     return _interpolate_to_image(shape, observation)
   else:
-    raise ValueError('Cannot convert observation shape {} to desired shape {}'
-                     .format(observation.shape, shape))
+    raise ValueError(
+        'Cannot convert observation shape {} to desired shape {}'.format(
+            observation.shape, shape))
 
 
 class RewardNoise(dm_env.Environment):
   """Reward Noise environment wrapper."""
 
-  def __init__(self, env, noise_scale, seed=None):
+  def __init__(self,
+               env: dm_env.Environment,
+               noise_scale: float,
+               seed: int = None):
     """Builds the Reward Noise environment wrapper.
 
     Args:
-      env: auto_reset_environment.Base. An environment whose rewards to perturb.
-      noise_scale: Float. Standard deviation of gaussian noise on rewards.
-      seed: Optional integer. Seed for numpy's random number generator (RNG).
+      env: An environment whose rewards to perturb.
+      noise_scale: Standard deviation of gaussian noise on rewards.
+      seed: Optional seed for numpy's random number generator (RNG).
     """
     super(RewardNoise, self).__init__()
     self._env = env
@@ -257,7 +270,7 @@ class RewardNoise(dm_env.Environment):
   def step(self, action):
     return self._add_reward_noise(self._env.step(action))
 
-  def _add_reward_noise(self, timestep):
+  def _add_reward_noise(self, timestep: dm_env.TimeStep):
     if timestep.first():
       return timestep
     reward = timestep.reward + self._noise_scale * self._rng.randn()
@@ -273,21 +286,24 @@ class RewardNoise(dm_env.Environment):
   def action_spec(self):
     return self._env.action_spec()
 
-  def bsuite_info(self):
-    return self._env.bsuite_info()
+  def __getattr__(self, attr):
+    """Delegate attribute access to underlying environment."""
+    return getattr(self._env, attr)
 
 
 class RewardScale(dm_env.Environment):
-  """Reward Scale environment wrapper.
-  """
+  """Reward Scale environment wrapper."""
 
-  def __init__(self, env, reward_scale, seed=None):
+  def __init__(self,
+               env: dm_env.Environment,
+               reward_scale: float,
+               seed: int = None):
     """Builds the Reward Scale environment wrapper.
 
     Args:
-      env: auto_reset_environment.Base. An environment whose rewards to rescale.
-      reward_scale: Float. rescaling for rewards.
-      seed: Optional integer. Seed for numpy's random number generator (RNG).
+      env: Environment whose rewards to rescale.
+      reward_scale: Rescaling for rewards.
+      seed: Optional seed for numpy's random number generator (RNG).
     """
     super(RewardScale, self).__init__()
     self._env = env
@@ -300,7 +316,7 @@ class RewardScale(dm_env.Environment):
   def step(self, action):
     return self._rescale_rewards(self._env.step(action))
 
-  def _rescale_rewards(self, timestep):
+  def _rescale_rewards(self, timestep: dm_env.TimeStep):
     if timestep.first():
       return timestep
     reward = timestep.reward * self._reward_scale
@@ -316,5 +332,6 @@ class RewardScale(dm_env.Environment):
   def action_spec(self):
     return self._env.action_spec()
 
-  def bsuite_info(self):
-    return self._env.bsuite_info()
+  def __getattr__(self, attr):
+    """Delegate attribute access to underlying environment."""
+    return getattr(self._env, attr)

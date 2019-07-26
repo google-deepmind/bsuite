@@ -22,7 +22,9 @@ from __future__ import print_function
 import os
 
 from bsuite import sweep
+from bsuite.logging import base
 from bsuite.utils import wrappers
+
 import dm_env
 import pandas as pd
 
@@ -42,7 +44,7 @@ def wrap_environment(env: dm_env.Environment,
   return wrappers.Logging(env, logger, log_by_step=log_by_step)
 
 
-class Logger(object):
+class Logger(base.Logger):
   """Saves data to a CSV file via  Pandas.
 
   BSuite is split into multiple _experiments_. Each experiment has multiple
@@ -59,10 +61,11 @@ class Logger(object):
   storage system.
   """
 
-  def __init__(self,
-               bsuite_id: Text,
-               results_dir: Text = '/tmp/bsuite',
-               overwrite: bool = False):
+  def __init__(
+      self,
+      bsuite_id: Text,
+      results_dir: Text = '/tmp/bsuite',
+      overwrite: bool = False):
     """Initializes a new CSV logger, saving to results_dir + overwrite data."""
     self._data = []
 

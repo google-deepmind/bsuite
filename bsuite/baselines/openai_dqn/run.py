@@ -50,7 +50,7 @@ FLAGS = flags.FLAGS
 def main(_):
   raw_env = bsuite.load_from_id(FLAGS.bsuite_id)
   env = gym_wrapper.GymWrapper(raw_env)
-  num_episodes = raw_env.bsuite_num_episodes  # pytype: disable=attribute-error
+  num_episodes = getattr(env, 'bsuite_num_episodes', FLAGS.num_episodes)
 
   def callback(lcl, unused_glb):
     # Terminate after `num_episodes`.

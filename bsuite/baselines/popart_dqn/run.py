@@ -55,28 +55,42 @@ def main(argv):
   env = bsuite.load_from_id(FLAGS.bsuite_id)
 
   hidden_units = [FLAGS.num_units] * FLAGS.num_hidden_layers
-  torso = snt.Sequential([
-      snt.BatchFlatten(), snt.nets.MLP(hidden_units, activate_final=True)])
+  torso = snt.Sequential(
+      [snt.BatchFlatten(),
+       snt.nets.MLP(hidden_units, activate_final=True)])
   head = snt.Linear(env.action_spec().num_values)
-  target_torso = snt.Sequential([
-      snt.BatchFlatten(), snt.nets.MLP(hidden_units, activate_final=True)])
+  target_torso = snt.Sequential(
+      [snt.BatchFlatten(),
+       snt.nets.MLP(hidden_units, activate_final=True)])
   target_head = snt.Linear(env.action_spec().num_values)
 
   agent = popart_dqn.PopArtDQN(
-      obs_spec=env.observation_spec(), action_spec=env.action_spec(),
-      torso=torso, head=head,
-      target_torso=target_torso, target_head=target_head,
-      batch_size=FLAGS.batch_size, agent_discount=FLAGS.agent_discount,
+      obs_spec=env.observation_spec(),
+      action_spec=env.action_spec(),
+      torso=torso,
+      head=head,
+      target_torso=target_torso,
+      target_head=target_head,
+      batch_size=FLAGS.batch_size,
+      agent_discount=FLAGS.agent_discount,
       replay_capacity=FLAGS.replay_capacity,
-      min_replay_size=FLAGS.min_replay_size, update_period=FLAGS.update_period,
+      min_replay_size=FLAGS.min_replay_size,
+      update_period=FLAGS.update_period,
       target_update_period=FLAGS.target_update_period,
       optimizer=tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate),
-      popart_step_size=FLAGS.popart_step_size, popart_lb=FLAGS.popart_lb,
-      popart_ub=FLAGS.popart_ub, epsilon=FLAGS.epsilon, seed=FLAGS.seed)
+      popart_step_size=FLAGS.popart_step_size,
+      popart_lb=FLAGS.popart_lb,
+      popart_ub=FLAGS.popart_ub,
+      epsilon=FLAGS.epsilon,
+      seed=FLAGS.seed)
 
-  FLAGS.alsologtostderr = True
+  num_episodes = getattr(env, 'bsuite_num_episodes', FLAGS.num_episodes)
+
   experiment.run(
-      agent, env, num_episodes=FLAGS.num_episodes, verbose=FLAGS.verbose)
+      agent=agent,
+      environment=env,
+      num_episodes=num_episodes,
+      verbose=FLAGS.verbose)
 
 
 if __name__ == '__main__':

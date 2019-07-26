@@ -24,7 +24,10 @@ import sys
 import traceback
 
 from absl import logging
+
+from bsuite.logging import base
 from bsuite.utils import wrappers
+
 import dm_env
 import six
 import sqlite3
@@ -44,7 +47,7 @@ def wrap_environment(env: dm_env.Environment,
   return wrappers.Logging(env, logger, log_by_step=log_by_step)
 
 
-class Logger(object):
+class Logger(base.Logger):
   """Saves data to a SQLite Database.
 
   BSuite is split into multiple _experiments_. Each experiment has multiple
@@ -61,12 +64,13 @@ class Logger(object):
   experiments.
   """
 
-  def __init__(self,
-               db_path: Text,
-               experiment_name: Text,
-               setting_index: int,
-               connection: sqlite3.Connection = None,
-               skip_name_validation: bool = False):
+  def __init__(
+      self,
+      db_path: Text,
+      experiment_name: Text,
+      setting_index: int,
+      connection: sqlite3.Connection = None,
+      skip_name_validation: bool = False):
     """Initializes a new SQLite logger.
 
     Args:
@@ -121,13 +125,13 @@ class Logger(object):
 
     column_declaration = ', '.join(sorted_keys)
 
-    create_statement = '''
+    create_statement = """
     create table {} (
       setting_index integer not null,
       steps integer not null,
       {},
       primary key (setting_index, steps)
-    );'''.format(self._experiment_name, column_declaration)
+    );""".format(self._experiment_name, column_declaration)
 
     try:
       with self._connection:
@@ -151,5 +155,6 @@ def _validate_experiment_name(name):
   valid_characters = set(string.ascii_letters + string.digits + '_')
   for character in name:
     if character not in valid_characters:
-      raise ValueError('Experiment name {!r} contains invalid character {!r}.'
-                       .format(name, character))
+      raise ValueError(
+          'Experiment name {!r} contains invalid character {!r}.'.format(
+              name, character))

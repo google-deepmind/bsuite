@@ -26,8 +26,9 @@ import os
 from bsuite import sweep
 from bsuite.logging import csv_logging
 from bsuite.logging import logging_utils
+
 import pandas as pd
-from typing import Text
+from typing import List, Tuple, Text
 
 
 def load_one_result_set(results_dir: Text) -> pd.DataFrame:
@@ -43,8 +44,8 @@ def load_one_result_set(results_dir: Text) -> pd.DataFrame:
     # Then we will assume that the file is actually a bsuite file
     df = pd.read_csv(file_path)
     file_bsuite_id = name.strip('.csv').split('=')[1]
-    bsuite_id = file_bsuite_id.replace(
-        csv_logging.SAFE_SEPARATOR, sweep.SEPARATOR)
+    bsuite_id = file_bsuite_id.replace(csv_logging.SAFE_SEPARATOR,
+                                       sweep.SEPARATOR)
     df['bsuite_id'] = bsuite_id
     df['results_dir'] = results_dir
     data.append(df)
@@ -52,7 +53,9 @@ def load_one_result_set(results_dir: Text) -> pd.DataFrame:
   return logging_utils.join_metadata(df)
 
 
-def load_bsuite(results_dirs: logging_utils.PathCollection) -> pd.DataFrame:
+def load_bsuite(
+    results_dirs: logging_utils.PathCollection
+) -> Tuple[pd.DataFrame, List[Text]]:
   """Returns a pandas DataFrame of bsuite results."""
   return logging_utils.load_multiple_runs(
       path_collection=results_dirs,

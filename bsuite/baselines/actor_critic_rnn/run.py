@@ -22,9 +22,11 @@ from __future__ import print_function
 
 from absl import app
 from absl import flags
+
 from bsuite import bsuite
 from bsuite.baselines import experiment
 from bsuite.baselines.actor_critic_rnn import actor_critic_rnn
+
 import tensorflow as tf
 
 flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite identifier')
@@ -39,7 +41,6 @@ flags.DEFINE_float('agent_discount', .99, 'discounting on the agent side')
 flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
 
 FLAGS = flags.FLAGS
-FLAGS.alsologtostderr = True
 
 
 def main(argv):
@@ -61,8 +62,13 @@ def main(argv):
       seed=FLAGS.seed,
   )
 
+  num_episodes = getattr(env, 'bsuite_num_episodes', FLAGS.num_episodes)
+
   experiment.run(
-      agent, env, num_episodes=FLAGS.num_episodes, verbose=FLAGS.verbose)
+      agent=agent,
+      environment=env,
+      num_episodes=num_episodes,
+      verbose=FLAGS.verbose)
 
 
 if __name__ == '__main__':

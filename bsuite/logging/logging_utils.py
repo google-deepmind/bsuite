@@ -24,7 +24,7 @@ import collections
 from bsuite import sweep
 import pandas as pd
 import six
-from typing import Callable, Mapping, Sequence, Text, Union
+from typing import Callable, List, Mapping, Sequence, Text, Tuple, Union
 
 
 def join_metadata(df: pd.DataFrame) -> pd.DataFrame:
@@ -49,16 +49,16 @@ PathCollection = Union[Text, Sequence[Text], Mapping[Text, Text]]
 SingleLoadFn = Callable[[Text], pd.DataFrame]
 
 
-def load_multiple_runs(path_collection: PathCollection,
-                       single_load_fn: SingleLoadFn) -> pd.DataFrame:
+def load_multiple_runs(
+    path_collection: PathCollection,
+    single_load_fn: SingleLoadFn) -> Tuple[pd.DataFrame, List[Text]]:
   """Returns a pandas DataFrame of bsuite results.
 
   Args:
     path_collection: Paths to one or more locations of bsuite results.
-      be given as one of:
-        - A sequence (e.g. list, tuple) of paths
-        - a mapping from agent or algorithm name to path.
-        - A string containing a single path.
+      be given as one of: - A sequence (e.g. list, tuple) of paths - a mapping
+        from agent or algorithm name to path. - A string containing a single
+        path.
     single_load_fn: A function that takes in a single path (as specified in the
       path_collection and loads the bsuite results for one agent run).
 

@@ -22,9 +22,11 @@ from __future__ import print_function
 
 from absl import app
 from absl import flags
+
 from bsuite import bsuite
 from bsuite.baselines import experiment
 from bsuite.baselines.boot_dqn import boot_dqn
+
 import tensorflow as tf
 
 # Network options
@@ -63,15 +65,13 @@ def main(argv):
       num_ensemble=FLAGS.num_ensemble,
       num_hidden_layers=FLAGS.num_hidden_layers,
       num_units=FLAGS.num_units,
-      prior_scale=FLAGS.prior_scale
-  )
+      prior_scale=FLAGS.prior_scale)
   target_ensemble = boot_dqn.make_ensemble(
       num_actions=env.action_spec().num_values,
       num_ensemble=FLAGS.num_ensemble,
       num_hidden_layers=FLAGS.num_hidden_layers,
       num_units=FLAGS.num_units,
-      prior_scale=FLAGS.prior_scale
-  )
+      prior_scale=FLAGS.prior_scale)
 
   agent = boot_dqn.BootstrappedDqn(
       obs_spec=env.observation_spec(),
@@ -90,9 +90,13 @@ def main(argv):
       epsilon_fn=lambda x: FLAGS.epsilon,
       seed=FLAGS.seed)
 
-  FLAGS.alsologtostderr = True
+  num_episodes = getattr(env, 'bsuite_num_episodes', FLAGS.num_episodes)
+
   experiment.run(
-      agent, env, num_episodes=FLAGS.num_episodes, verbose=FLAGS.verbose)
+      agent=agent,
+      environment=env,
+      num_episodes=num_episodes,
+      verbose=FLAGS.verbose)
 
 
 if __name__ == '__main__':
