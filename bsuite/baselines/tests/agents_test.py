@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 from absl.testing import absltest
+
 from bsuite import bsuite
 from bsuite.baselines import experiment
 from bsuite.baselines.actor_critic import actor_critic
@@ -28,8 +29,6 @@ from bsuite.baselines.boot_dqn import boot_dqn
 from bsuite.baselines.dqn import dqn
 from bsuite.baselines.popart_dqn import popart_dqn
 from bsuite.baselines.random import random
-import sonnet as snt
-import tensorflow as tf
 
 
 class AgentsTest(absltest.TestCase):
@@ -63,14 +62,10 @@ class AgentsTest(absltest.TestCase):
     experiment.run(agent, self._env, num_episodes=5)
 
   def test_dqn(self):
-    layer_sizes = [10, self._num_actions]
-    net = snt.Sequential([snt.BatchFlatten(), snt.nets.MLP(layer_sizes)])
-    agent = dqn.DQN(
-        obs_spec=self._obs_spec, action_spec=self._action_spec,
-        online_network=net, target_network=net,
-        batch_size=5, agent_discount=.99, replay_capacity=20,
-        min_replay_size=5, sgd_period=1, target_update_period=2,
-        optimizer=tf.train.AdamOptimizer(0.01), epsilon=0.1, seed=42)
+    agent = dqn.default_agent(
+        obs_spec=self._obs_spec,
+        action_spec=self._action_spec,
+    )
     experiment.run(agent, self._env, num_episodes=5)
 
   def test_popart_dqn(self):
