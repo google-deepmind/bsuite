@@ -28,7 +28,6 @@ from bsuite.baselines.random import random
 
 flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite setting identifier')
 flags.DEFINE_integer('seed', 42, 'seed for random number generation')
-flags.DEFINE_integer('num_episodes', 10000, 'number of episodes to run')
 flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
 
 FLAGS = flags.FLAGS
@@ -41,12 +40,10 @@ def main(argv):
                                action_spec=env.action_spec(),
                                seed=FLAGS.seed)
 
-  num_episodes = getattr(env, 'bsuite_num_episodes', FLAGS.num_episodes)
-
   experiment.run(
       agent=agent,
       environment=env,
-      num_episodes=num_episodes,
+      num_episodes=env.bsuite_num_episodes,  # pytype: disable=attribute-error
       verbose=FLAGS.verbose)
 
 if __name__ == '__main__':

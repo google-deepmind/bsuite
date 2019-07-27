@@ -30,7 +30,6 @@ import sonnet as snt
 import tensorflow as tf
 
 flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite identifier')
-flags.DEFINE_integer('num_episodes', 10000, 'number of episodes to run')
 flags.DEFINE_integer('num_hidden_layers', 2, 'number of hidden layers')
 flags.DEFINE_integer('num_units', 256, 'number of units per hidden layer')
 flags.DEFINE_integer('batch_size', 32, 'size of batches sampled from replay')
@@ -84,12 +83,10 @@ def main(argv):
       epsilon=FLAGS.epsilon,
       seed=FLAGS.seed)
 
-  num_episodes = getattr(env, 'bsuite_num_episodes', FLAGS.num_episodes)
-
   experiment.run(
       agent=agent,
       environment=env,
-      num_episodes=num_episodes,
+      num_episodes=env.bsuite_num_episodes,  # pytype: disable=attribute-error
       verbose=FLAGS.verbose)
 
 

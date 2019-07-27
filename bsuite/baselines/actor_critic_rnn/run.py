@@ -31,7 +31,6 @@ import tensorflow as tf
 
 flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite identifier')
 flags.DEFINE_integer('seed', 42, 'seed for random number generation')
-flags.DEFINE_integer('num_episodes', 10000, 'number of episodes to run')
 flags.DEFINE_integer('num_hidden_layers', 2, 'number of hidden layers')
 flags.DEFINE_integer('num_units', 64, 'number of units per hidden layer')
 flags.DEFINE_float('learning_rate', 3e-3, 'the learning rate')
@@ -62,12 +61,10 @@ def main(argv):
       seed=FLAGS.seed,
   )
 
-  num_episodes = getattr(env, 'bsuite_num_episodes', FLAGS.num_episodes)
-
   experiment.run(
       agent=agent,
       environment=env,
-      num_episodes=num_episodes,
+      num_episodes=env.bsuite_num_episodes,  # pytype: disable=attribute-error
       verbose=FLAGS.verbose)
 
 

@@ -52,7 +52,6 @@ flags.DEFINE_float('epsilon', 0.0, 'fraction of exploratory random actions')
 flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite identifier')
 flags.DEFINE_integer('seed', 42, 'seed for random number generation')
 flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
-flags.DEFINE_integer('num_episodes', 10000, 'number of episodes to run')
 
 FLAGS = flags.FLAGS
 
@@ -90,12 +89,10 @@ def main(argv):
       epsilon_fn=lambda x: FLAGS.epsilon,
       seed=FLAGS.seed)
 
-  num_episodes = getattr(env, 'bsuite_num_episodes', FLAGS.num_episodes)
-
   experiment.run(
       agent=agent,
       environment=env,
-      num_episodes=num_episodes,
+      num_episodes=env.bsuite_num_episodes,  # pytype: disable=attribute-error
       verbose=FLAGS.verbose)
 
 
