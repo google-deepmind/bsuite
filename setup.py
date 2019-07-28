@@ -42,7 +42,9 @@ setup(
         'six',
         'tensorflow>=1.13,<1.14',
         'tensorflow-probability>=0.6,<0.7',
+        'termcolor',
         'trfl',
+        'tqdm',
     ],
     tests_require=[
         'absl-py',
