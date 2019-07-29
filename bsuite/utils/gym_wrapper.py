@@ -44,7 +44,8 @@ class GymWrapper(gym.Env):
   def step(self, action: int) -> _GymTimestep:
     timestep = self._env.step(action)
     self._last_observation = timestep.observation
-    return timestep.observation, timestep.reward, timestep.last(), {}
+    reward = timestep.reward or 0.
+    return timestep.observation, reward, timestep.last(), {}
 
   def reset(self) -> np.ndarray:
     timestep = self._env.reset()
