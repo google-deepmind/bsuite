@@ -21,7 +21,7 @@ from __future__ import print_function
 
 from absl.testing import absltest
 
-from bsuite.baselines import replay as replay_lib
+from bsuite.baselines.utils import replay as replay_lib
 import numpy as np
 
 

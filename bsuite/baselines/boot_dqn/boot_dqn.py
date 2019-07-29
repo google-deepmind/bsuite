@@ -37,7 +37,8 @@ from __future__ import print_function
 import collections
 
 from bsuite.baselines import base
-from bsuite.baselines import replay
+from bsuite.baselines.utils import replay
+
 import dm_env
 import numpy as np
 import sonnet as snt

@@ -25,10 +25,11 @@ from __future__ import division
 from __future__ import print_function
 
 from bsuite.baselines import base
-from bsuite.baselines import replay
+from bsuite.baselines.utils import replay
 
 import dm_env
 from dm_env import specs
+
 import numpy as np
 import sonnet as snt
 import tensorflow as tf

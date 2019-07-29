@@ -21,11 +21,11 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-from typing import Any, Sequence
+from typing import Any, Optional, Sequence
 
 
 class Replay(object):
-  """Uniform replay buffer. Allocates all required memory initialization."""
+  """Uniform replay buffer. Allocates all required memory at initialization."""
 
   def __init__(self, capacity: int):
     """Initializes a new `Replay`.
@@ -35,7 +35,7 @@ class Replay(object):
         items to a replay that is at maximum capacity will overwrite the oldest
         items.
     """
-    self._data = None  # type: Sequence[np.ndarray]
+    self._data = None  # type: Optional[Sequence[np.ndarray]]
     self._capacity = capacity
     self._num_added = 0
 
