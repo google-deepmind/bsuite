@@ -45,6 +45,7 @@ from bsuite.experiments.mountain_car_noise import analysis as mountain_car_noise
 from bsuite.experiments.mountain_car_scale import analysis as mountain_car_scale_analysis
 from bsuite.experiments.umbrella_distract import analysis as umbrella_distract_analysis
 from bsuite.experiments.umbrella_length import analysis as umbrella_length_analysis
+from bsuite.utils import plotting
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -271,7 +272,14 @@ def plot_single_experiment(summary_df: pd.DataFrame,
   return p
 
 
-def _radar(df, ax, label, all_tags):
+def _tag_pretify(tag):
+  return tag.replace('_', ' ').title()
+
+
+def _radar(
+    df: pd.DataFrame, ax: plt.Axes, label: Text, all_tags: Sequence[Text],
+    color: Text, alpha: float = 0.25, edge_alpha: float = 1., zorder: int = 2,
+    edge_style: Text = '-'):
   """Plot utility."""
   tmp = df.groupby('tag').mean().reset_index()
 
@@ -291,16 +299,29 @@ def _radar(df, ax, label, all_tags):
   angles = np.linspace(0, 2*np.pi, len(all_tags), endpoint=False)
   angles = np.concatenate((angles, [angles[0]]))
 
-  ax.plot(angles, values, 'o-', linewidth=2, label=label)
-  ax.fill(angles, values, alpha=0.25)
-  ax.set_thetagrids(angles * 180/np.pi, all_tags)
+  ax.plot(angles, values, '-', linewidth=3, label=label,
+          c=color, alpha=edge_alpha, zorder=zorder, linestyle=edge_style)
+  ax.fill(angles, values, alpha=alpha, color=color, zorder=zorder)
+  ax.set_thetagrids(
+      angles * 180/np.pi, map(_tag_pretify, all_tags), fontsize=18)
+
+  # To avoid text on top of gridlines, we flip horizontalalignment
+  # based on label location
+  text_angles = np.rad2deg(angles)
+  for label, angle in zip(ax.get_xticklabels()[:-1], text_angles[:-1]):
+    if 90 <= angle <= 270:
+      label.set_horizontalalignment('right')
+    else:
+      label.set_horizontalalignment('left')
 
 
 def bsuite_radar_plot(summary_data: pd.DataFrame,
                       sweep_vars: Sequence[Text] = None):
   """Output a radar plot of bsuite data from bsuite_summary by tag."""
-  fig = plt.figure(figsize=(8, 8))
+  fig = plt.figure(figsize=(6, 6), facecolor='white')
+
   ax = fig.add_subplot(111, polar=True)
+  ax.set_axis_bgcolor('white')
   all_tags = sorted(summary_data['tag'].unique())
 
   summary_data['agent'] = (summary_data[sweep_vars].astype(str)
@@ -308,13 +329,46 @@ def bsuite_radar_plot(summary_data: pd.DataFrame,
                            .apply(lambda x: '\n'.join(x), axis=1)  # pylint:disable=unnecessary-lambda
                           )
 
+  # Creating radar plot background by hand, reusing the _radar call
+  # it will give a slight illusion of being "3D" as inner part will be
+  # darker than the outer
+  for fraction in (0.25, 0.5, 0.75, 1.):
+    thetas = np.linspace(0, 2*np.pi, 100)
+    ax.fill(thetas, [fraction,] * 100, color='k', alpha=0.045)
   if sweep_vars:
-    for agent, sweep_df in summary_data.groupby('agent'):
-      _radar(sweep_df, ax, agent, all_tags)
-    ax.legend(bbox_to_anchor=(1.85, 1.2))
-  else:
-    _radar(summary_data, ax, '', all_tags)
+    sweep_data_ = summary_data.groupby('agent')
+    my_palette = lambda x: plotting.FIVE_COLOURS[x % 5]  # cycle through colors
+    for aid, (agent, sweep_df) in enumerate(sweep_data_):
+      _radar(sweep_df, ax, agent, all_tags, color=my_palette(aid))
+    legend = ax.legend(bbox_to_anchor=(2.5, 1),
+                       loc='right', ncol=1,)
+    frame = legend.get_frame()
+    frame.set_color('white')
+    for text in legend.get_texts():
+      text.set_color('grey')
 
-  plt.yticks([0, 0.25, 0.5, 0.75, 1])
-  ax.grid(True)
+  else:
+    _radar(summary_data, ax, '', all_tags, color='red')
+
+  # Changing internal lines to be dotted and semi transparent
+  for line in ax.xaxis.get_gridlines():
+    line.set_color('grey')
+    line.set_alpha(0.95)
+    line.set_linestyle(':')
+    line.set_linewidth(2)
+
+  for line in ax.yaxis.get_gridlines():
+    line.set_color('grey')
+    line.set_alpha(0.95)
+    line.set_linestyle(':')
+    line.set_linewidth(2)
+
+  plt.xticks(color='grey')
+  ax.set_rlabel_position(0)
+  plt.yticks(
+      [0, 0.25, 0.5, 0.75, 1],
+      ['', '.25', '.5', '.75', '1'],
+      color='k', alpha=0.6, fontsize=14)
+  # For some reason axis labels are behind plot by default ...
+  ax.set_axisbelow(False)
   return fig
