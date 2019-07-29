@@ -34,9 +34,6 @@ class SweepTest(parameterized.TestCase):
   def test_access_experiment_constants(self):
     self.assertNotEmpty(sweep.DEEP_SEA)
 
-  def test_num_episodes(self):
-    self.assertGreater(sweep.num_episodes('catch/0'), 0)
-
   @parameterized.parameters(*sweep.SETTINGS)
   def test_sweep_name_format(self, bsuite_id):
     self.assertIn(sweep.SEPARATOR, bsuite_id)
