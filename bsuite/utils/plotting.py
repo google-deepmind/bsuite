@@ -38,14 +38,14 @@ style.use('ggplot')
 FIVE_COLOURS = [
     '#313695',  # DARK BLUE
     '#74add1',  # LIGHT BLUE
-    '#ffc832',  # YELLOW
+    '#4daf4a',  # GREEN
     '#f46d43',  # ORANGE
     '#d73027',  # RED
 ]
 
 CATEGORICAL_COLOURS = (FIVE_COLOURS + [
     '#984ea3',  # PURPLE
-    '#4daf4a',  # GREEN
+    '#ffc832',  # YELLOW
     '#000000',  # BLACK
     '#f781bf',  # PINK
 ]) * 100  # For very large sweeps the colours will just have to repeat.
