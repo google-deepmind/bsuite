@@ -35,7 +35,20 @@ from typing import Callable, Sequence, Text
 style.use('seaborn-poster')
 style.use('ggplot')
 
-FIVE_COLOURS = ['#313695', '#74add1', '#ffc832', '#f46d43', '#d73027']
+FIVE_COLOURS = [
+    '#313695',  # DARK BLUE
+    '#74add1',  # LIGHT BLUE
+    '#ffc832',  # YELLOW
+    '#f46d43',  # ORANGE
+    '#d73027',  # RED
+]
+
+CATEGORICAL_COLOURS = (FIVE_COLOURS + [
+    '#984ea3',  # PURPLE
+    '#4daf4a',  # GREEN
+    '#000000',  # BLACK
+    '#f781bf',  # PINK
+]) * 100  # For very large sweeps the colours will just have to repeat.
 
 
 def ave_regret_score(df: pd.DataFrame,

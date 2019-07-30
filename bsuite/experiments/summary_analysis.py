@@ -217,6 +217,8 @@ def bsuite_bar_plot(df_in: pd.DataFrame,
        + gg.aes(x='env', y='score', colour='type', fill='type')
        + gg.geom_bar(position='dodge', stat='identity')
        + gg.geom_hline(yintercept=1., linetype='dashed', alpha=0.5)
+       + gg.scale_colour_manual(plotting.CATEGORICAL_COLOURS)
+       + gg.scale_fill_manual(plotting.CATEGORICAL_COLOURS)
        + gg.xlab('experiment')
        + gg.theme(axis_text_x=gg.element_text(angle=25, hjust=1))
       )
@@ -240,6 +242,8 @@ def _bar_plot_compare(df: pd.DataFrame) -> gg.ggplot:
        + gg.geom_bar(position='dodge', stat='identity')
        + gg.geom_hline(yintercept=1., linetype='dashed', alpha=0.5)
        + gg.theme(axis_text_x=gg.element_text(angle=25, hjust=1))
+       + gg.scale_colour_manual(plotting.CATEGORICAL_COLOURS)
+       + gg.scale_fill_manual(plotting.CATEGORICAL_COLOURS)
       )
   if not all(df.finished):  # add a layer of alpha for unfinished jobs
     p += gg.aes(alpha='finished')
@@ -253,7 +257,7 @@ def bsuite_bar_plot_compare(df_in: pd.DataFrame,
   df = _clean_bar_plot_data(df_in, sweep_vars)
   p = _bar_plot_compare(df)
   p += gg.facet_wrap('env', labeller='label_both')
-  p += gg.theme(figure_size=(16, 12))
+  p += gg.theme(figure_size=(18, 16))
   return p
 
 
@@ -280,7 +284,7 @@ def _radar(
     df: pd.DataFrame, ax: plt.Axes, label: Text, all_tags: Sequence[Text],
     color: Text, alpha: float = 0.25, edge_alpha: float = 1., zorder: int = 2,
     edge_style: Text = '-'):
-  """Plot utility."""
+  """Plot utility for generating the underlying radar plot."""
   tmp = df.groupby('tag').mean().reset_index()
 
   values = []
@@ -318,7 +322,7 @@ def _radar(
 def bsuite_radar_plot(summary_data: pd.DataFrame,
                       sweep_vars: Sequence[Text] = None):
   """Output a radar plot of bsuite data from bsuite_summary by tag."""
-  fig = plt.figure(figsize=(6, 6), facecolor='white')
+  fig = plt.figure(figsize=(8, 8), facecolor='white')
 
   ax = fig.add_subplot(111, polar=True)
   ax.set_axis_bgcolor('white')
@@ -337,11 +341,10 @@ def bsuite_radar_plot(summary_data: pd.DataFrame,
     ax.fill(thetas, [fraction,] * 100, color='k', alpha=0.045)
   if sweep_vars:
     sweep_data_ = summary_data.groupby('agent')
-    my_palette = lambda x: plotting.FIVE_COLOURS[x % 5]  # cycle through colors
+    my_palette = lambda x: plotting.CATEGORICAL_COLOURS[x]
     for aid, (agent, sweep_df) in enumerate(sweep_data_):
       _radar(sweep_df, ax, agent, all_tags, color=my_palette(aid))
-    legend = ax.legend(bbox_to_anchor=(2.5, 1),
-                       loc='right', ncol=1,)
+    legend = ax.legend(loc=(1.2, 0.), ncol=1,)
     frame = legend.get_frame()
     frame.set_color('white')
     for text in legend.get_texts():
