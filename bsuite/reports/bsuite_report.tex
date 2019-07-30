@@ -48,17 +48,6 @@
 \date{}
 \author{}
 
-% \newcommand{\@toptitlebar}{
-%   \hrule height 4\p@
-%   \vskip 0.25in
-%   \vskip -\parskip%
-% }
-% \newcommand{\@bottomtitlebar}{
-%   \vskip 0.29in
-%   \vskip -\parskip
-%   \hrule height 1\p@
-%   \vskip 0.09in%
-% }
 
 \begin{document}
 
@@ -76,14 +65,15 @@ This report provides a snapshot of performance on \version, obtained by running 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% AGENT DEFINITION
 \section{Agent definition}
-In this experiment all implementations are taken from \url{github.com/deepmind/bsuite/baselines}. \\
-We provide a brief summary of the agents run on \version:
+In this experiment we compare the performance on \version of four agents
+from \url{github.com/deepmind/bsuite/baselines}. The agents that we
+considered were:
 \vspace{-2mm}
 \begin{itemize}[noitemsep, nolistsep]
-    \item actor\_critic\_rnn: an actor critic with recurrent neural network \cite{gittins1979bandit}.
+    \item actor\_critic\_rnn: an actor critic with recurrent neural network \cite{mnih2016asynchronous}.
     \item boot\_dqn: bootstrapped DQN with prior networks \cite{osband2016deep,osband2018rpf}.
-    \item dqn: Deep Q-networks \cite{mnih2015human}.
-    \item random: selects action uniformly at random each timestep.
+    \item dqn: a fairly canonical implementation of Deep Q-networks (DQN) \cite{mnih2015human}.
+    \item random: an agent that selects action uniformly at random on each timestep.
 \end{itemize}
 
 
@@ -100,14 +90,14 @@ A detailed analysis of each of these experiments may be found in a notebook host
 \centering
 \begin{subfigure}{.45\textwidth}
   \centering
-  \includegraphics[width=95mm,height=60mm,keepaspectratio]{images/radar_plot}
+  \includegraphics[width=95mm,height=60mm,keepaspectratio]{\folder/images/radar_plot}
   \caption{Radar plot for snapshot of agent characteristics.}
   \label{fig:memory_len_score}
 \end{subfigure}
 \hspace{10mm}
 \begin{subfigure}{.45\textwidth}
   \centering
-  \includegraphics[width=95mm,height=60mm,keepaspectratio]{images/bar_plot}
+  \includegraphics[width=95mm,height=60mm,keepaspectratio]{\folder/images/bar_plot}
   \caption{Examining score by individual experiment.}
   \label{fig:memory_len_scaling}
 \end{subfigure}
@@ -118,15 +108,13 @@ A detailed analysis of each of these experiments may be found in a notebook host
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% KEY TAKEAWAYS
 \section{Results commentary}
-Here we have a small section where you can write some explanatory text.
-Here we have a small section where you can write some explanatory text.
-Here we have a small section where you can write some explanatory text.
-Here we have a small section where you can write some explanatory text.
-Here we have a small section where you can write some explanatory text.
-Here we have a small section where you can write some explanatory text.
-Here we have a small section where you can write some explanatory text.
-Here we have a small section where you can write some explanatory text.
-
+All agents perform well on the basic reinforcement learning tasks, however they
+exhibit significant differences on some of the other dimensions. The recurrent
+actor-critic agent is the only one to perform better than random on the memory
+tasks, however it is more sensitive to noise and scaling issues than the other
+algorithms; As expected, Bootstrapped DQN is particularly effective on the
+exploration tasks, and it also seems to be more robust to noise, compared to
+vanilla DQN.
 
 
 \newpage
@@ -135,7 +123,7 @@ Here we have a small section where you can write some explanatory text.
 {
 \small
 \bibliographystyle{plain}
-\bibliography{../references}
+\bibliography{references}
 }
 
 
