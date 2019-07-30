@@ -26,7 +26,9 @@ from bsuite import bsuite
 from bsuite.baselines import experiment
 from bsuite.baselines.random import random
 
-flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite setting identifier')
+flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite identifier')
+flags.DEFINE_string('results_dir', '/tmp/bsuite', 'directory for csv logs')
+flags.DEFINE_boolean('overwrite_results', False, 'overwrite csv if found')
 flags.DEFINE_integer('seed', 42, 'seed for random number generation')
 flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
 
@@ -35,7 +37,11 @@ FLAGS = flags.FLAGS
 
 def main(argv):
   del argv  # Unused.
-  env = bsuite.load_from_id(FLAGS.bsuite_id)
+  env = bsuite.load_and_record_to_csv(
+      bsuite_id=FLAGS.bsuite_id,
+      results_dir=FLAGS.results_dir,
+      overwrite=FLAGS.overwrite_results,
+  )
   agent = random.default_agent(obs_spec=env.observation_spec(),
                                action_spec=env.action_spec(),
                                seed=FLAGS.seed)

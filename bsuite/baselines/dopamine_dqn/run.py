@@ -34,9 +34,12 @@ from bsuite.utils import wrappers
 from dopamine.agents.dqn import dqn_agent
 from dopamine.discrete_domains import run_experiment
 
+import gym
 import tensorflow as tf
 
 flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite identifier')
+flags.DEFINE_string('results_dir', '/tmp/bsuite', 'directory for csv logs')
+flags.DEFINE_boolean('overwrite', False, 'overwrite csv if found')
 flags.DEFINE_integer('num_steps', 1000000, 'number of steps to run')
 flags.DEFINE_integer('num_hidden_layers', 2, 'number of hidden layers')
 flags.DEFINE_integer('num_units', 50, 'number of units per hidden layer')
@@ -60,7 +63,7 @@ OBSERVATION_SHAPE = (20, 20)
 
 def main(_):
 
-  def _create_network(num_actions, network_type, state):
+  def _create_network(num_actions: int, network_type, state):
     """Build deep network compatible with dopamine/discrete_domains/gym_lib."""
     x = tf.cast(state, tf.float32)
     x = tf.contrib.slim.flatten(x)
@@ -69,7 +72,8 @@ def main(_):
     x = tf.contrib.slim.fully_connected(x, num_actions, activation_fn=None)
     return network_type(x)
 
-  def create_agent(sess, environment, summary_writer=None):
+  def create_agent(sess: tf.Session, environment: gym.Env, summary_writer=None):
+    """Factory method for agent initialization in Dopmamine."""
     del summary_writer
     return dqn_agent.DQNAgent(
         sess=sess,
@@ -88,8 +92,13 @@ def main(_):
         optimizer=tf.train.AdamOptimizer(FLAGS.learning_rate),
     )
 
-  def create_environment():
-    env = bsuite.load_from_id(FLAGS.bsuite_id)
+  def create_environment() -> gym.Env:
+    """Factory method for environment initialization in Dopmamine."""
+    env = bsuite.load_and_record_to_csv(
+        bsuite_id=FLAGS.bsuite_id,
+        results_dir=FLAGS.results_dir,
+        overwrite=FLAGS.overwrite,
+    )
     env = wrappers.ImageObservation(env, OBSERVATION_SHAPE)
     if FLAGS.verbose:
       env = terminal_logging.wrap_environment(env, log_every=True)

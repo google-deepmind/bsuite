@@ -28,9 +28,14 @@ from absl import flags
 
 from baselines import deepq
 from bsuite import bsuite
+from bsuite.logging import terminal_logging
 from bsuite.utils import gym_wrapper
 
 flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite identifier')
+flags.DEFINE_string('results_dir', '/tmp/bsuite', 'directory for csv logs')
+flags.DEFINE_boolean('overwrite', False, 'overwrite csv if found')
+flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
+
 flags.DEFINE_integer('num_hidden_layers', 2, 'number of hidden layers')
 flags.DEFINE_integer('num_units', 50, 'number of units per hidden layer')
 flags.DEFINE_integer('batch_size', 32, 'size of batches sampled from replay')
@@ -48,7 +53,13 @@ FLAGS = flags.FLAGS
 
 
 def main(_):
-  raw_env = bsuite.load_from_id(FLAGS.bsuite_id)
+  raw_env = bsuite.load_and_record_to_csv(
+      bsuite_id=FLAGS.bsuite_id,
+      results_dir=FLAGS.results_dir,
+      overwrite=FLAGS.overwrite,
+  )
+  if FLAGS.verbose:
+    raw_env = terminal_logging.wrap_environment(raw_env, log_every=True)
   env = gym_wrapper.GymWrapper(raw_env)
   num_episodes = getattr(env, 'bsuite_num_episodes', FLAGS.num_episodes)
 
