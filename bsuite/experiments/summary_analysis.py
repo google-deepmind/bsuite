@@ -282,7 +282,7 @@ def _tag_pretify(tag):
 
 def _radar(
     df: pd.DataFrame, ax: plt.Axes, label: Text, all_tags: Sequence[Text],
-    color: Text, alpha: float = 0.25, edge_alpha: float = 0.85, zorder: int = 2,
+    color: Text, alpha: float = 0.2, edge_alpha: float = 0.85, zorder: int = 2,
     edge_style: Text = '-'):
   """Plot utility for generating the underlying radar plot."""
   tmp = df.groupby('tag').mean().reset_index()
@@ -303,7 +303,7 @@ def _radar(
   angles = np.linspace(0, 2*np.pi, len(all_tags), endpoint=False)
   angles = np.concatenate((angles, [angles[0]]))
 
-  ax.plot(angles, values, '-', linewidth=4.5, label=label,
+  ax.plot(angles, values, '-', linewidth=5, label=label,
           c=color, alpha=edge_alpha, zorder=zorder, linestyle=edge_style)
   ax.fill(angles, values, alpha=alpha, color=color, zorder=zorder)
   ax.set_thetagrids(
@@ -332,19 +332,25 @@ def bsuite_radar_plot(summary_data: pd.DataFrame,
                            .apply(lambda x: x.name + '=' + x, axis=0)
                            .apply(lambda x: '\n'.join(x), axis=1)  # pylint:disable=unnecessary-lambda
                           )
+  if len(summary_data.agent.unique()) > 5:
+    print('WARNING: We do not recommend radar plot for more than 5 agents.')
 
   # Creating radar plot background by hand, reusing the _radar call
   # it will give a slight illusion of being "3D" as inner part will be
   # darker than the outer
-  for fraction in (0.25, 0.5, 0.75, 1.):
-    thetas = np.linspace(0, 2*np.pi, 100)
-    ax.fill(thetas, [fraction,] * 100, color='k', alpha=0.045)
+  thetas = np.linspace(0, 2*np.pi, 100)
+  ax.fill(thetas, [0.25,] * 100, color='k', alpha=0.05)
+  ax.fill(thetas, [0.5,] * 100, color='k', alpha=0.05)
+  ax.fill(thetas, [0.75,] * 100, color='k', alpha=0.03)
+  ax.fill(thetas, [1.,] * 100, color='k', alpha=0.01)
+
   if sweep_vars:
     sweep_data_ = summary_data.groupby('agent')
     my_palette = lambda x: plotting.CATEGORICAL_COLOURS[x]
     for aid, (agent, sweep_df) in enumerate(sweep_data_):
       _radar(sweep_df, ax, agent, all_tags, color=my_palette(aid))
-    legend = ax.legend(loc=(1.2, 0.), ncol=1,)
+    legend = ax.legend(loc=(1.1, 0.), ncol=1,)
+    plt.setp(legend.texts, fontname='serif')
     frame = legend.get_frame()
     frame.set_color('white')
     for text in legend.get_texts():
@@ -366,12 +372,12 @@ def bsuite_radar_plot(summary_data: pd.DataFrame,
     line.set_linestyle(':')
     line.set_linewidth(2)
 
-  plt.xticks(color='grey')
+  plt.xticks(color='grey', fontname='serif')
   ax.set_rlabel_position(0)
   plt.yticks(
       [0, 0.25, 0.5, 0.75, 1],
       ['', '.25', '.5', '.75', '1'],
-      color='k', alpha=0.6, fontsize=14)
+      color='k', alpha=0.75, fontsize=16, fontname='serif')
   # For some reason axis labels are behind plot by default ...
   ax.set_axisbelow(False)
   return fig
