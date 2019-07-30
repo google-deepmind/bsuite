@@ -282,7 +282,7 @@ def _tag_pretify(tag):
 
 def _radar(
     df: pd.DataFrame, ax: plt.Axes, label: Text, all_tags: Sequence[Text],
-    color: Text, alpha: float = 0.25, edge_alpha: float = 1., zorder: int = 2,
+    color: Text, alpha: float = 0.25, edge_alpha: float = 0.85, zorder: int = 2,
     edge_style: Text = '-'):
   """Plot utility for generating the underlying radar plot."""
   tmp = df.groupby('tag').mean().reset_index()
@@ -303,7 +303,7 @@ def _radar(
   angles = np.linspace(0, 2*np.pi, len(all_tags), endpoint=False)
   angles = np.concatenate((angles, [angles[0]]))
 
-  ax.plot(angles, values, '-', linewidth=3, label=label,
+  ax.plot(angles, values, '-', linewidth=4.5, label=label,
           c=color, alpha=edge_alpha, zorder=zorder, linestyle=edge_style)
   ax.fill(angles, values, alpha=alpha, color=color, zorder=zorder)
   ax.set_thetagrids(
