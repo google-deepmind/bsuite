@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""A simple TensorFlow-based DQN implementation.
+"""A simple TensorFlow 2-based DQN implementation.
 
 Reference: "Playing atari with deep reinforcement learning" (Mnih et al, 2015).
 Link: https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf.
@@ -31,31 +31,30 @@ import dm_env
 from dm_env import specs
 
 import numpy as np
-import sonnet as snt
-import tensorflow as tf
+import sonnet.v2 as snt
+import tensorflow.compat.v2 as tf
 import trfl
 
 
-class DQN(base.Agent):
-  """A simple TensorFlow-based DQN implementation."""
+class DQNTF2(base.Agent):
+  """A simple DQN agent using TF2."""
 
   def __init__(
       self,
       obs_spec: specs.Array,
       action_spec: specs.DiscreteArray,
-      online_network: snt.AbstractModule,
-      target_network: snt.AbstractModule,
+      online_network: snt.Module,
+      target_network: snt.Module,
       batch_size: int,
       discount: float,
       replay_capacity: int,
       min_replay_size: int,
       sgd_period: int,
       target_update_period: int,
-      optimizer: tf.train.Optimizer,
+      optimizer: snt.Optimizer,
       epsilon: float,
       seed: int = None,
   ):
-    """A simple DQN agent."""
 
     # DQN configuration and hyperparameters.
     self._num_actions = action_spec.num_values
@@ -68,56 +67,35 @@ class DQN(base.Agent):
     self._total_steps = 0
     self._replay = replay.Replay(capacity=replay_capacity)
     self._min_replay_size = min_replay_size
-    tf.set_random_seed(seed)
+
+    tf.random.set_seed(seed)
     self._rng = np.random.RandomState(seed)
 
-    # Make the TensorFlow graph.
-    o = tf.placeholder(shape=obs_spec.shape, dtype=obs_spec.dtype)
-    q = online_network(tf.expand_dims(o, 0))
-
-    o_tm1 = tf.placeholder(shape=(None,) + obs_spec.shape, dtype=obs_spec.dtype)
-    a_tm1 = tf.placeholder(shape=(None,), dtype=action_spec.dtype)
-    r_t = tf.placeholder(shape=(None,), dtype=tf.float32)
-    d_t = tf.placeholder(shape=(None,), dtype=tf.float32)
-    o_t = tf.placeholder(shape=(None,) + obs_spec.shape, dtype=obs_spec.dtype)
-
-    q_tm1 = online_network(o_tm1)
-    q_t = target_network(o_t)
-    loss = trfl.qlearning(q_tm1, a_tm1, r_t, discount * d_t, q_t).loss
-
-    train_op = self._optimizer.minimize(loss)
-    with tf.control_dependencies([train_op]):
-      train_op = trfl.periodic_target_update(
-          target_variables=target_network.variables,
-          source_variables=online_network.variables,
-          update_period=target_update_period)
-
-    # Make session and callables.
-    session = tf.Session()
-    self._sgd_fn = session.make_callable(train_op,
-                                         [o_tm1, a_tm1, r_t, d_t, o_t])
-    self._value_fn = session.make_callable(q, [o])
-    session.run(tf.global_variables_initializer())
+    # Internalize the networks.
+    self._online_network = online_network
+    self._target_network = target_network
+    self._forward = tf.function(online_network)
 
   def policy(self, timestep: dm_env.TimeStep) -> base.Action:
-    """Select actions according to epsilon-greedy policy."""
+    # Epsilon-greedy policy.
     if self._rng.rand() < self._epsilon:
-      return self._rng.randint(self._num_actions)
-
-    q_values = self._value_fn(timestep.observation)
+      return np.random.randint(self._num_actions)
+    q_values = self._forward(timestep.observation[None, ...])
     return int(np.argmax(q_values))
 
-  def update(self, old_step: dm_env.TimeStep, action: base.Action,
-             new_step: dm_env.TimeStep):
-    """Takes in a transition from the environment."""
-
+  def update(
+      self,
+      timestep: dm_env.TimeStep,
+      action: base.Action,
+      new_timestep: dm_env.TimeStep,
+  ):
     # Add this transition to replay.
     self._replay.add([
-        old_step.observation,
+        timestep.observation,
         action,
-        new_step.reward,
-        new_step.discount,
-        new_step.observation,
+        new_timestep.reward,
+        new_timestep.discount,
+        new_timestep.observation,
     ])
 
     self._total_steps += 1
@@ -128,22 +106,44 @@ class DQN(base.Agent):
       return
 
     # Do a batch of SGD.
-    minibatch = self._replay.sample(self._batch_size)
-    self._sgd_fn(*minibatch)
+    transitions = self._replay.sample(self._batch_size)
+    self._training_step(transitions)
+
+    # Periodically update target network variables.
+    if self._total_steps % self._target_update_period == 0:
+      for target, param in zip(self._target_network.trainable_variables,
+                               self._online_network.trainable_variables):
+        target.assign(param)
+
+  @tf.function
+  def _training_step(self, transitions):
+    with tf.GradientTape() as tape:
+      o_tm1, a_tm1, r_t, d_t, o_t = transitions
+      r_t = tf.cast(r_t, tf.float32)
+      d_t = tf.cast(d_t, tf.float32)
+      q_tm1 = self._online_network(o_tm1)
+      q_t = self._target_network(o_t)
+
+      loss = trfl.qlearning(q_tm1, a_tm1, r_t, d_t * self._discount, q_t).loss
+
+    params = self._online_network.trainable_variables
+    grads = tape.gradient(loss, params)
+    self._optimizer.apply(grads, params)
+    return loss
 
 
 def default_agent(obs_spec: specs.Array, action_spec: specs.DiscreteArray):
   """Initialize a DQN agent with default parameters."""
   hidden_units = [50, 50]
   online_network = snt.Sequential([
-      snt.BatchFlatten(),
+      snt.Flatten(),
       snt.nets.MLP(hidden_units + [action_spec.num_values]),
   ])
   target_network = snt.Sequential([
-      snt.BatchFlatten(),
+      snt.Flatten(),
       snt.nets.MLP(hidden_units + [action_spec.num_values]),
   ])
-  return DQN(
+  return DQNTF2(
       obs_spec=obs_spec,
       action_spec=action_spec,
       online_network=online_network,
@@ -154,6 +154,6 @@ def default_agent(obs_spec: specs.Array, action_spec: specs.DiscreteArray):
       min_replay_size=100,
       sgd_period=1,
       target_update_period=4,
-      optimizer=tf.train.AdamOptimizer(learning_rate=1e-3),
+      optimizer=snt.optimizers.Adam(learning_rate=1e-3),
       epsilon=0.05,
       seed=42)

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Run a Dqn agent instance on a bsuite experiment."""
+"""Run a Dqn agent instance (using TensorFlow 2) on a bsuite experiment."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -25,10 +25,10 @@ from absl import flags
 
 from bsuite import bsuite
 from bsuite.baselines import experiment
-from bsuite.baselines.dqn import dqn
+from bsuite.baselines.dqn_tf2 import dqn
 
-import sonnet as snt
-import tensorflow as tf
+import sonnet.v2 as snt
+import tensorflow.compat.v2 as tf
 
 flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite identifier')
 flags.DEFINE_string('results_dir', '/tmp/bsuite', 'directory for csv logs')
@@ -54,7 +54,6 @@ FLAGS = flags.FLAGS
 def main(argv):
   del argv  # Unused.
 
-  # env = bsuite.load_from_id(FLAGS.bsuite_id)
   env = bsuite.load_and_record_to_csv(
       bsuite_id=FLAGS.bsuite_id,
       results_dir=FLAGS.results_dir,
@@ -64,15 +63,15 @@ def main(argv):
   # Making the networks.
   hidden_units = [FLAGS.num_units] * FLAGS.num_hidden_layers
   online_network = snt.Sequential([
-      snt.BatchFlatten(),
+      snt.Flatten(),
       snt.nets.MLP(hidden_units + [env.action_spec().num_values]),
   ])
   target_network = snt.Sequential([
-      snt.BatchFlatten(),
+      snt.Flatten(),
       snt.nets.MLP(hidden_units + [env.action_spec().num_values]),
   ])
 
-  agent = dqn.DQN(
+  agent = dqn.DQNTF2(
       obs_spec=env.observation_spec(),
       action_spec=env.action_spec(),
       online_network=online_network,
@@ -83,7 +82,7 @@ def main(argv):
       min_replay_size=FLAGS.min_replay_size,
       sgd_period=FLAGS.sgd_period,
       target_update_period=FLAGS.target_update_period,
-      optimizer=tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate),
+      optimizer=snt.optimizers.Adam(learning_rate=FLAGS.learning_rate),
       epsilon=FLAGS.epsilon,
       seed=FLAGS.seed,
   )
@@ -96,4 +95,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
+  tf.enable_v2_behavior()
   app.run(main)
