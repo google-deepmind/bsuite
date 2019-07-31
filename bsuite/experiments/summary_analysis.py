@@ -52,7 +52,7 @@ import numpy as np
 import pandas as pd
 import plotnine as gg
 
-from typing import Mapping, Sequence, Text
+from typing import Mapping, Sequence, Text, Union
 
 
 ################################################################################
@@ -261,12 +261,22 @@ def bsuite_bar_plot_compare(df_in: pd.DataFrame,
   return p
 
 
-def plot_single_experiment(summary_df: pd.DataFrame,
-                           bsuite_env: Text,
-                           sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+def plot_single_experiment(
+    summary_df: pd.DataFrame,
+    bsuite_env: Text,
+    sweep_vars: Sequence[Text] = None) -> Union[gg.ggplot, None]:
   """Compare score for just one experiment."""
-  df = _clean_bar_plot_data(
-      summary_df[summary_df.bsuite_env == bsuite_env], sweep_vars)
+  if len(summary_df) == 0:  # pylint:disable=g-explicit-length-test
+    print('WARNING: you have no bsuite summary data, please reload.')
+    return
+  env_df = summary_df[summary_df.bsuite_env == bsuite_env]
+  if len(env_df) == 0:  # pylint:disable=g-explicit-length-test
+    print('Warning, you have no data for bsuite_env={}'.format(bsuite_env))
+    print('Your dataframe only includes bsuite_env={}'
+          .format(summary_df.bsuite_env.unique()))
+    return
+
+  df = _clean_bar_plot_data(env_df, sweep_vars)
   n_agent = len(df.agent.unique())
   p = _bar_plot_compare(df)
   plot_width = min(2 + n_agent, 12)
