@@ -38,7 +38,9 @@ The default method of logging writes to an SQLite database. Users just need to
 specify a file path when loading the environment. The notebook generates
 detailed analysis from this data.
 
-## Installation
+## Getting started
+
+### Installation
 
 We have tested `bsuite`on Python 3.5. We do not attempt to maintain a working
 version for Python 2.7.
@@ -62,7 +64,7 @@ run
 pip install -e /path/to/bsuite/
 ```
 
-## Loading an environment
+### Loading an environment
 
 Environments are specified by a string (e.g. 'catch', 'deep_sea', etc.) followed
 by an experiment number, which specifies a particular configuration of the
@@ -74,7 +76,7 @@ import bsuite
 env = bsuite.load_from_id('catch/0')
 ```
 
-## Interacting with an environment
+### Interacting with an environment
 
 Our environments implement the Python interface defined in
 [`dm_env`](https://github.com/deepmind/dm_env).
@@ -90,43 +92,68 @@ num_actions = env.action_spec().num_values
 
 Each environment returns observations in the form of a numpy array.
 
-We also expose a `num_episodes` property for each environment in bsuite. This
-allows users to run exactly the number of episodes required for bsuite's
+We also expose a `bsuite_num_episodes` property for each environment in bsuite.
+This allows users to run exactly the number of episodes required for bsuite's
 analysis, which may vary between environments used in different experiments.
 
 Example run loop for an agent with a `step()` method.
 
 ```python
-for _ in range(env.num_episodes):
-
+for _ in range(env.bsuite_num_episodes):
   timestep = env.reset()
-  while True:
+  while not timestep.last():
     action = agent.step(timestep)
     timestep = env.step(action)
-    if timestep.last():
-      _ = agent.step(timestep)
-      break
+  agent.step(timestep)
 ```
 
-## Baselines
+## Environments
 
-We also include implementations of several common agents in the `baselines`
+These environments all have small observation sizes such that you should expect
+reasonable performance running on a CPU.
+
+### Environment descriptions
+
+<!-- 'Ground truth' of environment descriptions here? -->
+
+### Rolling your own environment into `bsuite`
+
+<!-- Describe what API your environment needs to fulfil -->
+
+## Baseline agents
+
+We include implementations of several common agents in the `baselines`
 subdirectory, along with a minimal run-loop.
 
 Our baselines additionally depend on [TensorFlow](http://tensorflow.org) and
 [Sonnet](https://github.com/deepmind/sonnet). These dependencies are not
-installed by default, since bsuite is independent of any machine learning
+installed by default, since `bsuite` is independent of any machine learning
 library.
 
 ## Running the entire suite of experiments
 
-<!-- Instructions for running a sweep here -->
+See `baselines/scripts/run_sweep.py` for an example of running a baseline agent
+against the entire suite of experiments. On a 12 core machine, this will take
+around an hour to complete for most agents.
 
-## Analysis
+### Logging
 
-<!-- Instructions for using the colab here -->
+We include environment wrappers for handling the logging:
 
-## Bsuite Report
+*   A CSV logger in `logging/csv_logging.py`
+*   A SQLite logger in `logging/sqlite_logging.py`
+*   A terminal logger in `logging/terminal_logging.py`
+
+The most convenient way to use this is via `bsuite.load_and_record_to_csv` or
+`bsuite.load_and_record_to_sqlite`.
+
+### Analysis
+
+`bsuite` comes with a ready-made analysis colab included in
+`analysis/results.ipynb`. This colab loads and processes logged data, and
+produces the scores and plots for each experiment.
+
+### Bsuite Report
 
 You can generate a short PDF report summarizing how different algorithms compare
 along the dimensions considered by Bsuite by simply running `pdflatex
