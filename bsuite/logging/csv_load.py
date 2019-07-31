@@ -43,7 +43,7 @@ def load_one_result_set(results_dir: Text) -> pd.DataFrame:
 
     # Then we will assume that the file is actually a bsuite file
     df = pd.read_csv(file_path)
-    file_bsuite_id = name.strip('.csv').split('=')[1]
+    file_bsuite_id = name.strip('.csv').split(csv_logging.INITIAL_SEPARATOR)[1]
     bsuite_id = file_bsuite_id.replace(csv_logging.SAFE_SEPARATOR,
                                        sweep.SEPARATOR)
     df['bsuite_id'] = bsuite_id

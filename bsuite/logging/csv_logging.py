@@ -31,7 +31,8 @@ import pandas as pd
 from typing import Any, Mapping, Text
 
 SAFE_SEPARATOR = '-'
-BSUITE_PREFIX = 'bsuite_id='
+INITIAL_SEPARATOR = '_-_'
+BSUITE_PREFIX = 'bsuite_id' + INITIAL_SEPARATOR
 
 
 def wrap_environment(env: dm_env.Environment,
@@ -61,11 +62,10 @@ class Logger(base.Logger):
   storage system.
   """
 
-  def __init__(
-      self,
-      bsuite_id: Text,
-      results_dir: Text = '/tmp/bsuite',
-      overwrite: bool = False):
+  def __init__(self,
+               bsuite_id: Text,
+               results_dir: Text = '/tmp/bsuite',
+               overwrite: bool = False):
     """Initializes a new CSV logger, saving to results_dir + overwrite data."""
     self._data = []
 
@@ -81,8 +81,9 @@ class Logger(base.Logger):
     self._save_path = os.path.join(results_dir, filename)
 
     if os.path.exists(self._save_path) and not overwrite:
-      raise ValueError('File {} already exists. '
-                       'Set overwrite=True to overwrite existing data.')
+      msg = ('File {} already exists. Specify a different directory, or set'
+             ' overwrite=True to overwrite existing data.')
+      raise ValueError(msg.format(self._save_path))
 
   def write(self, data: Mapping[Text, Any]):
     """Writes a row to the internal list of data and saves to CSV."""
