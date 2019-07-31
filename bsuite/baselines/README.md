@@ -14,9 +14,7 @@ implementation of the same algorithm in [JAX](github.com/google/jax). *
 `dqn_tf2`: An example implementation of the same algorithm in
 [TensorFlow 2](https://www.tensorflow.org/beta). * `boot_dqn`: An implementation
 of the Bootstrapped DQN with randomized priors algorithm described in
-[Osband et al. 2018.](https://arxiv.org/abs/1806.03335). * `popart_dqn`: An
-implementation of the PopArt algorithm described in
-[van Hasselt et al. 2016](https://arxiv.org/abs/1602.07714). * `random`: A
+[Osband et al. 2018.](https://arxiv.org/abs/1806.03335). * `random`: A
 simple uniform random agent.
 
 Additionally, we provide examples of running existing baselines from other

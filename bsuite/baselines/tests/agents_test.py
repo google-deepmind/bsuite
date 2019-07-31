@@ -27,7 +27,6 @@ from bsuite.baselines.actor_critic import actor_critic
 from bsuite.baselines.actor_critic_rnn import actor_critic_rnn
 from bsuite.baselines.boot_dqn import boot_dqn
 from bsuite.baselines.dqn import dqn
-from bsuite.baselines.popart_dqn import popart_dqn
 from bsuite.baselines.random import random
 
 
@@ -63,13 +62,6 @@ class AgentsTest(absltest.TestCase):
 
   def test_dqn(self):
     agent = dqn.default_agent(
-        obs_spec=self._obs_spec,
-        action_spec=self._action_spec,
-    )
-    experiment.run(agent, self._env, num_episodes=5)
-
-  def test_popart_dqn(self):
-    agent = popart_dqn.default_agent(
         obs_spec=self._obs_spec,
         action_spec=self._action_spec,
     )

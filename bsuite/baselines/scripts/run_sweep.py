@@ -33,7 +33,6 @@ from bsuite.baselines.actor_critic import actor_critic
 from bsuite.baselines.actor_critic_rnn import actor_critic_rnn
 from bsuite.baselines.boot_dqn import boot_dqn
 from bsuite.baselines.dqn import dqn
-from bsuite.baselines.popart_dqn import popart_dqn
 from bsuite.baselines.random import random
 
 import termcolor
@@ -47,7 +46,6 @@ flags.DEFINE_enum('agent', 'random', [
     'actor_critic_rnn',
     'boot_dqn',
     'dqn',
-    'popart_dqn',
     'random',
 ], 'which agent to run')
 
@@ -58,7 +56,6 @@ _AGENTS = {
     'actor_critic_rnn': actor_critic_rnn.default_agent,
     'boot_dqn': boot_dqn.default_agent,
     'dqn': dqn.default_agent,
-    'popart_dqn': popart_dqn.default_agent,
     'random': random.default_agent,
 }
 
