@@ -328,10 +328,15 @@ def bsuite_radar_plot(summary_data: pd.DataFrame,
   ax.set_axis_bgcolor('white')
   all_tags = sorted(summary_data['tag'].unique())
 
-  summary_data['agent'] = (summary_data[sweep_vars].astype(str)
-                           .apply(lambda x: x.name + '=' + x, axis=0)
-                           .apply(lambda x: '\n'.join(x), axis=1)  # pylint:disable=unnecessary-lambda
-                          )
+  if sweep_vars is None:
+    summary_data['agent'] = 'agent'
+  elif len(sweep_vars) == 1:
+    summary_data['agent'] = summary_data[sweep_vars[0]].astype(str)
+  else:
+    summary_data['agent'] = (summary_data[sweep_vars].astype(str)
+                             .apply(lambda x: x.name + '=' + x, axis=0)
+                             .apply(lambda x: '\n'.join(x), axis=1)  # pylint:disable=unnecessary-lambda
+                            )
   if len(summary_data.agent.unique()) > 5:
     print('WARNING: We do not recommend radar plot for more than 5 agents.')
 
@@ -344,20 +349,30 @@ def bsuite_radar_plot(summary_data: pd.DataFrame,
   ax.fill(thetas, [0.75,] * 100, color='k', alpha=0.03)
   ax.fill(thetas, [1.,] * 100, color='k', alpha=0.01)
 
+  palette = lambda x: plotting.CATEGORICAL_COLOURS[x]
   if sweep_vars:
     sweep_data_ = summary_data.groupby('agent')
-    my_palette = lambda x: plotting.CATEGORICAL_COLOURS[x]
     for aid, (agent, sweep_df) in enumerate(sweep_data_):
-      _radar(sweep_df, ax, agent, all_tags, color=my_palette(aid))
-    legend = ax.legend(loc=(1.1, 0.), ncol=1,)
+      _radar(sweep_df, ax, agent, all_tags, color=palette(aid))
+    if len(sweep_vars) == 1:
+      label = sweep_vars[0]
+      if label == 'experiment':
+        label = 'agent'  # rename if actually each individual agent
+      legend = ax.legend(loc=(1.1, 0.), ncol=1, title=label)
+      ax.get_legend().get_title().set_fontsize('20')
+      ax.get_legend().get_title().set_fontname('serif')
+      ax.get_legend().get_title().set_color('k')
+      ax.get_legend().get_title().set_alpha(0.75)
+      legend._legend_box.align = 'left'  # pylint:disable=protected-access
+    else:
+      legend = ax.legend(loc=(1.1, 0.), ncol=1,)
     plt.setp(legend.texts, fontname='serif')
     frame = legend.get_frame()
     frame.set_color('white')
     for text in legend.get_texts():
       text.set_color('grey')
-
   else:
-    _radar(summary_data, ax, '', all_tags, color='red')
+    _radar(summary_data, ax, '', all_tags, color=palette(0))
 
   # Changing internal lines to be dotted and semi transparent
   for line in ax.xaxis.get_gridlines():
