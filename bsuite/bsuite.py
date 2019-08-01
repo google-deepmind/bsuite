@@ -109,6 +109,29 @@ def load_from_id(bsuite_id: Text) -> dm_env.Environment:
   return load(experiment_name, kwargs)
 
 
+def load_and_record(bsuite_id: Text,
+                    save_path: Text,
+                    logging_mode: Text = 'csv',
+                    overwrite: bool = False) -> dm_env.Environment:
+  """Returns a bsuite environment wrapped with either CSV or SQLite logging."""
+  if logging_mode == 'csv':
+    print('Logging results as separate csv for each bsuite_id in {}'
+          .format(save_path))
+    return load_and_record_to_csv(bsuite_id, save_path, overwrite)
+
+  elif logging_mode == 'sqlite':
+    if not save_path.endswith('.db'):
+      save_path += '.db'
+    print('Logging results as SQLite database in {}'.format(save_path))
+    if overwrite:
+      print('WARNING: overwrite option is ignored for SQLite logging.')
+    return load_and_record_to_sqlite(bsuite_id, save_path)
+
+  else:
+    raise ValueError('Unrecognised logging_mode={}, must be "csv" or "sqlite".'
+                     .format(logging_mode))
+
+
 def load_and_record_to_sqlite(bsuite_id: Text,
                               db_path: Text) -> dm_env.Environment:
   """Returns a bsuite environment that saves results to an SQLite database.
@@ -149,7 +172,27 @@ def load_and_record_to_sqlite(bsuite_id: Text,
 def load_and_record_to_csv(bsuite_id: Text,
                            results_dir: Text,
                            overwrite: bool = False) -> dm_env.Environment:
-  """Returns a bsuite environment that saves results to csv."""
+  """Returns a bsuite environment that saves results to csv.
+
+    To load the results, specify the file path in the provided notebook, or to
+    manually inspect the results use:
+
+    ```python
+    from bsuite.utils import csv_load
+
+    results_df, sweep_vars = csv_load.load_bsuite(results_dir)
+    ```
+
+  Args:
+    bsuite_id: The bsuite id identifying the environment to return. For example,
+      "catch/0" or "deep_sea/3".
+    results_dir: Path to the directory to store the resultant csv files. Note
+      that this logger will generate a separate csv file for each bsuite_id.
+    overwrite: Whether to overwrite existing csv files if found.
+
+  Returns:
+    A bsuite environment determined by the bsuite_id.
+  """
   raw_env = load_from_id(bsuite_id)
   return csv_logging.wrap_environment(
       env=raw_env,

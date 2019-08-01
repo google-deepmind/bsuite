@@ -27,6 +27,9 @@ from absl import app
 from absl import flags
 
 from bsuite import bsuite
+from bsuite import sweep
+
+from bsuite.baselines.utils import pool
 from bsuite.logging import terminal_logging
 from bsuite.utils import gym_wrapper
 from bsuite.utils import wrappers
@@ -37,10 +40,20 @@ from dopamine.discrete_domains import run_experiment
 import gym
 import tensorflow as tf
 
-flags.DEFINE_string('bsuite_id', 'catch/0', 'bsuite identifier')
-flags.DEFINE_string('results_dir', '/tmp/bsuite', 'directory for csv logs')
-flags.DEFINE_boolean('overwrite', False, 'overwrite csv if found')
-flags.DEFINE_integer('num_steps', 1000000, 'number of steps to run')
+from typing import Text
+
+# bsuite logging
+flags.DEFINE_string('bsuite_id', 'catch/0',
+                    'specify either a single bsuite_id (e.g. catch/0)\n'
+                    'or a global variable from bsuite.sweep (e.g. SWEEP for '
+                    'all of bsuite, or DEEP_SEA for just deep_sea experiment).')
+flags.DEFINE_string('save_path', '/tmp/bsuite', 'where to save bsuite results')
+flags.DEFINE_enum('logging_mode', 'csv', ['csv', 'sqlite'],
+                  'which form of logging to use for bsuite results')
+flags.DEFINE_boolean('overwrite', False, 'overwrite csv logging if found')
+
+# algorithm
+flags.DEFINE_integer('training_steps', 1000000, 'number of steps to run')
 flags.DEFINE_integer('num_hidden_layers', 2, 'number of hidden layers')
 flags.DEFINE_integer('num_units', 50, 'number of units per hidden layer')
 flags.DEFINE_float('agent_discount', .99, 'discounting on the agent side')
@@ -55,13 +68,14 @@ flags.DEFINE_float('epsilon_decay_period', 1000,
                    'number of steps to anneal epsilon')
 flags.DEFINE_integer('seed', 42, 'seed for random number generation')
 flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
-flags.DEFINE_string('base_dir', '/tmp/bsuite', 'directory for dopamine logs')
+flags.DEFINE_string('base_dir', '/tmp/dopamine', 'directory for dopamine logs')
 FLAGS = flags.FLAGS
 
 OBSERVATION_SHAPE = (20, 20)
 
 
-def main(_):
+def run(bsuite_id: Text) -> Text:
+  """Runs Dopamine DQN on a given bsuite environment, logging to CSV."""
 
   def _create_network(num_actions: int, network_type, state):
     """Build deep network compatible with dopamine/discrete_domains/gym_lib."""
@@ -94,9 +108,10 @@ def main(_):
 
   def create_environment() -> gym.Env:
     """Factory method for environment initialization in Dopmamine."""
-    env = bsuite.load_and_record_to_csv(
-        bsuite_id=FLAGS.bsuite_id,
-        results_dir=FLAGS.results_dir,
+    env = bsuite.load_and_record(
+        bsuite_id=bsuite_id,
+        save_path=FLAGS.save_path,
+        logging_mode=FLAGS.logging_mode,
         overwrite=FLAGS.overwrite,
     )
     env = wrappers.ImageObservation(env, OBSERVATION_SHAPE)
@@ -112,11 +127,32 @@ def main(_):
       create_environment_fn=create_environment,
       log_every_n=1,
       num_iterations=1,
-      training_steps=1000000,  # Larger than strictly required for bsuite.
+      training_steps=FLAGS.training_steps,  # Make sure large enough for bsuite
       evaluation_steps=0,
       max_steps_per_episode=1000,
   )
   runner.run_experiment()
+
+  return bsuite_id
+
+
+def main(argv):
+  """Parses whether to run a single bsuite_id, or multiprocess sweep."""
+  del argv  # Unused.
+  bsuite_id = FLAGS.bsuite_id
+
+  if bsuite_id in sweep.SWEEP:
+    print('Running a single bsuite_id={}'.format(bsuite_id))
+    run(bsuite_id)
+
+  elif hasattr(sweep, bsuite_id):
+    bsuite_sweep = getattr(sweep, bsuite_id)
+    print('Running a sweep over bsuite_id in sweep.{}'.format(bsuite_sweep))
+    FLAGS.verbose = False
+    pool.map_mpi(run, bsuite_sweep)
+
+  else:
+    raise ValueError('Invalid flag bsuite_id={}'.format(bsuite_id))
 
 
 if __name__ == '__main__':
