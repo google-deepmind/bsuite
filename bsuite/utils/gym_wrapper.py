@@ -27,7 +27,7 @@ from gym import spaces
 import numpy as np
 from typing import Any, Dict, Optional, Text, Tuple, Union
 
-
+# OpenAI gym step format = obs, reward, is_finished, other_info
 _GymTimestep = Tuple[np.ndarray, float, bool, Dict[Text, Any]]
 
 

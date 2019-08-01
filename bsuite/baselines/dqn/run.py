@@ -54,7 +54,6 @@ FLAGS = flags.FLAGS
 def main(argv):
   del argv  # Unused.
 
-  # env = bsuite.load_from_id(FLAGS.bsuite_id)
   env = bsuite.load_and_record_to_csv(
       bsuite_id=FLAGS.bsuite_id,
       results_dir=FLAGS.results_dir,

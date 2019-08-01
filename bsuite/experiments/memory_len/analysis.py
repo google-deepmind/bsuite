@@ -84,7 +84,7 @@ def plot_scale(df: pd.DataFrame,
       sweep_vars=sweep_vars,
       regret_col='regret_ratio'
   )
-  return p + gg.ylab('% correct episodes after {} episodes compared to random'
+  return p + gg.ylab('% correct episodes after\n{} episodes compared to random'
                      .format(sweep.NUM_EPISODES))
 
 
