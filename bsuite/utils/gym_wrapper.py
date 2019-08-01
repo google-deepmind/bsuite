@@ -92,3 +92,7 @@ class GymWrapper(gym.Env):
     if isinstance(reward_spec, specs.BoundedArray):
       return reward_spec.minimum, reward_spec.maximum
     return -float('inf'), float('inf')
+
+  def __getattr__(self, attr):
+    """Delegate attribute access to underlying environment."""
+    return getattr(self._env, attr)
