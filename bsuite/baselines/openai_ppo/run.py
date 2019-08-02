@@ -77,7 +77,7 @@ def run(bsuite_id: Text) -> Text:
       env=env,
       network=FLAGS.network,
       lr=FLAGS.learning_rate,
-      total_timesteps=FLAGS.total_timestep,  # make sure to run enough steps
+      total_timesteps=FLAGS.total_timesteps,  # make sure to run enough steps
       nsteps=FLAGS.nsteps,
       gamma=FLAGS.agent_discount,
   )
