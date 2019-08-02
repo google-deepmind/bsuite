@@ -22,6 +22,22 @@ from __future__ import print_function
 from setuptools import find_packages
 from setuptools import setup
 
+# Additional requirements for bsuite/baselines, excluding OpenAI, Dopamine and
+# JAX examples.
+baselines_require = [
+    'termcolor',
+    # trfl needs to be in sync with a given TensorFlow version. We depend on
+    # TensorFlow transitively via the "tensorflow" extras_require entry
+    # specified by trfl.
+    'trfl[tensorflow]',
+    'tqdm',
+]
+
+dependency_links = [
+    'http://github.com/google/dopamine/tarball/master#egg=dopamine_rl',
+]
+
+
 setup(
     name='bsuite',
     description=('Core RL Behaviour Suite. '
@@ -40,16 +56,14 @@ setup(
         'scipy',
         'scikit-image',
         'six',
-        'tensorflow>=1.13,<1.14',
-        'tensorflow-probability>=0.6,<0.7',
-        'termcolor',
-        'trfl',
-        'tqdm',
     ],
     tests_require=[
         'absl-py',
         'nose',
     ],
+    extras_require={
+        'baselines': baselines_require,
+    },
     test_suite='nose.collector',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

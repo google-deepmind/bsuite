@@ -54,14 +54,21 @@ pip install git+git://github.com/deepmind/bsuite.git
 or clone the repository and run
 
 ```
-pip install /path/to/bsuite/
+pip install bsuite/
 ```
 
 To install the package while being able to edit the code (see baselines below),
 run
 
 ```
-pip install -e /path/to/bsuite/
+pip install -e bsuite/
+```
+
+To also install dependencies for the `baselines/` examples (excluding Gym and
+Dopamine examples), install with:
+
+```
+pip install -e bsuite[baselines]
 ```
 
 ### Loading an environment
@@ -125,10 +132,10 @@ reasonable performance running on a CPU.
 We include implementations of several common agents in the `baselines`
 subdirectory, along with a minimal run-loop.
 
-Our baselines additionally depend on [TensorFlow](http://tensorflow.org) and
-[Sonnet](https://github.com/deepmind/sonnet). These dependencies are not
-installed by default, since `bsuite` is independent of any machine learning
-library.
+See the [installation][#installation] section for how to include the required
+dependencies (mainly [TensorFlow](http://tensorflow.org) and [Sonnet](https://github.com/deepmind/sonnet)) at install time. These dependencies are
+not installed by default, since `bsuite` does not require users to use any
+specific machine learning library.
 
 ## Running the entire suite of experiments
 
