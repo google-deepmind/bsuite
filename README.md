@@ -255,7 +255,7 @@ You can generate a short PDF report summarizing how different algorithms compare
 along the dimensions considered by Bsuite by simply running
 
 ```console
-pdflatex bsuite/reports/bsuite_report.tex`.
+pdflatex bsuite/reports/bsuite_report.tex
 ```
 
 Examples of bsuite reports can be found in the `reports/` subdirectory.
