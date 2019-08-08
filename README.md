@@ -112,8 +112,8 @@ We include two implementations of automatic logging, available via:
     on a single workstation. The implementation is in
     [`logging/sqlite_logging.py`].
 
-We also include a terminal logger in `logging/terminal_logging.py`, exposed via
-`bsuite.load_and_record_to_terminal`.
+We also include a terminal logger in [`logging/terminal_logging.py`], exposed
+via `bsuite.load_and_record_to_terminal`.
 
 It is easy to write your own logging mechanism, if you need to save results to a
 different storage system. See the CSV implementation for the simplest reference.
@@ -153,13 +153,13 @@ for _ in range(env.bsuite_num_episodes):
 
 To use `bsuite` with a codebase that uses the
 [OpenAI Gym](https://github.com/openai/gym) interface, use the `GymWrapper`
-class in [`utils/gym_wrapper.py`]
+class in [`utils/gym_wrapper.py`]:
 
 ```python
 import bsuite
 from bsuite.utils import gym_wrapper
 
-env = bsuite.load_and_record_to_csv('catch/0')
+env = bsuite.load_and_record_to_csv('catch/0', results_dir='/path/to/results')
 gym_env = gym_wrapper.GymWrapper(env)
 ```
 
@@ -174,8 +174,7 @@ reasonable performance running on a CPU.
 Complete descriptions of each environment and their corresponding experiments
 are found in the [`analysis/results.ipynb`] Jupyter notebook.
 
-### Rolling your own environment into `bsuite`
-
+<!-- ### Rolling your own environment into `bsuite` -->
 <!-- Describe what API your environment needs to fulfil -->
 
 ## Baseline agents
@@ -199,7 +198,7 @@ the host machine allows. On a 12 core machine, this will complete overnight for
 most agents. Alternatively, it is possible to run on Google Compute Platform
 using `run_on_gcp.sh`, steps of which are outlined below.
 
-### Running experiments of Google Cloud Platform
+### Running experiments on Google Cloud Platform
 
 [`run_on_gcp.sh`](run_on_gcp.sh) does the following in order:
 
@@ -261,14 +260,6 @@ pdflatex bsuite/reports/bsuite_report.tex`.
 
 Examples of bsuite reports can be found in the `reports/` subdirectory.
 
-[`analysis/results.ipynb`]: bsuite/analysis/results.ipynb
-[`baselines`]:  bsuite/baselines/
-[`bsuite.load_and_record_to_csv`]: bsuite/bsuite.py
-[`bsuite.load_and_record_to_sqlite`]: bsuite/bsuite.py
-[`experiments`]:  bsuite/experiments/
-[`logging/csv_logging.py`]: bsuite/logging/csv_logging.py
-[`logging/sqlite_logging.py`]: bsuite/logging/sqlite_logging.py
-[`utils/gym_wrapper.py`]: bsuite/utils/gym_wrapper.py
 
 ## Citing
 
@@ -294,3 +285,13 @@ If you use `bsuite` in your work, please cite the accompanying paper:
          year={2019},
 }
 ```
+
+[`analysis/results.ipynb`]: bsuite/analysis/results.ipynb
+[`baselines`]:  bsuite/baselines/
+[`bsuite.load_and_record_to_csv`]: bsuite/bsuite.py
+[`bsuite.load_and_record_to_sqlite`]: bsuite/bsuite.py
+[`experiments`]:  bsuite/experiments/
+[`logging/csv_logging.py`]: bsuite/logging/csv_logging.py
+[`logging/sqlite_logging.py`]: bsuite/logging/sqlite_logging.py
+[`logging/terminal_logging.py`]: bsuite/logging/terminal_logging.py
+[`utils/gym_wrapper.py`]: bsuite/utils/gym_wrapper.py
