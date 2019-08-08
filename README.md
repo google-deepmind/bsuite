@@ -169,7 +169,7 @@ need to pip install it separately.
 ## Environments
 
 These environments all have small observation sizes such that you should expect
-reasonable performance running on a CPU.
+reasonable performance running with a small network in a single process on CPU.
 
 Complete descriptions of each environment and their corresponding experiments
 are found in the [`analysis/results.ipynb`] Jupyter notebook.
@@ -182,7 +182,7 @@ are found in the [`analysis/results.ipynb`] Jupyter notebook.
 We include implementations of several common agents in the `baselines`
 subdirectory, along with a minimal run-loop.
 
-See the [installation][#installation] section for how to include the required
+See the [installation](#installation) section for how to include the required
 dependencies (mainly [TensorFlow](http://tensorflow.org) and
 [Sonnet](https://github.com/deepmind/sonnet)) at install time. These
 dependencies are not installed by default, since `bsuite` does not require users
