@@ -1,4 +1,4 @@
-# Behaviour Suite for Reinforcement Learning (bsuite)
+# Behaviour Suite for Reinforcement Learning (`bsuite`)
 
 # ![radar plot](reports/standalone/images/radar_plot.png)
 
