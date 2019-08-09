@@ -18,16 +18,12 @@
 
 import numbers
 
-from absl import flags
-
 from bsuite.logging import base
 from bsuite.utils import wrappers
 
 import dm_env
 
 from typing import Any, Mapping, Text
-
-FLAGS = flags.FLAGS
 
 
 def wrap_environment(env: dm_env.Environment,
