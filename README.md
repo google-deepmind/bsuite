@@ -42,7 +42,7 @@ agents or algorithms.
 
 ## Getting started
 
-If you are new to `bsuite` you can get started in our [colab tutorial](https://colab.research.google.com/drive/1DLbzGVL7nFtUHRJvf7ll_ovzU7kGw5nc).
+If you are new to `bsuite` you can get started in our [colab tutorial](https://colab.research.google.com/drive/1rU20zJ281sZuMD1DHbsODFr1DbASL0RH).
 This Jupyter notebook is hosted with a free cloud server, so you can start
 coding right away without installing anything on your machine. After this, 
 you can follow the instructions below to get `bsuite` running on your local machine.
