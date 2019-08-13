@@ -20,6 +20,8 @@ Going forward, we hope to incorporate more excellent experiments from the
 research community, and commit to a periodic review of the experiments from a
 committee of prominent researchers.
 
+For a more comprehensive overview, see the accompanying [paper].
+
 ## Technical overview
 
 `bsuite` is a collection of _experiments_, defined in the [`experiments`]
@@ -303,3 +305,5 @@ If you use `bsuite` in your work, please cite the accompanying paper:
 [`logging/sqlite_logging.py`]: bsuite/logging/sqlite_logging.py
 [`logging/terminal_logging.py`]: bsuite/logging/terminal_logging.py
 [`utils/gym_wrapper.py`]: bsuite/utils/gym_wrapper.py
+
+[paper]: https://arxiv.org/abs/1908.03568
