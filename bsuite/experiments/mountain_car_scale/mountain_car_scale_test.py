@@ -19,13 +19,12 @@
 
 from absl.testing import absltest
 from bsuite.experiments.mountain_car_scale import mountain_car_scale
-from bsuite.utils import environment_test
+from dm_env import test_utils
 
 import numpy as np
 
 
-class InterfaceTest(
-    environment_test.EnvironmentTestMixin, absltest.TestCase):
+class InterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
     return mountain_car_scale.load(10., 22)

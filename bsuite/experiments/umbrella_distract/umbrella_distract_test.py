@@ -19,12 +19,12 @@
 
 from absl.testing import absltest
 from bsuite.experiments.umbrella_distract import umbrella_distract
-from bsuite.utils import environment_test
+from dm_env import test_utils
 
 import numpy as np
 
 
-class InterfaceTest(environment_test.EnvironmentTestMixin, absltest.TestCase):
+class InterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
     return umbrella_distract.load(22)

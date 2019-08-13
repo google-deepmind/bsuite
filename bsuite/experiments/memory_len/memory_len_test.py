@@ -20,12 +20,12 @@
 # Internal dependencies.
 from absl.testing import absltest
 from bsuite.experiments.memory_len import memory_len
-from bsuite.utils import environment_test
+from dm_env import test_utils
 import numpy as np
 
 
-class MemoryChainInterfaceTest(
-    environment_test.EnvironmentTestMixin, absltest.TestCase):
+class MemoryChainInterfaceTest(test_utils.EnvironmentTestMixin,
+                               absltest.TestCase):
 
   def make_object_under_test(self):
     return memory_len.MemoryChain(10)

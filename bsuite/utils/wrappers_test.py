@@ -21,11 +21,11 @@ from absl.testing import absltest
 from absl.testing import parameterized
 
 from bsuite.experiments.catch import catch
-from bsuite.utils import environment_test
 from bsuite.utils import wrappers
 
 import dm_env
 from dm_env import specs
+from dm_env import test_utils
 import mock
 import numpy as np
 
@@ -123,8 +123,7 @@ class ImageObservationTest(parameterized.TestCase):
     self.assertCountEqual(np.unique(image), np.unique(observation))
 
 
-class ImageWrapperCatchTest(
-    environment_test.EnvironmentTestMixin, absltest.TestCase):
+class ImageWrapperCatchTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
     env = catch.Catch()

@@ -19,12 +19,12 @@
 
 from absl.testing import absltest
 from bsuite.experiments.deep_sea_stochastic import deep_sea_stochastic
-from bsuite.utils import environment_test
+from dm_env import test_utils
 
 import numpy as np
 
 
-class InterfaceTest(environment_test.EnvironmentTestMixin, absltest.TestCase):
+class InterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
     return deep_sea_stochastic.load(22)

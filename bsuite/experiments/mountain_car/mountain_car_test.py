@@ -21,11 +21,11 @@
 
 from absl.testing import absltest
 from bsuite.experiments.mountain_car import mountain_car
-from bsuite.utils import environment_test
+from dm_env import test_utils
 import numpy as np
 
 
-class InterfaceTest(environment_test.EnvironmentTestMixin, absltest.TestCase):
+class InterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
     return mountain_car.MountainCar(2)

@@ -21,12 +21,11 @@
 
 from absl.testing import absltest
 from bsuite.experiments.deep_sea import deep_sea
-from bsuite.utils import environment_test
+from dm_env import test_utils
 import numpy as np
 
 
-class DeepSeaInterfaceTest(
-    environment_test.EnvironmentTestMixin, absltest.TestCase):
+class DeepSeaInterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
     return deep_sea.DeepSea(10)
@@ -39,8 +38,8 @@ class DeepSeaInterfaceTest(
       yield rng.choice(valid_actions)
 
 
-class StochasticDeepSeaInterfaceTest(
-    environment_test.EnvironmentTestMixin, absltest.TestCase):
+class StochasticDeepSeaInterfaceTest(test_utils.EnvironmentTestMixin,
+                                     absltest.TestCase):
 
   def make_object_under_test(self):
     return deep_sea.DeepSea(5, deterministic=False)
