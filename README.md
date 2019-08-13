@@ -31,7 +31,7 @@ subdirectory. Each subdirectory corresponds to one experiment and contains:
     `SETTINGS` variable found in the experiment's `sweep.py` file.
 -   A file `analysis.py` defining plots used in the provided Jupyter notebook.
 
-bsuite works by logging results from "within" each environment, when loading
+`bsuite` works by logging results from "within" each environment, when loading
 environment via a
 [`load_and_record*` function](#loading-an-environment-with-logging-included).
 This means any experiment will automatically output data in the correct format
@@ -39,6 +39,11 @@ for analysis using the notebook, without any constraints on the structure of
 agents or algorithms.
 
 ## Getting started
+
+If you are new to `bsuite` you can get started in our [colab tutorial](https://colab.research.google.com/drive/1DLbzGVL7nFtUHRJvf7ll_ovzU7kGw5nc).
+This Jupyter notebook is hosted with a free cloud server, so you can start
+coding right away without installing anything on your machine. After this, 
+you can follow the instructions below to get `bsuite` running on your local machine.
 
 ### Installation
 
@@ -149,7 +154,7 @@ for _ in range(env.bsuite_num_episodes):
   agent.step(timestep)
 ```
 
-### Interoperability with OpenAI Gym
+### Using `bsuite` with OpenAI Gym
 
 To use `bsuite` with a codebase that uses the
 [OpenAI Gym](https://github.com/openai/gym) interface, use the `GymWrapper`
@@ -203,7 +208,7 @@ using `run_on_gcp.sh`, steps of which are outlined below.
 [`run_on_gcp.sh`](run_on_gcp.sh) does the following in order:
 
 1.  Create an instance with specified specs (by default 64-core CPU optimized).
-1.  `git clone`s bsuite and installs it together with other dependencies.
+1.  `git clone`s `bsuite` and installs it together with other dependencies.
 1.  Runs the specified agent (currently limited to `/baselines`) on a specified
     environment.
 1.  Copies the resulting SQLite file to `/tmp/bsuite.db` from the remote
@@ -214,7 +219,7 @@ In order to run the script, you first need to create a billing account. Then
 follow the instructions
 [here](https://cloud.google.com/sdk/docs/quickstart-debian-ubuntu) to setup and
 initialize Cloud SDK. After completing `gcloud init`, you are ready to run
-bsuite on Google Cloud.
+`bsuite` on Google Cloud.
 
 For this make [`run_on_gcp.sh`](run_on_gcp.sh) executable and run it:
 
@@ -249,16 +254,19 @@ for instance.
 produces the scores and plots for each experiment. We recommend using this
 notebook in conjunction with [Colaboratory](colab.research.google.com).
 
+We provide an example of a such `bsuite` report [here](https://colab.research.google.com/drive/1RYWJaMEHVeN8yI83QtL35GOSFQBRgLaX).
+
 ### Bsuite Report
 
-You can generate a short PDF report summarizing how different algorithms compare
-along the dimensions considered by Bsuite by simply running
+You can use `bsuite` to generate an automated 1-page appendix, that summarizes
+the core capabilities of your RL algorithm. This appendix is compatible with
+most major ML conference formats. For example output run,
 
 ```console
-pdflatex bsuite/reports/bsuite_report.tex
+pdflatex bsuite/reports/neurips_2019/neurips_2019.tex
 ```
 
-Examples of bsuite reports can be found in the `reports/` subdirectory.
+More examples of bsuite reports can be found in the `reports/` subdirectory.
 
 
 ## Citing
