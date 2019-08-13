@@ -256,7 +256,7 @@ notebook in conjunction with [Colaboratory](colab.research.google.com).
 
 We provide an example of a such `bsuite` report [here](https://colab.research.google.com/drive/1RYWJaMEHVeN8yI83QtL35GOSFQBRgLaX).
 
-### Bsuite Report
+### `bsuite` Report
 
 You can use `bsuite` to generate an automated 1-page appendix, that summarizes
 the core capabilities of your RL algorithm. This appendix is compatible with
