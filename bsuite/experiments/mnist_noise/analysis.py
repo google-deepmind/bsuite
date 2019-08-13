@@ -20,7 +20,6 @@
 from bsuite.experiments.mnist import analysis as mnist_analysis
 from bsuite.experiments.mnist_noise import sweep
 from bsuite.utils import plotting
-import numpy as np
 import pandas as pd
 import plotnine as gg
 from typing import Text, Sequence
@@ -60,12 +59,8 @@ def plot_average(df: pd.DataFrame,
       episode=sweep.NUM_EPISODES,
       sweep_vars=sweep_vars
   )
-  p += gg.scale_y_continuous(breaks=np.arange(0, 1.1, 0.1).tolist())
-  p += gg.theme(panel_grid_major_y=gg.element_line(size=2.5),
-                panel_grid_minor_y=gg.element_line(size=0),)
   p += gg.geom_hline(gg.aes(yintercept=mnist_analysis.BASE_REGRET),
                      linetype='dashed', alpha=0.4, size=1.75)
-  p += gg.coord_cartesian(ylim=(0, 1))
   return p
 
 
