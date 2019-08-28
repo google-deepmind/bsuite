@@ -13,8 +13,8 @@ virtual environment system.
 
 ## Agents and installation instructions.
 
-The below agents require [TensorFlow 1.13](tensorflow.org),
-[TRFL](github.com/deepmind/trfl), and [Sonnet](github.com/deepmind/sonnet).
+The below agents require [TensorFlow 1.13](https://www.tensorflow.org),
+[TRFL](https://github.com/deepmind/trfl), and [Sonnet](https://github.com/deepmind/sonnet).
 These dependencies can be installed by `pip3 install bsuite[baselines].`
 
 *   `actor_critic`: A feed-forward implementation of the advantage actor-critic
@@ -30,14 +30,14 @@ Additionally, we provide examples of running existing baselines from other
 codebases, which introduce their own dependencies.
 
 *   `dopamine_dqn`: An implementation of DQN from
-    [Dopamine](github.com/google/dopamine).
+    [Dopamine](https://github.com/google/dopamine).
 
     ```bash
     pip3 install dopamine-rl
     ```
 
 *   `openai_dqn` and `openai_ppo`: Implementation of DQN and PPO from
-    [OpenAI baselines](github.com/openai/baselines).
+    [OpenAI baselines](https://github.com/openai/baselines).
 
     ```bash
     pip3 install git+https://github.com/openai/baselines
@@ -46,7 +46,7 @@ codebases, which introduce their own dependencies.
 We also provide examples of DQN written in other machine learning libraries:
 
 *   `dqn_jax`: An example implementation of the same algorithm in
-    [JAX](github.com/google/jax).
+    [JAX](https://github.com/google/jax).
 
     ```bash
     pip3 install jax
