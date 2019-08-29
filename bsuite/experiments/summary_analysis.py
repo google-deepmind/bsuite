@@ -339,7 +339,10 @@ def bsuite_radar_plot(summary_data: pd.DataFrame,
   fig = plt.figure(figsize=(8, 8), facecolor='white')
 
   ax = fig.add_subplot(111, polar=True)
-  ax.set_facecolor('white')
+  try:
+    ax.set_axis_bgcolor('white')
+  except AttributeError:
+    ax.set_facecolor('white')
   all_tags = sorted(summary_data['tag'].unique())
 
   if sweep_vars is None:
