@@ -34,6 +34,7 @@ from bsuite.utils import gym_wrapper
 from bsuite.utils import wrappers
 
 from dopamine.agents.dqn import dqn_agent
+from dopamine.discrete_domains import atari_lib
 from dopamine.discrete_domains import run_experiment
 
 import gym
@@ -76,14 +77,23 @@ OBSERVATION_SHAPE = (20, 20)
 def run(bsuite_id: Text) -> Text:
   """Runs Dopamine DQN on a given bsuite environment, logging to CSV."""
 
-  def _create_network(num_actions: int, network_type, state):
+  class Network(tf.keras.Model):
     """Build deep network compatible with dopamine/discrete_domains/gym_lib."""
-    x = tf.cast(state, tf.float32)
-    x = tf.contrib.slim.flatten(x)
-    for _ in range(FLAGS.num_hidden_layers):
-      x = tf.contrib.slim.fully_connected(x, FLAGS.num_units)
-    x = tf.contrib.slim.fully_connected(x, num_actions, activation_fn=None)
-    return network_type(x)
+
+    def __init__(self, num_actions: int, name='Network'):
+      super(Network, self).__init__(name=name)
+      self.forward_fn = tf.keras.Sequential(
+          [tf.keras.layers.Flatten()] +
+          [tf.keras.layers.Dense(FLAGS.num_units,
+                                 activation=tf.keras.activations.relu)
+           for _ in range(FLAGS.num_hidden_layers)] +
+          [tf.keras.layers.Dense(num_actions, activation=None)])
+
+    def call(self, state):
+      """Creates the output tensor/op given the state tensor as input."""
+      x = tf.cast(state, tf.float32)
+      x = self.forward_fn(x)
+      return atari_lib.DQNNetworkType(x)
 
   def create_agent(sess: tf.Session, environment: gym.Env, summary_writer=None):
     """Factory method for agent initialization in Dopmamine."""
@@ -94,7 +104,7 @@ def run(bsuite_id: Text) -> Text:
         observation_shape=OBSERVATION_SHAPE,
         observation_dtype=tf.float32,
         stack_size=1,
-        network=_create_network,
+        network=Network,
         gamma=FLAGS.agent_discount,
         update_horizon=1,
         min_replay_history=FLAGS.min_replay_size,
