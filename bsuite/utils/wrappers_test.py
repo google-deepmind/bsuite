@@ -22,13 +22,14 @@ from absl.testing import parameterized
 
 from bsuite.experiments.catch import catch
 from bsuite.utils import wrappers
+from bsuite.utils import gym_wrapper
 
 import dm_env
 from dm_env import specs
 from dm_env import test_utils
 import mock
 import numpy as np
-
+import gym
 
 class FakeEnvironment(dm_env.Environment):
   """An environment that returns pre-determined rewards and observations."""
@@ -135,6 +136,37 @@ class ImageWrapperCatchTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
 
     for _ in range(100):
       yield rng.choice(actions)
+
+
+class ReverseGymWrapperTest(absltest.TestCase):
+
+  def test_gym_cartpole(self):
+    self.gym_test_env = gym_wrapper.ReverseGymWrapper(gym.make('CartPole-v0'))
+
+    # test converted observation spec
+    self.assertEqual(type(self.gym_test_env.observation_spec()), specs.BoundedArray)
+    self.assertEqual(self.gym_test_env.observation_spec().shape,(4,))
+    self.assertEqual(self.gym_test_env.observation_spec().minimum.shape, (4,))
+    self.assertEqual(self.gym_test_env.observation_spec().maximum.shape, (4,))
+    self.assertEqual(self.gym_test_env.observation_spec().dtype,np.dtype('float32'))
+
+    #test converted action spec
+    self.assertEqual(type(self.gym_test_env.action_spec()), specs.DiscreteArray)
+    self.assertEqual(self.gym_test_env.action_spec().shape,())
+    self.assertEqual(self.gym_test_env.action_spec().minimum,0)
+    self.assertEqual(self.gym_test_env.action_spec().maximum,1)
+    self.assertEqual(self.gym_test_env.action_spec().num_values,2)
+    self.assertEqual(self.gym_test_env.action_spec().dtype,np.dtype('int64'))
+
+    #test step
+    self.gym_test_env.reset()
+    test_timestep = self.gym_test_env.step(1)
+    self.assertEqual(test_timestep.reward,1.0)
+    self.assertEqual(test_timestep.observation.shape,(4,))
+    self.gym_test_env.close()
+
+
+
 
 
 if __name__ == '__main__':
