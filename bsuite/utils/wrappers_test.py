@@ -5,7 +5,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#    http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,15 +21,16 @@ from absl.testing import absltest
 from absl.testing import parameterized
 
 from bsuite.experiments.catch import catch
-from bsuite.utils import wrappers
 from bsuite.utils import gym_wrapper
+from bsuite.utils import wrappers
 
 import dm_env
 from dm_env import specs
 from dm_env import test_utils
+import gym
 import mock
 import numpy as np
-import gym
+
 
 class FakeEnvironment(dm_env.Environment):
   """An environment that returns pre-determined rewards and observations."""
@@ -141,29 +142,29 @@ class ImageWrapperCatchTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
 class ReverseGymWrapperTest(absltest.TestCase):
 
   def test_gym_cartpole(self):
-    self.gym_test_env = gym_wrapper.ReverseGymWrapper(gym.make('CartPole-v0'))
+    gym_test_env = gym_wrapper.ReverseGymWrapper(gym.make('CartPole-v0'))
 
     # test converted observation spec
-    self.assertEqual(type(self.gym_test_env.observation_spec()), specs.BoundedArray)
-    self.assertEqual(self.gym_test_env.observation_spec().shape,(4,))
-    self.assertEqual(self.gym_test_env.observation_spec().minimum.shape, (4,))
-    self.assertEqual(self.gym_test_env.observation_spec().maximum.shape, (4,))
-    self.assertEqual(self.gym_test_env.observation_spec().dtype,np.dtype('float32'))
+    self.assertEqual(type(gym_test_env.observation_spec()), specs.BoundedArray)
+    self.assertEqual(gym_test_env.observation_spec().shape, (4,))
+    self.assertEqual(gym_test_env.observation_spec().minimum.shape, (4,))
+    self.assertEqual(gym_test_env.observation_spec().maximum.shape, (4,))
+    self.assertEqual(gym_test_env.observation_spec().dtype, np.dtype('float32'))
 
     #test converted action spec
-    self.assertEqual(type(self.gym_test_env.action_spec()), specs.DiscreteArray)
-    self.assertEqual(self.gym_test_env.action_spec().shape,())
-    self.assertEqual(self.gym_test_env.action_spec().minimum,0)
-    self.assertEqual(self.gym_test_env.action_spec().maximum,1)
-    self.assertEqual(self.gym_test_env.action_spec().num_values,2)
-    self.assertEqual(self.gym_test_env.action_spec().dtype,np.dtype('int64'))
+    self.assertEqual(type(gym_test_env.action_spec()), specs.DiscreteArray)
+    self.assertEqual(gym_test_env.action_spec().shape, ())
+    self.assertEqual(gym_test_env.action_spec().minimum, 0)
+    self.assertEqual(gym_test_env.action_spec().maximum, 1)
+    self.assertEqual(gym_test_env.action_spec().num_values, 2)
+    self.assertEqual(gym_test_env.action_spec().dtype, np.dtype('int64'))
 
     #test step
-    self.gym_test_env.reset()
-    test_timestep = self.gym_test_env.step(1)
-    self.assertEqual(test_timestep.reward,1.0)
-    self.assertEqual(test_timestep.observation.shape,(4,))
-    self.gym_test_env.close()
+    gym_test_env.reset()
+    test_timestep = gym_test_env.step(1)
+    self.assertEqual(test_timestep.reward, 1.0)
+    self.assertEqual(test_timestep.observation.shape, (4,))
+    gym_test_env.close()
 
 
 if __name__ == '__main__':

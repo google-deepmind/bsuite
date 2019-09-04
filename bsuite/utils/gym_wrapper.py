@@ -59,7 +59,6 @@ class GymWrapper(gym.Env):
     if mode == 'human':
       if self.viewer is None:
         from gym.envs.classic_control import rendering  # pylint: disable=g-import-not-at-top
-
         self.viewer = rendering.SimpleImageViewer()
       self.viewer.imshow(self._last_observation)
       return self.viewer.isopen
@@ -95,76 +94,72 @@ class GymWrapper(gym.Env):
     """Delegate attribute access to underlying environment."""
     return getattr(self._env, attr)
 
+def space2spec(space: gym.Space, name: Text=None):
+  """Convert a gym space to a dm_env spec.
+
+  Box, MultiBinary and MultiDiscrete Openai spaces are converted to BoundedArray specs.  Discrete Openai
+  spaces are converted to DiscreteArray specs.  Tuple and Dict spaces are recursively converted to tuples
+  and dictionaries of specs.
+  """
+  if isinstance(space, spaces.Discrete):
+    return specs.DiscreteArray(num_values=space.n, dtype=space.dtype, name=name)
+
+  elif isinstance(space, spaces.Box):
+    return specs.BoundedArray(shape=space.shape, dtype=space.dtype, minimum=space.low, maximum=space.high,
+                              name=name)
+
+  elif isinstance(space, spaces.MultiBinary):
+    return specs.BoundedArray(shape=space.shape, dtype=space.dtype, minimum=0.0, maximum=1.0, name=name)
+
+  elif isinstance(space, spaces.MultiDiscrete):
+    return specs.BoundedArray(shape=space.shape, dtype=space.dtype, minimum=np.zeros(space.shape),
+                              maximum=space.nvec, name=name)
+
+  elif isinstance(space, spaces.Tuple):
+
+    spec_list = []
+    for _space in space.spaces:
+      spec_list.append(space2spec(_space, name))
+
+    return tuple(spec_list)
+
+  elif isinstance(space, spaces.Dict):
+
+    spec_dict = {}
+    for k in space.spaces:
+      spec_dict[k] = space2spec(space.spaces[k], name)
+
+    return spec_dict
+
+  else:
+    raise ValueError('Unexpected gym space: {}'.format(space))
 
 class ReverseGymWrapper(dm_env.Environment):
-    """A wrapper that converts an OpenAI gym environment to a dm_env.Environment"""
+  """A wrapper that converts an OpenAI gym environment to a dm_env.Environment."""
 
-    def __init__(self, gym_env:gym.Env):
-        self.gym_env = gym_env
-        # convert gym action and observation spaces to dm_env specs
-        self._observation_spec = self.space2spec(self.gym_env.observation_space, "observations")
-        self._action_spec = self.space2spec(self.gym_env.action_space, "actions")
+  def __init__(self, gym_env: gym.Env):
+    self.gym_env = gym_env
+    # convert gym action and observation spaces to dm_env specs
+    self._observation_spec = space2spec(self.gym_env.observation_space, 'observations')
+    self._action_spec = space2spec(self.gym_env.action_space, 'actions')
 
-    def reset(self):
-        self.gym_env.reset()
+  def reset(self):
+    self.gym_env.reset()
 
-    def step(self, action):
-        """convert gym step result (observations, reward, done, info) to dm_env TimeStep"""
-        gym_step_res = self.gym_env.step(action)
-        _obs = gym_step_res[0]
-        _reward = gym_step_res[1]
-        _done = gym_step_res[2]
+  def step(self, action):
+    """Convert a gym step result (observations, reward, done, info) to a dm_env TimeStep."""
+    obs,reward,done,_ = self.gym_env.step(action)
 
-        if _done:
-            return dm_env.TimeStep(dm_env.StepType.LAST, _reward, None, _obs)
-        else:
-            return dm_env.TimeStep(dm_env.StepType.MID, _reward, None, _obs)
+    if done:
+      return dm_env.termination(reward,obs)
+    else:
+      return dm_env.transition(reward,obs)
 
-    def close(self):
-        self.gym_env.close()
+  def close(self):
+    self.gym_env.close()
 
-    def observation_spec(self):
-        return self._observation_spec
+  def observation_spec(self):
+    return self._observation_spec
 
-    def action_spec(self):
-        return self._action_spec
-
-    def space2spec(self, space:gym.Space, name:str=None):
-        """convert a gym space to a dm_env spec.
-
-        Box, MultiBinary and MultiDiscrete openai spaces are converted to BoundedArray specs.  Discrete openai
-        spaces are converted to DiscreteArray specs.  Tuple and Dict spaces are recursively converted to tuples
-        and dictionaries of specs.
-        """
-        if isinstance(space, spaces.Discrete):
-            return specs.DiscreteArray(num_values=space.n, dtype=space.dtype, name=name)
-
-        elif isinstance(space, spaces.Box):
-            return specs.BoundedArray(shape=space.shape, dtype=space.dtype, minimum=space.low, maximum=space.high,
-                                      name=name)
-
-        elif isinstance(space, spaces.MultiBinary):
-            return specs.BoundedArray(shape=space.shape, dtype=space.dtype, minimum=0.0, maximum=1.0, name=name)
-
-        elif isinstance(space, spaces.MultiDiscrete):
-            return specs.BoundedArray(shape=space.shape, dtype=space.dtype, minimum=np.zeros(space.shape),
-                                      maximum=space.nvec, name=name)
-
-        elif isinstance(space, spaces.Tuple):
-
-            spec_list = []
-            for _space in space.spaces:
-                spec_list.append(self.space2spec(_space, name))
-
-            return tuple(spec_list)
-
-        elif isinstance(space, spaces.Dict):
-
-            spec_dict = {}
-            for k in space.spaces:
-                spec_dict[k] = self.space2spec(space.spaces[k], name)
-
-            return spec_dict
-
-        else:
-            raise ValueError("Unexpected gym space type")
+  def action_spec(self):
+    return self._action_spec
