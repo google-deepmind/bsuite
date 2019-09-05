@@ -69,7 +69,7 @@ def run(bsuite_id: Text) -> Text:
     )
     if FLAGS.verbose:
       raw_env = terminal_logging.wrap_environment(raw_env, log_every=True)
-    return gym_wrapper.GymWrapper(raw_env)
+    return gym_wrapper.GymFromDMEnv(raw_env)
   env = dummy_vec_env.DummyVecEnv([_load_env])
 
   ppo2.learn(

@@ -78,7 +78,7 @@ def run(bsuite_id: Text) -> Text:
   num_episodes = raw_env.bsuite_num_episodes  # pytype: disable=attribute-error
   if FLAGS.verbose:
     raw_env = terminal_logging.wrap_environment(raw_env, log_every=True)
-  env = gym_wrapper.GymWrapper(raw_env)
+  env = gym_wrapper.GymFromDMEnv(raw_env)
 
   def callback(lcl, unused_glb):
     # Terminate after `num_episodes`.

@@ -126,7 +126,7 @@ def run(bsuite_id: Text) -> Text:
     env = wrappers.ImageObservation(env, OBSERVATION_SHAPE)
     if FLAGS.verbose:
       env = terminal_logging.wrap_environment(env, log_every=True)
-    env = gym_wrapper.GymWrapper(env)
+    env = gym_wrapper.GymFromDMEnv(env)
     env.game_over = False  # Dopamine looks for this
     return env
 
