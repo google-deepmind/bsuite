@@ -159,7 +159,7 @@ for _ in range(env.bsuite_num_episodes):
 ### Using `bsuite` with OpenAI Gym
 
 To use `bsuite` with a codebase that uses the
-[OpenAI Gym](https://github.com/openai/gym) interface, use the `GymWrapper`
+[OpenAI Gym](https://github.com/openai/gym) interface, use the `GymFromDMEnv`
 class in [`utils/gym_wrapper.py`]:
 
 ```python
@@ -167,7 +167,7 @@ import bsuite
 from bsuite.utils import gym_wrapper
 
 env = bsuite.load_and_record_to_csv('catch/0', results_dir='/path/to/results')
-gym_env = gym_wrapper.GymWrapper(env)
+gym_env = gym_wrapper.GymFromDMEnv(env)
 ```
 
 Note that `bsuite` does not include Gym in its default dependencies, so you may

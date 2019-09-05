@@ -25,7 +25,7 @@ import gym
 import numpy as np
 
 
-class ReverseGymWrapperTest(absltest.TestCase):
+class DMEnvFromGymTest(absltest.TestCase):
 
   def test_gym_cartpole(self):
     env = gym_wrapper.DMEnvFromGym(gym.make('CartPole-v0'))
