@@ -42,41 +42,51 @@ agents or algorithms.
 
 ## Getting started
 
-If you are new to `bsuite` you can get started in our [colab tutorial](https://colab.research.google.com/drive/1rU20zJ281sZuMD1DHbsODFr1DbASL0RH).
+If you are new to `bsuite` you can get started in our
+[colab tutorial](https://colab.research.google.com/drive/1rU20zJ281sZuMD1DHbsODFr1DbASL0RH).
 This Jupyter notebook is hosted with a free cloud server, so you can start
-coding right away without installing anything on your machine. After this, 
-you can follow the instructions below to get `bsuite` running on your local machine.
+coding right away without installing anything on your machine. After this, you
+can follow the instructions below to get `bsuite` running on your local machine.
 
 ### Installation
 
-We have tested `bsuite`on Python 3.6. We do not attempt to maintain a working
+We have tested `bsuite` on Python 3.6. We do not attempt to maintain a working
 version for Python 2.7.
 
-To install `bsuite`, run the command
+-   (Optional) You may wish to create a
+    [Python virtual environment](https://docs.python.org/3/tutorial/venv.html)
+    to manage your dependencies, so as not to clobber your system installation:
 
-```
-pip install git+git://github.com/deepmind/bsuite.git
-```
+    ```
+    python3 -m venv my_virtual_env
+    source my_virtual_env/bin/activate
+    ```
 
-or clone the repository and run
+-   To install `bsuite`, run the command
 
-```
-pip install bsuite/
-```
+    ```
+    pip install git+git://github.com/deepmind/bsuite.git
+    ```
 
-To install the package while being able to edit the code (see baselines below),
-run
+    or clone the repository and run
 
-```
-pip install -e bsuite/
-```
+    ```
+    pip install bsuite/
+    ```
 
-To also install dependencies for the `baselines/` examples (excluding Gym and
-Dopamine examples), install with:
+    To install the package while being able to edit the code (see baselines
+    below), run
 
-```
-pip install -e bsuite[baselines]
-```
+    ```
+    pip install -e bsuite/
+    ```
+
+    To also install dependencies for the `baselines/` examples (excluding Gym
+    and Dopamine examples), install with:
+
+    ```
+    pip install -e bsuite[baselines]
+    ```
 
 ### Loading an environment
 
@@ -256,7 +266,8 @@ for instance.
 produces the scores and plots for each experiment. We recommend using this
 notebook in conjunction with [Colaboratory](colab.research.google.com).
 
-We provide an example of a such `bsuite` report [here](https://colab.research.google.com/drive/1RYWJaMEHVeN8yI83QtL35GOSFQBRgLaX).
+We provide an example of a such `bsuite` report
+[here](https://colab.research.google.com/drive/1RYWJaMEHVeN8yI83QtL35GOSFQBRgLaX).
 
 ### `bsuite` Report
 
@@ -269,7 +280,6 @@ pdflatex bsuite/reports/neurips_2019/neurips_2019.tex
 ```
 
 More examples of bsuite reports can be found in the `reports/` subdirectory.
-
 
 ## Citing
 
@@ -305,5 +315,4 @@ If you use `bsuite` in your work, please cite the accompanying paper:
 [`logging/sqlite_logging.py`]: bsuite/logging/sqlite_logging.py
 [`logging/terminal_logging.py`]: bsuite/logging/terminal_logging.py
 [`utils/gym_wrapper.py`]: bsuite/utils/gym_wrapper.py
-
 [paper]: https://arxiv.org/abs/1908.03568
