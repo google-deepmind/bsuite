@@ -18,13 +18,13 @@
 # Import all packages
 
 import abc
+import six
 from typing import Any, Mapping, Text
 
 
+@six.add_metaclass(abc.ABCMeta)
 class Logger(object):
   """A logger has a `write` method."""
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def write(self, data: Mapping[Text, Any]):

@@ -19,16 +19,16 @@
 
 import abc
 import dm_env
+import six
 
 # pylint: disable=invalid-name
 Action = int  # Only discrete-action agents for now.
 # pylint: enable=invalid-name
 
 
+@six.add_metaclass(abc.ABCMeta)
 class Agent(object):
   """An agent consists of a policy and an update rule."""
-
-  __metaclass__ = abc.ABCMeta
 
   @abc.abstractmethod
   def policy(self, timestep: dm_env.TimeStep) -> Action:
