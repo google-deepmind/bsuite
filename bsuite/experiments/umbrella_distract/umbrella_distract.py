@@ -21,12 +21,12 @@ from bsuite.experiments.umbrella_distract import sweep
 from bsuite.experiments.umbrella_length import umbrella_length
 
 
-def load(n_distractor):
+def load(n_distractor, seed=0):
   """Load a deep sea experiment with the prescribed settings."""
   env = umbrella_length.UmbrellaChain(
       chain_length=20,
       n_distractor=n_distractor,
-      seed=73,
+      seed=seed,
   )
   env.bsuite_num_episodes = sweep.NUM_EPISODES
   return env

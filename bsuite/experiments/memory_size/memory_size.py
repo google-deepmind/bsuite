@@ -28,12 +28,12 @@ from bsuite.experiments.memory_len import memory_len
 from bsuite.experiments.memory_size import sweep
 
 
-def load(num_bits):
+def load(num_bits, seed=0):
   """Memory Chain environment, with variable number of bits."""
   env = memory_len.MemoryChain(
       memory_length=2,
       num_bits=num_bits,
-      seed=73,
+      seed=seed,
   )
   env.bsuite_num_episodes = sweep.NUM_EPISODES
   return env
