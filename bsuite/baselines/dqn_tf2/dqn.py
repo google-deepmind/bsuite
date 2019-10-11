@@ -30,7 +30,6 @@ from dm_env import specs
 import numpy as np
 import sonnet as snt
 import tensorflow.compat.v2 as tf
-from trfl.action_value_ops import qlearning
 
 
 class DQNTF2(base.Agent):
@@ -115,12 +114,19 @@ class DQNTF2(base.Agent):
   def _training_step(self, transitions):
     with tf.GradientTape() as tape:
       o_tm1, a_tm1, r_t, d_t, o_t = transitions
-      r_t = tf.cast(r_t, tf.float32)
-      d_t = tf.cast(d_t, tf.float32)
-      q_tm1 = self._online_network(o_tm1)
-      q_t = self._target_network(o_t)
+      r_t = tf.cast(r_t, tf.float32)  # [B]
+      d_t = tf.cast(d_t, tf.float32)  # [B]
+      q_tm1 = self._online_network(o_tm1)  # [B, A]
+      q_t = self._target_network(o_t)  # [B, A]
 
-      loss = qlearning(q_tm1, a_tm1, r_t, d_t * self._discount, q_t).loss
+      onehot_actions = tf.one_hot(a_tm1, depth=self._num_actions)  # [B, A]
+      qa_tm1 = tf.reduce_sum(q_tm1 * onehot_actions, axis=-1)  # [B]
+      qa_t = tf.reduce_max(q_t, axis=-1)  # [B]
+
+      # One-step Q-learning loss.
+      target = r_t + d_t * self._discount * qa_t
+      td_error = qa_tm1 - target
+      loss = 0.5 * tf.reduce_sum(td_error**2)  # []
 
     params = self._online_network.trainable_variables
     grads = tape.gradient(loss, params)
