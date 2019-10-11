@@ -109,12 +109,12 @@ class MemoryChain(auto_reset_environment.Base):
         total_regret=self._total_regret)
 
 
-def load(memory_length):
+def load(memory_length, seed=0):
   """Memory Chain environment, with variable delay between cue and decision."""
   env = MemoryChain(
       memory_length=memory_length,
       num_bits=1,
-      seed=73,
+      seed=seed,
   )
   env.bsuite_num_episodes = sweep.NUM_EPISODES
   return env
