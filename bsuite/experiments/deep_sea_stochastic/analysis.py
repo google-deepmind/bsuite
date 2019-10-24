@@ -42,18 +42,22 @@ plot_regret = deep_sea_analysis.plot_regret
 
 
 def find_solution(df_in: pd.DataFrame,
-                  sweep_vars: Sequence[Text] = None) -> pd.DataFrame:
+                  sweep_vars: Sequence[Text] = None,
+                  num_episodes: int = NUM_EPISODES) -> pd.DataFrame:
   """Find first solution episode, with harsher thresh for stochastic domain."""
   df = df_in.copy()
   df = df[df.episode >= 100]
-  return deep_sea_analysis.find_solution(df, sweep_vars, thresh=0.8)
+  return deep_sea_analysis.find_solution(
+      df, sweep_vars, thresh=0.8, num_episodes=num_episodes)
 
 
 def plot_seeds(df: pd.DataFrame,
-               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+               sweep_vars: Sequence[Text] = None,
+               num_episodes: int = NUM_EPISODES) -> gg.ggplot:
   """Plot the returns through time individually by run."""
   return deep_sea_analysis.plot_seeds(
       df_in=df,
       sweep_vars=sweep_vars,
-      yintercept=np.exp(-1)
+      yintercept=np.exp(-1),
+      num_episodes=num_episodes,
   ) + gg.ylab('average episodic return (excluding additive noise)')

@@ -39,12 +39,13 @@ def _check_data(df: pd.DataFrame) -> None:
 def find_solution(df_in: pd.DataFrame,
                   sweep_vars: Sequence[Text] = None,
                   merge: bool = True,
-                  thresh: float = 0.8) -> pd.DataFrame:
+                  thresh: float = 0.8,
+                  num_episodes: int = NUM_EPISODES) -> pd.DataFrame:
   """Find first episode that gets below thresh regret by sweep_vars."""
   # Check data has the necessary columns for deep sea
   df = df_in.copy()
   _check_data(df)
-  df = df[df.episode <= NUM_EPISODES]
+  df = df[df.episode <= num_episodes]
 
   # Parse the variables that you are aggregating over
   if sweep_vars is None:
@@ -70,7 +71,7 @@ def find_solution(df_in: pd.DataFrame,
 
   # Add a column to see if the experiment has finished 10k episodes
   finish_df = (
-      df.groupby(sweep_vars)['episode'].max() >= NUM_EPISODES).reset_index()
+      df.groupby(sweep_vars)['episode'].max() >= num_episodes).reset_index()
   finish_df.rename(columns={'episode': 'finished'}, inplace=True)
   plt_df = plt_df.merge(finish_df, on=sweep_vars)
   plt_df.loc[plt_df.solved, 'finished'] = True  # If solved -> finished
@@ -138,13 +139,14 @@ def _base_scaling(plt_df: pd.DataFrame,
 
 def plot_scaling(plt_df: pd.DataFrame,
                  sweep_vars: Sequence[Text] = None,
-                 with_baseline: bool = True) -> gg.ggplot:
+                 with_baseline: bool = True,
+                 num_episodes: int = NUM_EPISODES) -> gg.ggplot:
   """Plot scaling of learning time against exponential baseline."""
   p = _base_scaling(plt_df, sweep_vars, with_baseline)
   p += gg.xlab('deep sea problem size')
   p += gg.ylab('#episodes until < 90% bad episodes')
   if with_baseline:
-    max_steps = np.minimum(NUM_EPISODES, plt_df.episode.max())
+    max_steps = np.minimum(num_episodes, plt_df.episode.max())
     p += gg.coord_cartesian(ylim=(0, max_steps))
   return plotting.facet_sweep_plot(p, sweep_vars)
 
@@ -162,13 +164,14 @@ def plot_scaling_log(plt_df: pd.DataFrame,
 
 
 def plot_regret(df_in: pd.DataFrame,
-                sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+                sweep_vars: Sequence[Text] = None,
+                num_episodes: int = NUM_EPISODES) -> gg.ggplot:
   """Plot average regret of deep_sea through time by size."""
   df = df_in.copy()
   df = df[df['size'].isin([10, 20, 30, 40, 50])]
   df['avg_bad'] = df.total_bad_episodes / df.episode
   df['size'] = df['size'].astype('category')
-  p = (gg.ggplot(df[df.episode <= NUM_EPISODES])
+  p = (gg.ggplot(df[df.episode <= num_episodes])
        + gg.aes('episode', 'avg_bad', group='size', colour='size')
        + gg.geom_line(size=2, alpha=0.75)
        + gg.geom_hline(
@@ -182,13 +185,14 @@ def plot_regret(df_in: pd.DataFrame,
 
 def plot_seeds(df_in: pd.DataFrame,
                sweep_vars: Sequence[Text] = None,
-               yintercept: float = 0.99) -> gg.ggplot:
+               yintercept: float = 0.99,
+               num_episodes: int = NUM_EPISODES) -> gg.ggplot:
   """Plot the returns through time individually by run."""
   df = df_in.copy()
   df['average_return'] = df.denoised_return.diff() / df.episode.diff()
   p = plotting.plot_individual_returns(
-      df_in=df[df.episode > 0.01 * NUM_EPISODES],  # First episodes very noisy
-      max_episode=NUM_EPISODES,
+      df_in=df[df.episode > 0.01 * num_episodes],  # First episodes very noisy
+      max_episode=num_episodes,
       return_column='average_return',
       colour_var='size',
       yintercept=yintercept,
