@@ -55,6 +55,16 @@ class DMEnvFromGymTest(absltest.TestCase):
     self.assertEqual(timestep.observation.shape, (4,))
     env.close()
 
+  def test_episode_truncation(self):
+    # Pendulum has no early termination condition.
+    gym_env = gym.make('Pendulum-v0')
+    env = gym_wrapper.DMEnvFromGym(gym_env)
+    ts = env.reset()
+    while not ts.last():
+      ts = env.step(env.action_spec().generate_value())
+    self.assertEqual(ts.discount, 1.0)
+    env.close()
+
 
 if __name__ == '__main__':
   absltest.main()

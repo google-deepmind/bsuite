@@ -157,13 +157,17 @@ class DMEnvFromGym(dm_env.Environment):
       return self.reset()
 
     # Convert the gym step result to a dm_env TimeStep.
-    obs, reward, done, _ = self.gym_env.step(action)
+    observation, reward, done, info = self.gym_env.step(action)
+    self._reset_next_step = done
 
     if done:
-      self._reset_next_step = True
-      return dm_env.termination(reward, obs)
+      is_truncated = info.get('TimeLimit.truncated', False)
+      if is_truncated:
+        return dm_env.truncation(reward, observation)
+      else:
+        return dm_env.termination(reward, observation)
     else:
-      return dm_env.transition(reward, obs)
+      return dm_env.transition(reward, observation)
 
   def close(self):
     self.gym_env.close()
