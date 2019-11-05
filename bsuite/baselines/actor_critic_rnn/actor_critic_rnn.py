@@ -36,8 +36,9 @@ import tensorflow as tf
 from trfl.discrete_policy_gradient_ops import discrete_policy_gradient_loss
 from trfl.value_ops import td_lambda as td_lambda_loss
 from typing import Sequence
+from tensorflow.contrib import framework as contrib_framework
 
-nest = tf.contrib.framework.nest
+nest = contrib_framework.nest
 
 
 class ActorCriticRNN(base.Agent):

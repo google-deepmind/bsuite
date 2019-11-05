@@ -33,8 +33,6 @@ from trfl.discrete_policy_gradient_ops import discrete_policy_gradient_loss
 from trfl.value_ops import td_lambda as td_lambda_loss
 from typing import Sequence, Tuple
 
-nest = tf.contrib.framework.nest
-
 
 class ActorCritic(base.Agent):
   """A simple TensorFlow-based feedforward actor-critic implementation."""
