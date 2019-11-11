@@ -283,6 +283,14 @@ class RewardNoise(dm_env.Environment):
   def action_spec(self):
     return self._env.action_spec()
 
+  @property
+  def raw_env(self):
+    # Recursively unwrap until we reach the true 'raw' env.
+    wrapped = self._env
+    if hasattr(wrapped, 'raw_env'):
+      return wrapped.raw_env
+    return wrapped
+
   def __getattr__(self, attr):
     """Delegate attribute access to underlying environment."""
     return getattr(self._env, attr)
@@ -328,6 +336,14 @@ class RewardScale(dm_env.Environment):
 
   def action_spec(self):
     return self._env.action_spec()
+
+  @property
+  def raw_env(self):
+    # Recursively unwrap until we reach the true 'raw' env.
+    wrapped = self._env
+    if hasattr(wrapped, 'raw_env'):
+      return wrapped.raw_env
+    return wrapped
 
   def __getattr__(self, attr):
     """Delegate attribute access to underlying environment."""

@@ -110,6 +110,15 @@ class WrapperTest(absltest.TestCase):
           )
     mock_logger.write.assert_has_calls(expected_calls)
 
+  def test_unwrap(self):
+    raw_env = FakeEnvironment([dm_env.restart([])])
+    scale_env = wrappers.RewardScale(raw_env, reward_scale=1.)
+    noise_env = wrappers.RewardNoise(scale_env, noise_scale=1.)
+    logging_env = wrappers.Logging(noise_env, logger=None)
+
+    unwrapped = logging_env.raw_env
+    self.assertEqual(id(raw_env), id(unwrapped))
+
 
 class ImageObservationTest(parameterized.TestCase):
 
