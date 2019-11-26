@@ -37,12 +37,19 @@ class MountainCar(auto_reset_environment.Base):
   def __init__(self,
                max_steps: int = 1000,
                seed: int = None):
-    """Mountain Car, an underpowered car must power up a hill."""
+    """Mountain Car, an underpowered car must power up a hill.
+
+    Args:
+      max_steps : maximum number of steps to perform per episode
+      seed : randomization seed
+    """
     super(MountainCar, self).__init__()
     self._min_pos = -1.2
     self._max_pos = 0.6
     self._max_speed = 0.07
     self._goal_pos = 0.5
+    self._force = 0.001
+    self._gravity = 0.0025
 
     self._max_steps = max_steps
     self._rng = np.random.RandomState(seed)
@@ -70,7 +77,8 @@ class MountainCar(auto_reset_environment.Base):
     self._raw_return += reward
 
     # Step the environment
-    self._velocity += (action - 1) * 0.001 + np.cos(3 * self._position) * 0.0025
+    self._velocity += (action - 1) * self._force + np.cos(
+        3 * self._position) * -self._gravity
     self._velocity = np.clip(self._velocity, -self._max_speed, self._max_speed)
     self._position += self._velocity
     self._position = np.clip(self._position, self._min_pos, self._max_pos)
@@ -78,7 +86,7 @@ class MountainCar(auto_reset_environment.Base):
       self._velocity = np.clip(self._velocity, 0, self._max_speed)
 
     observation = self._get_observation()
-    if self._position >= self._goal_pos or self._timestep > self._max_steps:
+    if self._position >= self._goal_pos or self._timestep >= self._max_steps:
       return dm_env.termination(reward=reward, observation=observation)
     else:
       return dm_env.transition(reward=reward, observation=observation)
