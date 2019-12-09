@@ -33,12 +33,10 @@ from dm_env import specs
 import numpy as np
 import sonnet as snt
 import tensorflow as tf
+import tree
 from trfl.discrete_policy_gradient_ops import discrete_policy_gradient_loss
 from trfl.value_ops import td_lambda as td_lambda_loss
 from typing import Sequence
-from tensorflow.contrib import framework as contrib_framework
-
-nest = contrib_framework.nest
 
 
 class ActorCriticRNN(base.Agent):
@@ -82,7 +80,7 @@ class ActorCriticRNN(base.Agent):
         network, (observations, tf.expand_dims(masks, -1)),
         initial_state=state, dtype=tf.float32, time_major=True)
     (_, bootstrap_value), _ = network((obs, mask), final_state)
-    values, bootstrap_value = nest.map_structure(
+    values, bootstrap_value = tree.map_structure(
         lambda t: tf.squeeze(t, axis=-1), (values, bootstrap_value))
     critic_loss, (advantages, _) = td_lambda_loss(
         state_values=values,
@@ -117,7 +115,7 @@ class ActorCriticRNN(base.Agent):
 
   def _placeholders_like(self, tensor_nest):
     """Create placeholders with given nested structure, shape, and type."""
-    return nest.map_structure(
+    return tree.map_structure(
         lambda t: tf.placeholder(shape=t.shape, dtype=t.dtype), tensor_nest)
 
   def _compute_entropy_loss(self, logits):

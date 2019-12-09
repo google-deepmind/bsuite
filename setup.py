@@ -24,6 +24,7 @@ from setuptools import setup
 # JAX examples.
 baselines_require = [
     'dm-sonnet',
+    'dm-tree',
     # trfl needs to be in sync with a given TensorFlow version. We depend on
     # TensorFlow transitively via the "tensorflow" extras_require entry
     # specified by trfl.
