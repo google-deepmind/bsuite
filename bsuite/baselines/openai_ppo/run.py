@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -20,8 +21,6 @@ Note that OpenAI Gym is not installed with bsuite by default.
 See also github.com/openai/baselines for more information.
 """
 
-# Import all packages
-
 from absl import app
 from absl import flags
 
@@ -34,8 +33,6 @@ from bsuite import sweep
 from bsuite.baselines.utils import pool
 from bsuite.logging import terminal_logging
 from bsuite.utils import gym_wrapper
-
-from typing import Text
 
 # bsuite logging
 flags.DEFINE_string('bsuite_id', 'catch/0',
@@ -57,7 +54,7 @@ flags.DEFINE_float('learning_rate', 1e-3, 'learning rate for optimizer')
 FLAGS = flags.FLAGS
 
 
-def run(bsuite_id: Text) -> Text:
+def run(bsuite_id: str) -> str:
   """Runs a PPO agent on a given bsuite environment, logging to CSV."""
 
   def _load_env():

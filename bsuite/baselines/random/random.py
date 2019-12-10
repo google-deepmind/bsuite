@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,15 +16,12 @@
 # ============================================================================
 """An agent that takes uniformly random actions."""
 
-# Import all packages
+from typing import Optional
 
 from bsuite.baselines import base
 import dm_env
 from dm_env import specs
-
 import numpy as np
-
-from typing import Optional
 
 
 class Random(base.Agent):

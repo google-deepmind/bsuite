@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -20,14 +21,11 @@ Note that Dopamine is not installed with bsuite by default.
 See also github.com/google/dopamine for more information.
 """
 
-# Import all packages
-
 from absl import app
 from absl import flags
 
 from bsuite import bsuite
 from bsuite import sweep
-
 from bsuite.baselines.utils import pool
 from bsuite.logging import terminal_logging
 from bsuite.utils import gym_wrapper
@@ -39,8 +37,6 @@ from dopamine.discrete_domains import run_experiment
 
 import gym
 import tensorflow as tf
-
-from typing import Text
 
 # bsuite logging
 flags.DEFINE_string('bsuite_id', 'catch/0',
@@ -74,7 +70,7 @@ FLAGS = flags.FLAGS
 OBSERVATION_SHAPE = (20, 20)
 
 
-def run(bsuite_id: Text) -> Text:
+def run(bsuite_id: str) -> str:
   """Runs Dopamine DQN on a given bsuite environment, logging to CSV."""
 
   class Network(tf.keras.Model):

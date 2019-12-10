@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -18,8 +19,6 @@
 Reference: "Playing atari with deep reinforcement learning" (Mnih et al, 2015).
 Link: https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf.
 """
-
-# Import all packages
 
 from bsuite.baselines import base
 from bsuite.baselines.utils import replay

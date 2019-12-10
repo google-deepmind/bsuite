@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -25,7 +26,7 @@ Links:
 2. https://www.bioinf.jku.at/publications/older/2604.pdf
 """
 
-# Import all packages
+from typing import Sequence
 
 from bsuite.baselines import base
 import dm_env
@@ -36,7 +37,6 @@ import tensorflow as tf
 import tree
 from trfl.discrete_policy_gradient_ops import discrete_policy_gradient_loss
 from trfl.value_ops import td_lambda as td_lambda_loss
-from typing import Sequence
 
 
 class ActorCriticRNN(base.Agent):

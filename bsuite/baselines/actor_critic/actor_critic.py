@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -21,7 +22,7 @@ Reference: "Simple Statistical Gradient-Following Algorithms for Connectionist
 Link: http://www-anw.cs.umass.edu/~barto/courses/cs687/williams92simple.pdf.
 """
 
-# Import all packages
+from typing import Sequence, Tuple
 
 from bsuite.baselines import base
 import dm_env
@@ -31,7 +32,6 @@ import sonnet as snt
 import tensorflow as tf
 from trfl.discrete_policy_gradient_ops import discrete_policy_gradient_loss
 from trfl.value_ops import td_lambda as td_lambda_loss
-from typing import Sequence, Tuple
 
 
 class ActorCritic(base.Agent):

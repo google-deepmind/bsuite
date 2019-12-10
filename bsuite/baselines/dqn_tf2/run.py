@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,8 +16,6 @@
 # ============================================================================
 """Run a Dqn agent instance (using TensorFlow 2) on a bsuite experiment."""
 
-# Import all packages
-
 from absl import app
 from absl import flags
 
@@ -29,8 +28,6 @@ from bsuite.baselines.utils import pool
 
 import sonnet as snt
 import tensorflow.compat.v2 as tf
-
-from typing import Text
 
 # bsuite logging
 flags.DEFINE_string('bsuite_id', 'catch/0',
@@ -60,7 +57,7 @@ flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
 FLAGS = flags.FLAGS
 
 
-def run(bsuite_id: Text) -> Text:
+def run(bsuite_id: str) -> str:
   """Runs a DQN agent on a given bsuite environment, logging to CSV."""
 
   env = bsuite.load_and_record(

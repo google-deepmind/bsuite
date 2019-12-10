@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -14,8 +15,6 @@
 # limitations under the License.
 # ============================================================================
 """A simple agent-environment training loop."""
-
-# Import all packages
 
 from bsuite.baselines import base
 from bsuite.logging import terminal_logging

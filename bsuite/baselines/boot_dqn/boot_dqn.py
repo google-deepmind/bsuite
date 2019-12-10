@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -29,9 +30,8 @@ This implementation is potentially inefficient, in that it does not parallelize
 computation, but it is much more readable and clear than complex TF ops.
 """
 
-# Import all packages
-
 import collections
+from typing import Callable, Sequence
 
 from bsuite.baselines import base
 from bsuite.baselines.utils import replay
@@ -42,7 +42,6 @@ import sonnet as snt
 import tensorflow as tf
 from trfl.indexing_ops import batched_index
 from trfl.target_update_ops import update_target_variables
-from typing import Callable, Sequence
 
 
 class BootstrappedDqn(base.Agent):

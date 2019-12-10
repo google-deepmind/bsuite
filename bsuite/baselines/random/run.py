@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,8 +16,6 @@
 # ============================================================================
 """Runs a random agent on a bsuite experiment."""
 
-# Import all packages
-
 from absl import app
 from absl import flags
 
@@ -26,8 +25,6 @@ from bsuite import sweep
 from bsuite.baselines import experiment
 from bsuite.baselines.random import random
 from bsuite.baselines.utils import pool
-
-from typing import Text
 
 # bsuite logging
 flags.DEFINE_string('bsuite_id', 'catch/0',
@@ -46,7 +43,7 @@ flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
 FLAGS = flags.FLAGS
 
 
-def run(bsuite_id: Text) -> Text:
+def run(bsuite_id: str) -> str:
   """Runs a random agent on a given bsuite environment, logging to CSV."""
 
   env = bsuite.load_and_record(
