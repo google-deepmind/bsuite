@@ -35,7 +35,6 @@ from typing import Text, Sequence
 NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('exploration', 'noise')
 
-score = deep_sea_analysis.score
 plot_scaling = deep_sea_analysis.plot_scaling
 plot_scaling_log = deep_sea_analysis.plot_scaling_log
 plot_regret = deep_sea_analysis.plot_regret
@@ -49,6 +48,15 @@ def find_solution(df_in: pd.DataFrame,
   df = df[df.episode >= 100]
   return deep_sea_analysis.find_solution(
       df, sweep_vars, thresh=0.8, num_episodes=num_episodes)
+
+
+def score(df: pd.DataFrame,
+          forgiveness: float = 100.) -> float:
+  """Outputs a single score for deep sea selection."""
+  plt_df = find_solution(df)
+  beat_dither = (plt_df.solved
+                 & (plt_df.episode < 2 ** plt_df['size'] + forgiveness))
+  return np.mean(beat_dither)
 
 
 def plot_seeds(df: pd.DataFrame,
