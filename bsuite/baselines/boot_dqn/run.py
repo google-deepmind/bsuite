@@ -25,7 +25,8 @@ from bsuite.baselines import experiment
 from bsuite.baselines.boot_dqn import boot_dqn
 from bsuite.baselines.utils import pool
 
-import tensorflow as tf
+import sonnet.v2 as snt
+import tensorflow.compat.v2 as tf
 
 # bsuite logging
 flags.DEFINE_string('bsuite_id', 'catch/0',
@@ -46,7 +47,7 @@ flags.DEFINE_float('prior_scale', 3., 'scale for additive prior network')
 
 # Core DQN options
 flags.DEFINE_integer('batch_size', 128, 'size of batches sampled from replay')
-flags.DEFINE_float('agent_discount', .99, 'discounting on the agent side')
+flags.DEFINE_float('discount', .99, 'discounting on the agent side')
 flags.DEFINE_integer('replay_capacity', 100000, 'size of the replay buffer')
 flags.DEFINE_integer('min_replay_size', 128, 'min transitions for sampling')
 flags.DEFINE_integer('sgd_period', 1, 'steps between online net updates')
@@ -79,25 +80,18 @@ def run(bsuite_id: str) -> str:
       num_hidden_layers=FLAGS.num_hidden_layers,
       num_units=FLAGS.num_units,
       prior_scale=FLAGS.prior_scale)
-  target_ensemble = boot_dqn.make_ensemble(
-      num_actions=env.action_spec().num_values,
-      num_ensemble=FLAGS.num_ensemble,
-      num_hidden_layers=FLAGS.num_hidden_layers,
-      num_units=FLAGS.num_units,
-      prior_scale=FLAGS.prior_scale)
 
   agent = boot_dqn.BootstrappedDqn(
       obs_spec=env.observation_spec(),
       action_spec=env.action_spec(),
       ensemble=ensemble,
-      target_ensemble=target_ensemble,
       batch_size=FLAGS.batch_size,
-      agent_discount=FLAGS.agent_discount,
+      discount=FLAGS.discount,
       replay_capacity=FLAGS.replay_capacity,
       min_replay_size=FLAGS.min_replay_size,
       sgd_period=FLAGS.sgd_period,
       target_update_period=FLAGS.target_update_period,
-      optimizer=tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate),
+      optimizer=snt.optimizers.Adam(learning_rate=FLAGS.learning_rate),
       mask_prob=FLAGS.mask_prob,
       noise_scale=FLAGS.noise_scale,
       epsilon_fn=lambda x: FLAGS.epsilon,
@@ -132,4 +126,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
+  tf.enable_v2_behavior()
   app.run(main)
