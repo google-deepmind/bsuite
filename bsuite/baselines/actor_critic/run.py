@@ -26,7 +26,8 @@ from bsuite.baselines import experiment
 from bsuite.baselines.actor_critic import actor_critic
 from bsuite.baselines.utils import pool
 
-import tensorflow as tf
+import sonnet.v2 as snt
+import tensorflow.compat.v2 as tf
 
 # bsuite logging
 flags.DEFINE_string('bsuite_id', 'catch/0',
@@ -46,14 +47,14 @@ flags.DEFINE_integer('num_units', 64, 'number of units per hidden layer')
 flags.DEFINE_float('learning_rate', 1e-2, 'the learning rate')
 flags.DEFINE_integer('sequence_length', 32, 'mumber of transitions to batch')
 flags.DEFINE_float('td_lambda', 0.9, 'mixing parameter for boostrapping')
-flags.DEFINE_float('agent_discount', .99, 'discounting on the agent side')
+flags.DEFINE_float('discount', .99, 'discounting on the agent side')
 flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
 
 FLAGS = flags.FLAGS
 
 
 def run(bsuite_id: str) -> str:
-  """Runs recurrent A2C agent on a single bsuite environment, logging to CSV."""
+  """Runs A2C agent on a single bsuite environment, logging to CSV."""
 
   env = bsuite.load_and_record(
       bsuite_id=bsuite_id,
@@ -69,12 +70,11 @@ def run(bsuite_id: str) -> str:
   )
   agent = actor_critic.ActorCritic(
       obs_spec=env.observation_spec(),
-      action_spec=env.action_spec(),
       network=network,
-      optimizer=tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate),
+      optimizer=snt.optimizers.Adam(learning_rate=FLAGS.learning_rate),
       sequence_length=FLAGS.sequence_length,
       td_lambda=FLAGS.td_lambda,
-      agent_discount=FLAGS.agent_discount,
+      discount=FLAGS.discount,
       seed=FLAGS.seed,
   )
 
@@ -87,9 +87,8 @@ def run(bsuite_id: str) -> str:
   return bsuite_id
 
 
-def main(argv):
+def main(_):
   """Parses whether to run a single bsuite_id, or multiprocess sweep."""
-  del argv  # Unused.
   bsuite_id = FLAGS.bsuite_id
 
   if bsuite_id in sweep.SWEEP:
@@ -107,4 +106,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
+  tf.enable_v2_behavior()
   app.run(main)

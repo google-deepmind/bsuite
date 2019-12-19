@@ -28,8 +28,8 @@ from bsuite.baselines import base
 import dm_env
 from dm_env import specs
 import numpy as np
-import sonnet as snt
-import tensorflow as tf
+import sonnet.v2 as snt
+import tensorflow.compat.v2 as tf
 from trfl.discrete_policy_gradient_ops import discrete_policy_gradient_loss
 from trfl.value_ops import td_lambda as td_lambda_loss
 
@@ -40,89 +40,98 @@ class ActorCritic(base.Agent):
   def __init__(
       self,
       obs_spec: specs.Array,
-      action_spec: specs.DiscreteArray,
-      network: snt.AbstractModule,
-      optimizer: tf.train.Optimizer,
+      network: snt.Module,
+      optimizer: snt.Optimizer,
       sequence_length: int,
       td_lambda: float,
-      agent_discount: float,
+      discount: float,
       seed: int,
   ):
     """A simple actor-critic agent."""
-    del action_spec  # unused
-    tf.set_random_seed(seed)
+    tf.random.set_seed(seed)
     self._sequence_length = sequence_length
     self._count = 0
-
-    # Create the policy ops..
-    obs = tf.placeholder(shape=obs_spec.shape, dtype=obs_spec.dtype)
-    online_logits, _ = network(tf.expand_dims(obs, 0))
-    action = tf.squeeze(tf.multinomial(online_logits, 1, output_dtype=tf.int32))
+    self._td_lambda = td_lambda
+    self._discount = discount
+    self._network = network
+    policy_network = snt.Sequential([
+        network,
+        lambda pv: tf.random.categorical(pv[0], num_samples=1),
+        lambda a: tf.cast(a, tf.int32),
+        tf.squeeze,
+    ])
+    self._optimizer = optimizer
+    self._policy_network = tf.function(policy_network)
 
     # Create placeholders and numpy arrays for learning from trajectories.
     shapes = [obs_spec.shape, (), (), ()]
     dtypes = [obs_spec.dtype, np.int32, np.float32, np.float32]
 
-    placeholders = [
-        tf.placeholder(shape=(self._sequence_length, 1) + shape, dtype=dtype)
-        for shape, dtype in zip(shapes, dtypes)]
-    observations, actions, rewards, discounts = placeholders
-
-    self.arrays = [
+    self._buffer = [
         np.zeros(shape=(self._sequence_length, 1) + shape, dtype=dtype)
         for shape, dtype in zip(shapes, dtypes)]
 
-    # Build actor and critic losses.
-    logits, values = snt.BatchApply(network)(observations)
-    _, bootstrap_value = network(tf.expand_dims(obs, 0))
+  @tf.function
+  def _step(self, transitions: Sequence[tf.Tensor]):
+    observations, actions, rewards, discounts, final_observation = transitions
 
-    critic_loss, (advantages, _) = td_lambda_loss(
-        state_values=values,
-        rewards=rewards,
-        pcontinues=agent_discount * discounts,
-        bootstrap_value=bootstrap_value,
-        lambda_=td_lambda)
-    actor_loss = discrete_policy_gradient_loss(logits, actions, advantages)
-    train_op = optimizer.minimize(actor_loss + critic_loss)
+    with tf.GradientTape() as tape:
+      # Build actor and critic losses.
+      logits, values = snt.BatchApply(self._network)(observations)
+      _, bootstrap_value = self._network(final_observation)
 
-    # Create TF session and callables.
-    session = tf.Session()
-    self._policy_fn = session.make_callable(action, [obs])
-    self._update_fn = session.make_callable(train_op, placeholders + [obs])
-    session.run(tf.global_variables_initializer())
+      critic_loss, (advantages, _) = td_lambda_loss(
+          state_values=values,
+          rewards=rewards,
+          pcontinues=self._discount * discounts,
+          bootstrap_value=bootstrap_value,
+          lambda_=self._td_lambda)
+      actor_loss = discrete_policy_gradient_loss(logits, actions, advantages)
+      loss = tf.reduce_mean(actor_loss + critic_loss)
+
+      gradients = tape.gradient(loss, self._network.trainable_variables)
+    self._optimizer.apply(gradients, self._network.trainable_variables)
 
   def policy(self, timestep: dm_env.TimeStep) -> base.Action:
     """Selects actions according to the latest softmax policy."""
-    return np.int32(self._policy_fn(timestep.observation))
+    observation = tf.expand_dims(timestep.observation, axis=0)
+    action = self._policy_network(observation)
 
-  def update(self, old_step: dm_env.TimeStep, action: base.Action,
+    return action.numpy()
+
+  def update(self,
+             old_step: dm_env.TimeStep,
+             action: base.Action,
              new_step: dm_env.TimeStep):
     """Receives a transition and performs a learning update."""
 
     # Insert this step into our rolling window 'batch'.
     items = [old_step.observation, action, new_step.reward, new_step.discount]
-    for buf, item in zip(self.arrays, items):
+    for buf, item in zip(self._buffer, items):
       buf[self._count % self._sequence_length, 0] = item
     self._count += 1
 
     # When the batch is full, do a step of SGD.
     if self._count % self._sequence_length == 0:
-      self._update_fn(*(self.arrays + [new_step.observation]))
+      self._step(self._buffer + [new_step.observation[None, ...]])
 
 
-class PolicyValueNet(snt.AbstractModule):
+class PolicyValueNet(snt.Module):
   """A simple multilayer perceptron with a value and a policy head."""
 
   def __init__(self, hidden_sizes: Sequence[int], num_actions: int):
-    self._num_actions = num_actions
-    self._hidden_sizes = hidden_sizes
-    super(PolicyValueNet, self).__init__(name='policy_value_net')
+    super().__init__(name='policy_value_net')
+    self._torso = snt.Sequential([
+        snt.Flatten(),
+        snt.nets.MLP(hidden_sizes, activate_final=True),
+    ])
+    self._policy_head = snt.Linear(num_actions)
+    self._value_head = snt.Linear(1)
 
-  def _build(self, inputs: tf.Tensor) -> Tuple[tf.Tensor, tf.Tensor]:
-    inputs = snt.BatchFlatten()(inputs)
-    hiddens = snt.nets.MLP(self._hidden_sizes, activate_final=True)(inputs)
-    logits = snt.Linear(self._num_actions)(hiddens)
-    value = tf.squeeze(snt.Linear(1)(hiddens), axis=-1)
+  def __call__(self, inputs: tf.Tensor) -> Tuple[tf.Tensor, tf.Tensor]:
+    embedding = self._torso(inputs)
+    logits = self._policy_head(embedding)  # [B, A]
+    value = tf.squeeze(self._value_head(embedding), axis=-1)  # [B]
     return logits, value
 
 
@@ -135,11 +144,10 @@ def default_agent(obs_spec: specs.Array,
   )
   return ActorCritic(
       obs_spec=obs_spec,
-      action_spec=action_spec,
       network=network,
-      optimizer=tf.train.AdamOptimizer(learning_rate=1e-2),
+      optimizer=snt.optimizers.Adam(learning_rate=1e-2),
       sequence_length=32,
       td_lambda=0.9,
-      agent_discount=0.99,
+      discount=0.99,
       seed=42,
   )
