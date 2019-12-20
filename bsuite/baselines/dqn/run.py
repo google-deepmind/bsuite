@@ -23,7 +23,7 @@ from bsuite import bsuite
 from bsuite import sweep
 
 from bsuite.baselines import experiment
-from bsuite.baselines.dqn_tf2 import dqn
+from bsuite.baselines.dqn import dqn
 from bsuite.baselines.utils import pool
 
 import sonnet as snt
@@ -78,7 +78,7 @@ def run(bsuite_id: str) -> str:
       snt.nets.MLP(hidden_units + [env.action_spec().num_values]),
   ])
 
-  agent = dqn.DQNTF2(
+  agent = dqn.DQN(
       action_spec=env.action_spec(),
       online_network=online_network,
       target_network=target_network,

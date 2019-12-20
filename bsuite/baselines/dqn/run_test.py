@@ -19,7 +19,7 @@
 from absl import flags
 from absl.testing import absltest
 
-from bsuite.baselines.dqn_tf2 import run
+from bsuite.baselines.dqn import run
 import tensorflow.compat.v2 as tf
 
 FLAGS = flags.FLAGS

@@ -20,6 +20,8 @@ Reference: "Playing atari with deep reinforcement learning" (Mnih et al, 2015).
 Link: https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf.
 """
 
+from typing import Sequence
+
 from bsuite.baselines import base
 from bsuite.baselines.utils import replay
 
@@ -31,7 +33,7 @@ import sonnet as snt
 import tensorflow.compat.v2 as tf
 
 
-class DQNTF2(base.Agent):
+class DQN(base.Agent):
   """A simple DQN agent using TF2."""
 
   def __init__(
@@ -50,25 +52,26 @@ class DQNTF2(base.Agent):
       seed: int = None,
   ):
 
-    # DQN configuration and hyperparameters.
+    # Internalise hyperparameters.
     self._num_actions = action_spec.num_values
     self._discount = discount
     self._batch_size = batch_size
     self._sgd_period = sgd_period
     self._target_update_period = target_update_period
-    self._optimizer = optimizer
     self._epsilon = epsilon
-    self._total_steps = 0
-    self._replay = replay.Replay(capacity=replay_capacity)
     self._min_replay_size = min_replay_size
 
+    # Seed the RNG.
     tf.random.set_seed(seed)
     self._rng = np.random.RandomState(seed)
 
-    # Internalize the networks.
+    # Internalise the components (networks, optimizer, replay buffer).
+    self._optimizer = optimizer
+    self._replay = replay.Replay(capacity=replay_capacity)
     self._online_network = online_network
     self._target_network = target_network
     self._forward = tf.function(online_network)
+    self._total_steps = tf.Variable(0)
 
   def policy(self, timestep: dm_env.TimeStep) -> base.Action:
     # Epsilon-greedy policy.
@@ -92,7 +95,7 @@ class DQNTF2(base.Agent):
         new_timestep.observation,
     ])
 
-    self._total_steps += 1
+    self._total_steps.assign_add(1)
     if self._total_steps % self._sgd_period != 0:
       return
 
@@ -103,18 +106,14 @@ class DQNTF2(base.Agent):
     transitions = self._replay.sample(self._batch_size)
     self._training_step(transitions)
 
-    # Periodically update target network variables.
-    if self._total_steps % self._target_update_period == 0:
-      for target, param in zip(self._target_network.trainable_variables,
-                               self._online_network.trainable_variables):
-        target.assign(param)
-
   @tf.function
-  def _training_step(self, transitions):
+  def _training_step(self, transitions: Sequence[tf.Tensor]) -> tf.Tensor:
+    """Does a step of SGD on a batch of transitions."""
+    o_tm1, a_tm1, r_t, d_t, o_t = transitions
+    r_t = tf.cast(r_t, tf.float32)  # [B]
+    d_t = tf.cast(d_t, tf.float32)  # [B]
+
     with tf.GradientTape() as tape:
-      o_tm1, a_tm1, r_t, d_t, o_t = transitions
-      r_t = tf.cast(r_t, tf.float32)  # [B]
-      d_t = tf.cast(d_t, tf.float32)  # [B]
       q_tm1 = self._online_network(o_tm1)  # [B, A]
       q_t = self._target_network(o_t)  # [B, A]
 
@@ -127,9 +126,16 @@ class DQNTF2(base.Agent):
       td_error = qa_tm1 - target
       loss = 0.5 * tf.reduce_sum(td_error**2)  # []
 
-    params = self._online_network.trainable_variables
-    grads = tape.gradient(loss, params)
-    self._optimizer.apply(grads, params)
+    # Update the online network via SGD.
+    variables = self._online_network.trainable_variables
+    gradients = tape.gradient(loss, variables)
+    self._optimizer.apply(gradients, variables)
+
+    # Periodically copy online -> target network variables.
+    if self._total_steps % self._target_update_period == 0:
+      for target, param in zip(self._target_network.trainable_variables,
+                               self._online_network.trainable_variables):
+        target.assign(param)
     return loss
 
 
@@ -145,7 +151,7 @@ def default_agent(obs_spec: specs.Array, action_spec: specs.DiscreteArray):
       snt.Flatten(),
       snt.nets.MLP(hidden_units + [action_spec.num_values]),
   ])
-  return DQNTF2(
+  return DQN(
       action_spec=action_spec,
       online_network=online_network,
       target_network=target_network,
