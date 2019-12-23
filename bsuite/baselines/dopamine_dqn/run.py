@@ -36,7 +36,7 @@ from dopamine.discrete_domains import atari_lib
 from dopamine.discrete_domains import run_experiment
 
 import gym
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 # bsuite logging
 flags.DEFINE_string('bsuite_id', 'catch/0',

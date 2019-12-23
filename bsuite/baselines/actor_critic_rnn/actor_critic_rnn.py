@@ -33,7 +33,7 @@ import dm_env
 from dm_env import specs
 import numpy as np
 import sonnet as snt
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import tree
 from trfl.discrete_policy_gradient_ops import discrete_policy_gradient_loss
 from trfl.value_ops import td_lambda as td_lambda_loss
