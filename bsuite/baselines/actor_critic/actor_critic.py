@@ -25,13 +25,12 @@ Link: http://www-anw.cs.umass.edu/~barto/courses/cs687/williams92simple.pdf.
 from typing import Sequence, Tuple
 
 from bsuite.baselines import base
+
 import dm_env
-from dm_env import specs
 import numpy as np
 import sonnet.v2 as snt
 import tensorflow.compat.v2 as tf
-from trfl.discrete_policy_gradient_ops import discrete_policy_gradient_loss
-from trfl.value_ops import td_lambda as td_lambda_loss
+import trfl
 
 
 class ActorCritic(base.Agent):
@@ -39,7 +38,7 @@ class ActorCritic(base.Agent):
 
   def __init__(
       self,
-      obs_spec: specs.Array,
+      obs_spec: dm_env.specs.Array,
       network: snt.Module,
       optimizer: snt.Optimizer,
       sequence_length: int,
@@ -48,11 +47,15 @@ class ActorCritic(base.Agent):
       seed: int,
   ):
     """A simple actor-critic agent."""
+
+    # Internalise hyperparameters.
     tf.random.set_seed(seed)
     self._sequence_length = sequence_length
     self._count = 0
     self._td_lambda = td_lambda
     self._discount = discount
+
+    # Internalise network and optimizer.
     self._network = network
     policy_network = snt.Sequential([
         network,
@@ -60,19 +63,20 @@ class ActorCritic(base.Agent):
         lambda a: tf.cast(a, tf.int32),
         tf.squeeze,
     ])
-    self._optimizer = optimizer
     self._policy_network = tf.function(policy_network)
+    self._optimizer = optimizer
 
-    # Create placeholders and numpy arrays for learning from trajectories.
+    # Create windowed buffer for learning from trajectories.
     shapes = [obs_spec.shape, (), (), ()]
     dtypes = [obs_spec.dtype, np.int32, np.float32, np.float32]
-
     self._buffer = [
         np.zeros(shape=(self._sequence_length, 1) + shape, dtype=dtype)
-        for shape, dtype in zip(shapes, dtypes)]
+        for shape, dtype in zip(shapes, dtypes)
+    ]
 
   @tf.function
   def _step(self, transitions: Sequence[tf.Tensor]):
+    """Do a batch of SGD on the actor + critic loss."""
     observations, actions, rewards, discounts, final_observation = transitions
 
     with tf.GradientTape() as tape:
@@ -80,13 +84,14 @@ class ActorCritic(base.Agent):
       logits, values = snt.BatchApply(self._network)(observations)
       _, bootstrap_value = self._network(final_observation)
 
-      critic_loss, (advantages, _) = td_lambda_loss(
+      critic_loss, (advantages, _) = trfl.td_lambda(
           state_values=values,
           rewards=rewards,
           pcontinues=self._discount * discounts,
           bootstrap_value=bootstrap_value,
           lambda_=self._td_lambda)
-      actor_loss = discrete_policy_gradient_loss(logits, actions, advantages)
+      actor_loss = trfl.discrete_policy_gradient_loss(logits, actions,
+                                                      advantages)
       loss = tf.reduce_mean(actor_loss + critic_loss)
 
       gradients = tape.gradient(loss, self._network.trainable_variables)
@@ -99,9 +104,7 @@ class ActorCritic(base.Agent):
 
     return action.numpy()
 
-  def update(self,
-             old_step: dm_env.TimeStep,
-             action: base.Action,
+  def update(self, old_step: dm_env.TimeStep, action: base.Action,
              new_step: dm_env.TimeStep):
     """Receives a transition and performs a learning update."""
 
@@ -135,8 +138,8 @@ class PolicyValueNet(snt.Module):
     return logits, value
 
 
-def default_agent(obs_spec: specs.Array,
-                  action_spec: specs.DiscreteArray):
+def default_agent(obs_spec: dm_env.specs.Array,
+                  action_spec: dm_env.specs.DiscreteArray):
   """Initialize a DQN agent with default parameters."""
   network = PolicyValueNet(
       hidden_sizes=[64, 64],

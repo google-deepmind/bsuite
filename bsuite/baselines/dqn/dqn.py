@@ -26,8 +26,6 @@ from bsuite.baselines import base
 from bsuite.baselines.utils import replay
 
 import dm_env
-from dm_env import specs
-
 import numpy as np
 import sonnet as snt
 import tensorflow.compat.v2 as tf
@@ -38,7 +36,7 @@ class DQN(base.Agent):
 
   def __init__(
       self,
-      action_spec: specs.DiscreteArray,
+      action_spec: dm_env.specs.DiscreteArray,
       online_network: snt.Module,
       target_network: snt.Module,
       batch_size: int,
@@ -139,7 +137,8 @@ class DQN(base.Agent):
     return loss
 
 
-def default_agent(obs_spec: specs.Array, action_spec: specs.DiscreteArray):
+def default_agent(obs_spec: dm_env.specs.Array,
+                  action_spec: dm_env.specs.DiscreteArray):
   """Initialize a DQN agent with default parameters."""
   del obs_spec  # Unused.
   hidden_units = [50, 50]
