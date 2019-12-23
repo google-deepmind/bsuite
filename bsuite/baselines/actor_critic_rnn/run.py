@@ -26,7 +26,8 @@ from bsuite.baselines import experiment
 from bsuite.baselines.actor_critic_rnn import actor_critic_rnn
 from bsuite.baselines.utils import pool
 
-import tensorflow as tf
+import sonnet.v2 as snt
+import tensorflow.compat.v2 as tf
 
 # bsuite logging
 flags.DEFINE_string('bsuite_id', 'catch/0',
@@ -41,12 +42,12 @@ flags.DEFINE_integer('num_episodes', None, 'Overrides number of training eps.')
 
 # algorithm
 flags.DEFINE_integer('seed', 42, 'seed for random number generation')
-flags.DEFINE_integer('num_hidden_layers', 2, 'number of hidden layers')
+flags.DEFINE_integer('num_hidden_layers', 3, 'number of hidden layers')
 flags.DEFINE_integer('num_units', 64, 'number of units per hidden layer')
 flags.DEFINE_float('learning_rate', 3e-3, 'the learning rate')
 flags.DEFINE_integer('sequence_length', 32, 'mumber of transitions to batch')
 flags.DEFINE_float('td_lambda', 0.9, 'mixing parameter for boostrapping')
-flags.DEFINE_float('agent_discount', .99, 'discounting on the agent side')
+flags.DEFINE_float('discount', .99, 'discounting on the agent side')
 flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
 
 FLAGS = flags.FLAGS
@@ -68,12 +69,11 @@ def run(bsuite_id: str) -> str:
 
   agent = actor_critic_rnn.ActorCriticRNN(
       obs_spec=env.observation_spec(),
-      action_spec=env.action_spec(),
       network=network,
-      optimizer=tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate),
+      optimizer=snt.optimizers.Adam(learning_rate=FLAGS.learning_rate),
       sequence_length=FLAGS.sequence_length,
       td_lambda=FLAGS.td_lambda,
-      agent_discount=FLAGS.agent_discount,
+      discount=FLAGS.discount,
       seed=FLAGS.seed,
   )
 
@@ -106,4 +106,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
+  tf.enable_v2_behavior()
   app.run(main)
