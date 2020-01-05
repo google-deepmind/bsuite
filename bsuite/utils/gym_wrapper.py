@@ -130,7 +130,7 @@ def space2spec(space: gym.Space, name: Text = None):
     return tuple(space2spec(s, name) for s in space.spaces)
 
   elif isinstance(space, spaces.Dict):
-    return {key: space2spec(value, name) for key, value in space.items()}
+    return {key: space2spec(value, name) for key, value in space.spaces.items()}
 
   else:
     raise ValueError('Unexpected gym space: {}'.format(space))
