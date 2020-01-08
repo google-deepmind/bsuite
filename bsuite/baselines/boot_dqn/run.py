@@ -25,7 +25,7 @@ from bsuite.baselines import experiment
 from bsuite.baselines.boot_dqn import boot_dqn
 from bsuite.baselines.utils import pool
 
-import sonnet.v2 as snt
+import sonnet as snt
 import tensorflow.compat.v2 as tf
 
 # bsuite logging

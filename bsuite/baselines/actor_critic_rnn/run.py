@@ -26,7 +26,7 @@ from bsuite.baselines import experiment
 from bsuite.baselines.actor_critic_rnn import actor_critic_rnn
 from bsuite.baselines.utils import pool
 
-import sonnet.v2 as snt
+import sonnet as snt
 import tensorflow.compat.v2 as tf
 
 # bsuite logging

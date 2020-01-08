@@ -28,7 +28,7 @@ from bsuite.baselines import base
 
 import dm_env
 import numpy as np
-import sonnet.v2 as snt
+import sonnet as snt
 import tensorflow.compat.v2 as tf
 import trfl
 

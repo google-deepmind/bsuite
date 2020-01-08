@@ -42,7 +42,7 @@ from bsuite.baselines.utils import replay
 
 import dm_env
 import numpy as np
-import sonnet.v2 as snt
+import sonnet as snt
 import tensorflow.compat.v2 as tf
 import tree
 
