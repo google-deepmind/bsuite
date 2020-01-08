@@ -53,36 +53,31 @@ can follow the instructions below to get `bsuite` running on your local machine.
 We have tested `bsuite` on Python 3.6. We do not attempt to maintain a working
 version for Python 2.7.
 
--   (Optional) You may wish to create a
+1.  First clone the repository to your machine:
+
+    ```
+    git clone https://github.com/deepmind/bsuite.git
+    ```
+
+1.  **Optional**: You may wish to use a
     [Python virtual environment](https://docs.python.org/3/tutorial/venv.html)
     to manage your dependencies, so as not to clobber your system installation:
 
     ```
-    python3 -m venv my_virtual_env
-    source my_virtual_env/bin/activate
+    python3 -m venv bsuite
+    source bsuite/bin/activate
     ```
 
--   To install `bsuite`, run the command
+1.  Use `pip` to install the required dependencies, which are listed in
+    `setup.py`:
 
     ```
-    pip install git+git://github.com/deepmind/bsuite.git
-    ```
-
-    or clone the repository and run
-
-    ```
+    pip install --upgrade pip
     pip install bsuite/
     ```
 
-    To install the package while being able to edit the code (see baselines
-    below), run
-
-    ```
-    pip install -e bsuite/
-    ```
-
-    To also install dependencies for the `baselines/` examples (excluding Gym
-    and Dopamine examples), install with:
+1.  **Optional**: To also install dependencies for the `baselines/` examples
+    (excluding OpenAI and Dopamine examples), install with:
 
     ```
     pip install -e bsuite[baselines]
