@@ -105,11 +105,11 @@ class DeepSea(auto_reset_environment.Base):
       self._denoised_return += 1.
     if not self._deterministic:  # Noisy rewards on the 'end' of chain.
       if self._row == self._size - 1 and self._column in [0, self._size - 1]:
-        reward += np.random.randn()
+        reward += self._rng.randn()
 
     # Transition dynamics
     if action_right:
-      if np.random.rand() > 1 / self._size or self._deterministic:
+      if self._rng.rand() > 1 / self._size or self._deterministic:
         self._column = np.clip(self._column + 1, 0, self._size - 1)
       reward -= self._unscaled_move_cost / self._size
     else:
