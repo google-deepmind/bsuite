@@ -21,8 +21,6 @@ from absl.testing import absltest
 
 from bsuite.baselines.actor_critic_rnn import run
 
-import tensorflow.compat.v2 as tf
-
 FLAGS = flags.FLAGS
 
 
@@ -35,5 +33,4 @@ class RunTest(absltest.TestCase):
 
 
 if __name__ == '__main__':
-  tf.enable_v2_behavior()
   absltest.main()

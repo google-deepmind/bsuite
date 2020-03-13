@@ -27,7 +27,6 @@ from bsuite.baselines.actor_critic import actor_critic
 from bsuite.baselines.utils import pool
 
 import sonnet as snt
-import tensorflow.compat.v2 as tf
 
 # bsuite logging
 flags.DEFINE_string('bsuite_id', 'catch/0',
@@ -106,5 +105,4 @@ def main(_):
 
 
 if __name__ == '__main__':
-  tf.enable_v2_behavior()
   app.run(main)
