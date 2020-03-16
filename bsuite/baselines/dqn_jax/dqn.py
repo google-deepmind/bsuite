@@ -97,7 +97,7 @@ class DQNJAX(base.Agent):
     self._opt_state = opt_init(parameters)
     self._get_params = get_params
 
-  def policy(self, timestep: dm_env.TimeStep) -> base.Action:
+  def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     # Epsilon-greedy policy.
     if np.random.rand() < self._epsilon:
       return np.random.randint(self._num_actions)

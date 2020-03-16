@@ -71,7 +71,7 @@ class DQN(base.Agent):
     self._forward = tf.function(online_network)
     self._total_steps = tf.Variable(0)
 
-  def policy(self, timestep: dm_env.TimeStep) -> base.Action:
+  def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     # Epsilon-greedy policy.
     if self._rng.rand() < self._epsilon:
       return np.random.randint(self._num_actions)

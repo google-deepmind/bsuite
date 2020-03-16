@@ -97,7 +97,7 @@ class ActorCritic(base.Agent):
       gradients = tape.gradient(loss, self._network.trainable_variables)
     self._optimizer.apply(gradients, self._network.trainable_variables)
 
-  def policy(self, timestep: dm_env.TimeStep) -> base.Action:
+  def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     """Selects actions according to the latest softmax policy."""
     observation = tf.expand_dims(timestep.observation, axis=0)
     action = self._policy_network(observation)

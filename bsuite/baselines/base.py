@@ -23,11 +23,11 @@ Action = int  # Only discrete-action agents for now.
 
 
 class Agent(abc.ABC):
-  """An agent consists of a policy and an update rule."""
+  """An agent consists of an action-selection mechanism and an update rule."""
 
   @abc.abstractmethod
-  def policy(self, timestep: dm_env.TimeStep) -> Action:
-    """A policy takes in a timestep and returns an action."""
+  def select_action(self, timestep: dm_env.TimeStep) -> Action:
+    """Takes in a timestep, samples from agent's policy, returns an action."""
 
   @abc.abstractmethod
   def update(

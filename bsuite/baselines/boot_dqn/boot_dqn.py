@@ -129,7 +129,7 @@ class BootstrappedDqn(base.Agent):
                              self._target_ensemble[k].variables):
           dest.assign(src)
 
-  def policy(self, timestep: dm_env.TimeStep) -> base.Action:
+  def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     """Select actions according to epsilon-greedy policy."""
     if self._rng.rand() < self._epsilon_fn(self._total_steps.numpy()):
       return self._rng.randint(self._num_actions)

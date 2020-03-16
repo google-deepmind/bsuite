@@ -33,7 +33,7 @@ class Random(base.Agent):
     self._num_actions = action_spec.num_values
     self._rng = np.random.RandomState(seed)
 
-  def policy(self, timestep: dm_env.TimeStep) -> base.Action:
+  def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     del timestep
     return self._rng.randint(self._num_actions)
 

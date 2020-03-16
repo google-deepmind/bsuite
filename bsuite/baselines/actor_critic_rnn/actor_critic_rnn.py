@@ -114,7 +114,7 @@ class ActorCriticRNN(base.Agent):
 
     return state
 
-  def policy(self, timestep: dm_env.TimeStep) -> base.Action:
+  def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     """Selects actions according to the latest softmax policy."""
     observation = tf.expand_dims(timestep.observation, axis=0)
     mask = tf.expand_dims(float(not timestep.first()), axis=0)

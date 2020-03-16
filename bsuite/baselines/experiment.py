@@ -45,7 +45,7 @@ def run(agent: base.Agent,
     timestep = environment.reset()
     while not timestep.last():
       # Generate an action from the agent's policy.
-      action = agent.policy(timestep)
+      action = agent.select_action(timestep)
 
       # Step the environment.
       new_timestep = environment.step(action)
