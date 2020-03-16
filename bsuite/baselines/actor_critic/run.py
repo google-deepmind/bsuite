@@ -65,10 +65,11 @@ def run(bsuite_id: str) -> str:
   hidden_sizes = [FLAGS.num_units] * FLAGS.num_hidden_layers
   network = actor_critic.PolicyValueNet(
       hidden_sizes=hidden_sizes,
-      num_actions=env.action_spec().num_values,
+      action_spec=env.action_spec(),
   )
   agent = actor_critic.ActorCritic(
       obs_spec=env.observation_spec(),
+      action_spec=env.action_spec(),
       network=network,
       optimizer=snt.optimizers.Adam(learning_rate=FLAGS.learning_rate),
       sequence_length=FLAGS.sequence_length,

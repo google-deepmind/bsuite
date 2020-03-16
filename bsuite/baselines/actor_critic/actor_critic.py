@@ -30,7 +30,11 @@ import dm_env
 import numpy as np
 import sonnet as snt
 import tensorflow.compat.v2 as tf
+import tensorflow_probability as tfp
+import tree
 import trfl
+
+tfd = tfp.distributions
 
 
 class ActorCritic(base.Agent):
@@ -39,6 +43,7 @@ class ActorCritic(base.Agent):
   def __init__(
       self,
       obs_spec: dm_env.specs.Array,
+      action_spec: dm_env.specs.Array,
       network: snt.Module,
       optimizer: snt.Optimizer,
       sequence_length: int,
@@ -57,22 +62,21 @@ class ActorCritic(base.Agent):
 
     # Internalise network and optimizer.
     self._network = network
-    policy_network = snt.Sequential([
-        network,
-        lambda pv: tf.random.categorical(pv[0], num_samples=1),
-        lambda a: tf.cast(a, tf.int32),
-        tf.squeeze,
-    ])
-    self._policy_network = tf.function(policy_network)
     self._optimizer = optimizer
 
     # Create windowed buffer for learning from trajectories.
     shapes = [obs_spec.shape, (), (), ()]
-    dtypes = [obs_spec.dtype, np.int32, np.float32, np.float32]
+    dtypes = [obs_spec.dtype, action_spec.dtype, np.float32, np.float32]
     self._buffer = [
         np.zeros(shape=(self._sequence_length, 1) + shape, dtype=dtype)
         for shape, dtype in zip(shapes, dtypes)
     ]
+
+  @tf.function
+  def _sample_policy(self, inputs: tf.Tensor) -> tf.Tensor:
+    policy, _ = self._network(inputs)
+    action = policy.sample()
+    return tf.squeeze(action)
 
   @tf.function
   def _step(self, transitions: Sequence[tf.Tensor]):
@@ -81,7 +85,7 @@ class ActorCritic(base.Agent):
 
     with tf.GradientTape() as tape:
       # Build actor and critic losses.
-      logits, values = snt.BatchApply(self._network)(observations)
+      policies, values = snt.BatchApply(self._network)(observations)
       _, bootstrap_value = self._network(final_observation)
 
       critic_loss, (advantages, _) = trfl.td_lambda(
@@ -90,17 +94,18 @@ class ActorCritic(base.Agent):
           pcontinues=self._discount * discounts,
           bootstrap_value=bootstrap_value,
           lambda_=self._td_lambda)
-      actor_loss = trfl.discrete_policy_gradient_loss(logits, actions,
-                                                      advantages)
-      loss = tf.reduce_mean(actor_loss + critic_loss)
+      actions = tf.squeeze(actions, axis=-1)  # [B]
+      advantages = tf.squeeze(advantages, axis=-1)  # [B]
+      actor_loss = -policies.log_prob(actions) * tf.stop_gradient(advantages)
+      loss = tf.reduce_sum(actor_loss) + critic_loss
 
-      gradients = tape.gradient(loss, self._network.trainable_variables)
+    gradients = tape.gradient(loss, self._network.trainable_variables)
     self._optimizer.apply(gradients, self._network.trainable_variables)
 
   def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     """Selects actions according to the latest softmax policy."""
     observation = tf.expand_dims(timestep.observation, axis=0)
-    action = self._policy_network(observation)
+    action = self._sample_policy(observation)
 
     return action.numpy()
 
@@ -116,26 +121,32 @@ class ActorCritic(base.Agent):
 
     # When the batch is full, do a step of SGD.
     if self._count % self._sequence_length == 0:
-      self._step(self._buffer + [new_step.observation[None, ...]])
+      transitions = self._buffer + [new_step.observation[None, ...]]
+      transitions = tree.map_structure(tf.convert_to_tensor, transitions)
+      self._step(transitions)
 
 
 class PolicyValueNet(snt.Module):
   """A simple multilayer perceptron with a value and a policy head."""
 
-  def __init__(self, hidden_sizes: Sequence[int], num_actions: int):
+  def __init__(self,
+               hidden_sizes: Sequence[int],
+               action_spec: dm_env.specs.DiscreteArray):
     super().__init__(name='policy_value_net')
     self._torso = snt.Sequential([
         snt.Flatten(),
         snt.nets.MLP(hidden_sizes, activate_final=True),
     ])
-    self._policy_head = snt.Linear(num_actions)
+    self._policy_head = snt.Linear(action_spec.num_values)
     self._value_head = snt.Linear(1)
+    self._action_dtype = action_spec.dtype
 
-  def __call__(self, inputs: tf.Tensor) -> Tuple[tf.Tensor, tf.Tensor]:
+  def __call__(self, inputs: tf.Tensor) -> Tuple[tfd.Distribution, tf.Tensor]:
     embedding = self._torso(inputs)
     logits = self._policy_head(embedding)  # [B, A]
     value = tf.squeeze(self._value_head(embedding), axis=-1)  # [B]
-    return logits, value
+    policy = tfd.Categorical(logits, dtype=self._action_dtype)
+    return policy, value
 
 
 def default_agent(obs_spec: dm_env.specs.Array,
@@ -143,10 +154,11 @@ def default_agent(obs_spec: dm_env.specs.Array,
   """Initialize a DQN agent with default parameters."""
   network = PolicyValueNet(
       hidden_sizes=[64, 64],
-      num_actions=action_spec.num_values,
+      action_spec=action_spec,
   )
   return ActorCritic(
       obs_spec=obs_spec,
+      action_spec=action_spec,
       network=network,
       optimizer=snt.optimizers.Adam(learning_rate=1e-2),
       sequence_length=32,

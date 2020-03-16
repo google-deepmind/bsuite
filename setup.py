@@ -26,6 +26,7 @@ baselines_require = [
     'dm-sonnet>=2.0.0b0',
     'dm-tree',
     'tensorflow>=2.0.0',
+    'tensorflow_probability',
     'trfl',
     'tqdm',
 ]
