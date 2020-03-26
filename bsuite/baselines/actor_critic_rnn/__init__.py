@@ -14,3 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""A simple TensorFlow 2-based implementation of a recurrent actor-critic."""
+
+from bsuite.baselines.actor_critic_rnn.actor_critic_rnn import ActorCriticRNN
+from bsuite.baselines.actor_critic_rnn.actor_critic_rnn import default_agent
+from bsuite.baselines.actor_critic_rnn.actor_critic_rnn import PolicyValueRNN

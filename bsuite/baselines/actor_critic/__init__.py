@@ -14,3 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""A simple TensorFlow 2-based implementation of the actor-critic algorithm."""
+
+from bsuite.baselines.actor_critic.actor_critic import ActorCritic
+from bsuite.baselines.actor_critic.actor_critic import default_agent
+from bsuite.baselines.actor_critic.actor_critic import PolicyValueNet

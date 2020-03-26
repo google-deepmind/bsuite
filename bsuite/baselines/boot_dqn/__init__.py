@@ -14,3 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""A simple implementation of Bootstrapped DQN with prior networks."""
+
+from bsuite.baselines.boot_dqn.boot_dqn import BootstrappedDqn
+from bsuite.baselines.boot_dqn.boot_dqn import default_agent
+from bsuite.baselines.boot_dqn.boot_dqn import make_ensemble

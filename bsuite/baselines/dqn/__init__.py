@@ -14,3 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""A simple TensorFlow 2-based DQN implementation."""
+
+from bsuite.baselines.dqn.dqn import default_agent
+from bsuite.baselines.dqn.dqn import DQN
