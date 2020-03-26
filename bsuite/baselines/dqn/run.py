@@ -68,26 +68,22 @@ def run(bsuite_id: str) -> str:
 
   # Making the networks.
   hidden_units = [FLAGS.num_units] * FLAGS.num_hidden_layers
-  online_network = snt.Sequential([
+  network = snt.Sequential([
       snt.Flatten(),
       snt.nets.MLP(hidden_units + [env.action_spec().num_values]),
   ])
-  target_network = snt.Sequential([
-      snt.Flatten(),
-      snt.nets.MLP(hidden_units + [env.action_spec().num_values]),
-  ])
+  optimizer = snt.optimizers.Adam(learning_rate=FLAGS.learning_rate)
 
   agent = dqn.DQN(
       action_spec=env.action_spec(),
-      online_network=online_network,
-      target_network=target_network,
+      network=network,
       batch_size=FLAGS.batch_size,
       discount=FLAGS.discount,
       replay_capacity=FLAGS.replay_capacity,
       min_replay_size=FLAGS.min_replay_size,
       sgd_period=FLAGS.sgd_period,
       target_update_period=FLAGS.target_update_period,
-      optimizer=snt.optimizers.Adam(learning_rate=FLAGS.learning_rate),
+      optimizer=optimizer,
       epsilon=FLAGS.epsilon,
       seed=FLAGS.seed,
   )

@@ -123,7 +123,7 @@ class BootstrappedDqn(base.Agent):
     self._optimizer.apply(gradients, variables)
 
     # Periodically update the target network.
-    if self._total_steps % self._target_update_period == 0:
+    if tf.math.mod(self._total_steps, self._target_update_period) == 0:
       for k in range(self._num_ensemble):
         for src, dest in zip(self._ensemble[k].variables,
                              self._target_ensemble[k].variables):
@@ -136,7 +136,7 @@ class BootstrappedDqn(base.Agent):
 
     batched_obs = tf.expand_dims(timestep.observation, axis=0)
     q_values = self._ensemble[self._active_head](batched_obs)[0].numpy()
-    return np.argmax(q_values)
+    return int(np.argmax(q_values))
 
   def update(
       self,
@@ -164,7 +164,7 @@ class BootstrappedDqn(base.Agent):
     if self._replay.size < self._min_replay_size:
       return
 
-    if self._total_steps % self._sgd_period == 0:
+    if tf.math.mod(self._total_steps, self._sgd_period) == 0:
       minibatch = self._replay.sample(self._batch_size)
       minibatch = [tf.convert_to_tensor(x) for x in minibatch]
       self._step(minibatch)
@@ -223,6 +223,7 @@ def default_agent(obs_spec: dm_env.specs.Array,
                   action_spec: dm_env.specs.DiscreteArray) -> BootstrappedDqn:
   """Initialize a Bootstrapped DQN agent with default parameters."""
   ensemble = make_ensemble(num_actions=action_spec.num_values)
+  optimizer = snt.optimizers.Adam(learning_rate=1e-3)
   return BootstrappedDqn(
       obs_spec=obs_spec,
       action_spec=action_spec,
@@ -233,7 +234,7 @@ def default_agent(obs_spec: dm_env.specs.Array,
       min_replay_size=128,
       sgd_period=1,
       target_update_period=4,
-      optimizer=snt.optimizers.Adam(learning_rate=1e-3),
+      optimizer=optimizer,
       mask_prob=0.5,
       noise_scale=0.0,
       epsilon_fn=lambda t: 10 / (10 + t),

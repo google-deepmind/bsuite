@@ -20,6 +20,7 @@ Reference: "Playing atari with deep reinforcement learning" (Mnih et al, 2015).
 Link: https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf.
 """
 
+import copy
 from typing import Sequence
 
 from bsuite.baselines import base
@@ -37,8 +38,7 @@ class DQN(base.Agent):
   def __init__(
       self,
       action_spec: dm_env.specs.DiscreteArray,
-      online_network: snt.Module,
-      target_network: snt.Module,
+      network: snt.Module,
       batch_size: int,
       discount: float,
       replay_capacity: int,
@@ -66,9 +66,9 @@ class DQN(base.Agent):
     # Internalise the components (networks, optimizer, replay buffer).
     self._optimizer = optimizer
     self._replay = replay.Replay(capacity=replay_capacity)
-    self._online_network = online_network
-    self._target_network = target_network
-    self._forward = tf.function(online_network)
+    self._online_network = network
+    self._target_network = copy.deepcopy(network)
+    self._forward = tf.function(network)
     self._total_steps = tf.Variable(0)
 
   def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
@@ -94,7 +94,7 @@ class DQN(base.Agent):
     ])
 
     self._total_steps.assign_add(1)
-    if self._total_steps % self._sgd_period != 0:
+    if tf.math.mod(self._total_steps, self._sgd_period) != 0:
       return
 
     if self._replay.size < self._min_replay_size:
@@ -130,7 +130,7 @@ class DQN(base.Agent):
     self._optimizer.apply(gradients, variables)
 
     # Periodically copy online -> target network variables.
-    if self._total_steps % self._target_update_period == 0:
+    if tf.math.mod(self._total_steps, self._target_update_period) == 0:
       for target, param in zip(self._target_network.trainable_variables,
                                self._online_network.trainable_variables):
         target.assign(param)
@@ -141,25 +141,20 @@ def default_agent(obs_spec: dm_env.specs.Array,
                   action_spec: dm_env.specs.DiscreteArray):
   """Initialize a DQN agent with default parameters."""
   del obs_spec  # Unused.
-  hidden_units = [50, 50]
-  online_network = snt.Sequential([
+  network = snt.Sequential([
       snt.Flatten(),
-      snt.nets.MLP(hidden_units + [action_spec.num_values]),
+      snt.nets.MLP([50, 50, action_spec.num_values]),
   ])
-  target_network = snt.Sequential([
-      snt.Flatten(),
-      snt.nets.MLP(hidden_units + [action_spec.num_values]),
-  ])
+  optimizer = snt.optimizers.Adam(learning_rate=1e-3)
   return DQN(
       action_spec=action_spec,
-      online_network=online_network,
-      target_network=target_network,
+      network=network,
       batch_size=32,
       discount=0.99,
       replay_capacity=10000,
       min_replay_size=100,
       sgd_period=1,
       target_update_period=4,
-      optimizer=snt.optimizers.Adam(learning_rate=1e-3),
+      optimizer=optimizer,
       epsilon=0.05,
       seed=42)
