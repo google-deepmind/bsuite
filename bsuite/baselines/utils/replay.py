@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,14 +16,17 @@
 # ============================================================================
 """A simple, uniformly sampled replay buffer."""
 
-# Import all packages
-
-import numpy as np
 from typing import Any, Optional, Sequence
 
+import numpy as np
 
-class Replay(object):
+
+class Replay:
   """Uniform replay buffer. Allocates all required memory at initialization."""
+
+  _data: Optional[Sequence[np.ndarray]]
+  _capacity: int
+  _num_added: int
 
   def __init__(self, capacity: int):
     """Initializes a new `Replay`.
@@ -32,7 +36,7 @@ class Replay(object):
         items to a replay that is at maximum capacity will overwrite the oldest
         items.
     """
-    self._data = None  # type: Optional[Sequence[np.ndarray]]
+    self._data = None
     self._capacity = capacity
     self._num_added = 0
 

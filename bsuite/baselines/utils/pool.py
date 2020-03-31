@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,22 +16,20 @@
 # ============================================================================
 """Example of generating a full set of bsuite results using multiprocessing."""
 
-# Import all packages
-
-import multiprocessing
 from concurrent import futures
+import multiprocessing
+from typing import Callable, Optional, Sequence
+
 import termcolor
 import tqdm
 
-from typing import Callable, Sequence, Text
-
-BsuiteId = Text
+BsuiteId = str
 
 
 def map_mpi(
     run_fn: Callable[[BsuiteId], BsuiteId],
     bsuite_ids: Sequence[BsuiteId],
-    num_processes: int = None,
+    num_processes: Optional[int] = None,
 ):
   """Maps `run_fn` over `bsuite_ids`, using `num_processes` in parallel."""
 

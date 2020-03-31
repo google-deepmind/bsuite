@@ -41,6 +41,7 @@ from bsuite.baselines import base
 from bsuite.baselines.utils import replay
 
 import dm_env
+from dm_env import specs
 import numpy as np
 import sonnet as snt
 import tensorflow.compat.v2 as tf
@@ -52,8 +53,8 @@ class BootstrappedDqn(base.Agent):
 
   def __init__(
       self,
-      obs_spec: dm_env.specs.Array,
-      action_spec: dm_env.specs.DiscreteArray,
+      obs_spec: specs.Array,
+      action_spec: specs.DiscreteArray,
       ensemble: Sequence[snt.Module],
       batch_size: int,
       discount: float,
@@ -219,8 +220,8 @@ def make_ensemble(num_actions: int,
   return ensemble
 
 
-def default_agent(obs_spec: dm_env.specs.Array,
-                  action_spec: dm_env.specs.DiscreteArray) -> BootstrappedDqn:
+def default_agent(obs_spec: specs.Array,
+                  action_spec: specs.DiscreteArray) -> BootstrappedDqn:
   """Initialize a Bootstrapped DQN agent with default parameters."""
   ensemble = make_ensemble(num_actions=action_spec.num_values)
   optimizer = snt.optimizers.Adam(learning_rate=1e-3)

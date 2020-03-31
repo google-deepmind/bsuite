@@ -72,16 +72,17 @@ def run(bsuite_id: str) -> str:
       action_spec=env.action_spec(),
       network=network,
       optimizer=snt.optimizers.Adam(learning_rate=FLAGS.learning_rate),
-      sequence_length=FLAGS.sequence_length,
+      max_sequence_length=FLAGS.sequence_length,
       td_lambda=FLAGS.td_lambda,
       discount=FLAGS.discount,
       seed=FLAGS.seed,
   )
 
+  num_episodes = getattr(env, 'bsuite_num_episodes', FLAGS.num_episodes)
   experiment.run(
       agent=agent,
       environment=env,
-      num_episodes=FLAGS.num_episodes or env.bsuite_num_episodes,  # pytype: disable=attribute-error
+      num_episodes=num_episodes,
       verbose=FLAGS.verbose)
 
   return bsuite_id

@@ -25,9 +25,10 @@ Link: http://www-anw.cs.umass.edu/~barto/courses/cs687/williams92simple.pdf.
 from typing import Sequence, Tuple
 
 from bsuite.baselines import base
+from bsuite.baselines.utils import sequence
 
 import dm_env
-import numpy as np
+from dm_env import specs
 import sonnet as snt
 import tensorflow.compat.v2 as tf
 import tensorflow_probability as tfp
@@ -42,11 +43,11 @@ class ActorCritic(base.Agent):
 
   def __init__(
       self,
-      obs_spec: dm_env.specs.Array,
-      action_spec: dm_env.specs.Array,
-      network: snt.Module,
+      obs_spec: specs.Array,
+      action_spec: specs.Array,
+      network: 'PolicyValueNet',
       optimizer: snt.Optimizer,
-      sequence_length: int,
+      max_sequence_length: int,
       td_lambda: float,
       discount: float,
       seed: int,
@@ -55,8 +56,6 @@ class ActorCritic(base.Agent):
 
     # Internalise hyperparameters.
     tf.random.set_seed(seed)
-    self._sequence_length = sequence_length
-    self._count = 0
     self._td_lambda = td_lambda
     self._discount = discount
 
@@ -65,12 +64,7 @@ class ActorCritic(base.Agent):
     self._optimizer = optimizer
 
     # Create windowed buffer for learning from trajectories.
-    shapes = [obs_spec.shape, (), (), ()]
-    dtypes = [obs_spec.dtype, action_spec.dtype, np.float32, np.float32]
-    self._buffer = [
-        np.zeros(shape=(self._sequence_length, 1) + shape, dtype=dtype)
-        for shape, dtype in zip(shapes, dtypes)
-    ]
+    self._buffer = sequence.Buffer(obs_spec, action_spec, max_sequence_length)
 
   @tf.function
   def _sample_policy(self, inputs: tf.Tensor) -> tf.Tensor:
@@ -79,9 +73,17 @@ class ActorCritic(base.Agent):
     return tf.squeeze(action)
 
   @tf.function
-  def _step(self, transitions: Sequence[tf.Tensor]):
+  def _step(self, trajectory: sequence.Trajectory):
     """Do a batch of SGD on the actor + critic loss."""
-    observations, actions, rewards, discounts, final_observation = transitions
+    observations, actions, rewards, discounts = trajectory
+
+    # Add dummy batch dimensions.
+    rewards = tf.expand_dims(rewards, axis=-1)  # [T, 1]
+    discounts = tf.expand_dims(discounts, axis=-1)  # [T, 1]
+    observations = tf.expand_dims(observations, axis=1)  # [T+1, 1, ...]
+
+    # Extract final observation for bootstrapping.
+    observations, final_observation = observations[:-1], observations[-1]
 
     with tf.GradientTape() as tape:
       # Build actor and critic losses.
@@ -94,8 +96,7 @@ class ActorCritic(base.Agent):
           pcontinues=self._discount * discounts,
           bootstrap_value=bootstrap_value,
           lambda_=self._td_lambda)
-      actions = tf.squeeze(actions, axis=-1)  # [B]
-      advantages = tf.squeeze(advantages, axis=-1)  # [B]
+      advantages = tf.squeeze(advantages, axis=-1)  # [T]
       actor_loss = -policies.log_prob(actions) * tf.stop_gradient(advantages)
       loss = tf.reduce_sum(actor_loss) + critic_loss
 
@@ -109,29 +110,28 @@ class ActorCritic(base.Agent):
 
     return action.numpy()
 
-  def update(self, old_step: dm_env.TimeStep, action: base.Action,
-             new_step: dm_env.TimeStep):
+  def update(
+      self,
+      timestep: dm_env.TimeStep,
+      action: base.Action,
+      new_timestep: dm_env.TimeStep,
+  ):
     """Receives a transition and performs a learning update."""
 
-    # Insert this step into our rolling window 'batch'.
-    items = [old_step.observation, action, new_step.reward, new_step.discount]
-    for buf, item in zip(self._buffer, items):
-      buf[self._count % self._sequence_length, 0] = item
-    self._count += 1
+    self._buffer.append(timestep, action, new_timestep)
 
     # When the batch is full, do a step of SGD.
-    if self._count % self._sequence_length == 0:
-      transitions = self._buffer + [new_step.observation[None, ...]]
-      transitions = tree.map_structure(tf.convert_to_tensor, transitions)
-      self._step(transitions)
+    if self._buffer.full() or new_timestep.last():
+      trajectory = self._buffer.drain()
+      trajectory = tree.map_structure(tf.convert_to_tensor, trajectory)
+      self._step(trajectory)
 
 
 class PolicyValueNet(snt.Module):
   """A simple multilayer perceptron with a value and a policy head."""
 
-  def __init__(self,
-               hidden_sizes: Sequence[int],
-               action_spec: dm_env.specs.DiscreteArray):
+  def __init__(self, hidden_sizes: Sequence[int],
+               action_spec: specs.DiscreteArray):
     super().__init__(name='policy_value_net')
     self._torso = snt.Sequential([
         snt.Flatten(),
@@ -142,6 +142,7 @@ class PolicyValueNet(snt.Module):
     self._action_dtype = action_spec.dtype
 
   def __call__(self, inputs: tf.Tensor) -> Tuple[tfd.Distribution, tf.Tensor]:
+    """Returns a (policy, value) pair: (pi(.|s), V(s))."""
     embedding = self._torso(inputs)
     logits = self._policy_head(embedding)  # [B, A]
     value = tf.squeeze(self._value_head(embedding), axis=-1)  # [B]
@@ -149,8 +150,8 @@ class PolicyValueNet(snt.Module):
     return policy, value
 
 
-def default_agent(obs_spec: dm_env.specs.Array,
-                  action_spec: dm_env.specs.DiscreteArray):
+def default_agent(obs_spec: specs.Array,
+                  action_spec: specs.DiscreteArray) -> base.Agent:
   """Initialize a DQN agent with default parameters."""
   network = PolicyValueNet(
       hidden_sizes=[64, 64],
@@ -161,7 +162,7 @@ def default_agent(obs_spec: dm_env.specs.Array,
       action_spec=action_spec,
       network=network,
       optimizer=snt.optimizers.Adam(learning_rate=1e-2),
-      sequence_length=32,
+      max_sequence_length=32,
       td_lambda=0.9,
       discount=0.99,
       seed=42,

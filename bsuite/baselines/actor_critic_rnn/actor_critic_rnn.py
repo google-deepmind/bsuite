@@ -29,9 +29,10 @@ Links:
 from typing import Sequence
 
 from bsuite.baselines import base
+from bsuite.baselines.utils import sequence
 
 import dm_env
-import numpy as np
+from dm_env import specs
 import sonnet as snt
 import tensorflow.compat.v2 as tf
 import tree
@@ -43,10 +44,11 @@ class ActorCriticRNN(base.Agent):
 
   def __init__(
       self,
-      obs_spec: dm_env.specs.Array,
-      network: snt.RNNCore,
+      obs_spec: specs.Array,
+      action_spec: specs.Array,
+      network: 'PolicyValueRNN',
       optimizer: snt.Optimizer,
-      sequence_length: int,
+      max_sequence_length: int,
       td_lambda: float,
       discount: float,
       seed: int,
@@ -59,44 +61,37 @@ class ActorCriticRNN(base.Agent):
     self._optimizer = optimizer
 
     # Initialise recurrent state.
-    self._state: snt.LSTMState = network.initial_state(1)
-    self._rollout_initial_state: snt.LSTMState = network.initial_state(1)
+    self._state = network.initial_state(1)
+    self._rollout_initial_state = network.initial_state(1)
 
     # Set seed and internalise hyperparameters.
     tf.random.set_seed(seed)
-    self._sequence_length = sequence_length
-    self._num_transitions_in_buffer = 0
     self._discount = discount
     self._td_lambda = td_lambda
 
     # Initialise rolling experience buffer.
-    shapes = [obs_spec.shape, (), (), (), ()]
-    dtypes = [obs_spec.dtype, np.int32, np.float32, np.float32, np.float32]
-    self._buffer = [
-        np.zeros(shape=(self._sequence_length, 1) + shape, dtype=dtype)
-        for shape, dtype in zip(shapes, dtypes)
-    ]
+    self._buffer = sequence.Buffer(obs_spec, action_spec, max_sequence_length)
 
   @tf.function
-  def _step(self, sequence: Sequence[tf.Tensor]):
+  def _step(self, trajectory: sequence.Trajectory):
     """Do a batch of SGD on actor + critic loss on a sequence of experience."""
-    (observations, actions, rewards, discounts, masks, final_obs,
-     final_mask) = sequence
-    masks = tf.expand_dims(masks, axis=-1)
+    observations, actions, rewards, discounts = trajectory
+
+    # Add dummy batch dimensions.
+    actions = tf.expand_dims(actions, axis=-1)  # [T, 1]
+    rewards = tf.expand_dims(rewards, axis=-1)  # [T, 1]
+    discounts = tf.expand_dims(discounts, axis=-1)  # [T, 1]
+    observations = tf.expand_dims(observations, axis=1)  # [T+1, 1, ...]
+
+    # Extract final observation for bootstrapping.
+    observations, final_observation = observations[:-1], observations[-1]
 
     with tf.GradientTape() as tape:
       # Build actor and critic losses.
-      state = self._rollout_initial_state
-      logits_sequence = []
-      values = []
-      for t in range(self._sequence_length):
-        (logits, value), state = self._network((observations[t], masks[t]),
-                                               state)
-        logits_sequence.append(logits)
-        values.append(value)
-      (_, bootstrap_value), _ = self._network((final_obs, final_mask), state)
-      values = tf.squeeze(tf.stack(values, axis=0), axis=-1)
-      logits = tf.stack(logits_sequence, axis=0)
+      (logits, values), state = snt.dynamic_unroll(
+          self._network, observations, self._rollout_initial_state)
+      (_, bootstrap_value), state = self._network(final_observation, state)
+      values = tf.squeeze(values, axis=-1)
       bootstrap_value = tf.squeeze(bootstrap_value, axis=-1)
       critic_loss, (advantages, _) = trfl.td_lambda(
           state_values=values,
@@ -104,8 +99,8 @@ class ActorCriticRNN(base.Agent):
           pcontinues=self._discount * discounts,
           bootstrap_value=bootstrap_value,
           lambda_=self._td_lambda)
-      actor_loss = trfl.discrete_policy_gradient_loss(logits, actions,
-                                                      advantages)
+      actor_loss = trfl.discrete_policy_gradient_loss(
+          logits, actions, advantages)
       loss = tf.reduce_mean(actor_loss + critic_loss)
 
     gradients = tape.gradient(loss, self._network.trainable_variables)
@@ -116,72 +111,55 @@ class ActorCriticRNN(base.Agent):
 
   def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     """Selects actions according to the latest softmax policy."""
+    if timestep.first():
+      self._state = self._network.initial_state(1)
+      self._rollout_initial_state = self._network.initial_state(1)
     observation = tf.expand_dims(timestep.observation, axis=0)
-    mask = tf.expand_dims(float(not timestep.first()), axis=0)
-    (logits, _), self._state = self._forward((observation, mask), self._state)
+    (logits, _), self._state = self._forward(observation, self._state)
     return tf.random.categorical(logits, num_samples=1).numpy().squeeze()
 
-  def update(self, timestep: dm_env.TimeStep, action: base.Action,
-             new_timestep: dm_env.TimeStep):
+  def update(
+      self,
+      timestep: dm_env.TimeStep,
+      action: base.Action,
+      new_timestep: dm_env.TimeStep,
+  ):
     """Receives a transition and performs a learning update."""
+    self._buffer.append(timestep, action, new_timestep)
 
-    # Insert this step into our rolling window 'batch'.
-    items = [
-        timestep.observation, action, new_timestep.reward,
-        new_timestep.discount,
-        float(not timestep.first())
-    ]
-    for buf, item in zip(self._buffer, items):
-      buf[self._num_transitions_in_buffer % self._sequence_length, 0] = item
-    self._num_transitions_in_buffer += 1
-
-    # When the batch is full, do a step of SGD.
-    if self._num_transitions_in_buffer % self._sequence_length != 0:
-      return
-
-    transitions = (
-        self._buffer + [
-            tf.expand_dims(new_timestep.observation, axis=0),  # final_obs
-            tf.expand_dims(float(not new_timestep.first()),
-                           axis=0),  # final_mask
-        ])
-    self._rollout_initial_state = self._step(transitions)
+    if self._buffer.full() or new_timestep.last():
+      trajectory = self._buffer.drain()
+      trajectory = tree.map_structure(tf.convert_to_tensor, trajectory)
+      self._rollout_initial_state = self._step(trajectory)
 
 
 class PolicyValueRNN(snt.RNNCore):
-  """A recurrent multilayer perceptron with a value and a policy head."""
+  """A recurrent multi-layer perceptron with a value and a policy head."""
 
   def __init__(self, hidden_sizes: Sequence[int], num_actions: int):
     super().__init__(name='policy_value_net')
     self._num_actions = num_actions
-    self._torso = snt.Sequential([
-        snt.Flatten(),
-        snt.nets.MLP(hidden_sizes, activate_final=True, name='net'),
-    ])
-    self._core = snt.DeepRNN([
-        snt.Flatten(),
-        snt.LSTM(hidden_sizes[-1], name='rnn'),
-    ])
-    self._policy_head = snt.Linear(num_actions, name='policy')
-    self._value_head = snt.Linear(1, name='value')
+    self._torso = snt.nets.MLP(hidden_sizes, activate_final=True, name='torso')
+    self._core = snt.LSTM(hidden_sizes[-1], name='rnn')
+    self._policy_head = snt.Linear(num_actions, name='policy_head')
+    self._value_head = snt.Linear(1, name='value_head')
 
-  def __call__(self, inputs_and_mask, state: snt.LSTMState):
-    inputs, mask = inputs_and_mask
-    state = tree.map_structure(lambda x: x * mask, state)
-    embedding = self._torso(inputs)
-    lstm_output, next_state = self._core(inputs, state)
-    lstm_output = tf.nn.relu(lstm_output) + embedding  # 'skip connection'.
-    logits = self._policy_head(lstm_output)
-    value = self._value_head(lstm_output)
+  def __call__(self, inputs: tf.Tensor, state: snt.LSTMState):
+    flat_inputs = snt.Flatten()(inputs)
+    embedding = self._torso(flat_inputs)
+    lstm_output, next_state = self._core(embedding, state)
+    embedding += tf.nn.relu(lstm_output)  # Note: skip connection.
+    logits = self._policy_head(embedding)
+    value = self._value_head(embedding)
     return (logits, value), next_state
 
-  def initial_state(self, *args, **kwargs):
+  def initial_state(self, *args, **kwargs) -> snt.LSTMState:
     """Creates the core initial state."""
     return self._core.initial_state(*args, **kwargs)
 
 
-def default_agent(obs_spec: dm_env.specs.Array,
-                  action_spec: dm_env.specs.DiscreteArray):
+def default_agent(obs_spec: specs.Array,
+                  action_spec: specs.DiscreteArray) -> base.Agent:
   """Initialize a DQN agent with default parameters."""
   network = PolicyValueRNN(
       hidden_sizes=[64, 64, 32],
@@ -189,9 +167,10 @@ def default_agent(obs_spec: dm_env.specs.Array,
   )
   return ActorCriticRNN(
       obs_spec=obs_spec,
+      action_spec=action_spec,
       network=network,
-      optimizer=snt.optimizers.Adam(learning_rate=3e-3),
-      sequence_length=32,
+      optimizer=snt.optimizers.Adam(learning_rate=1e-3),
+      max_sequence_length=32,
       td_lambda=0.9,
       discount=0.99,
       seed=42,
