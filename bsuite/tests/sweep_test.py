@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -14,10 +15,6 @@
 # limitations under the License.
 # ============================================================================
 """Tests for bsuite.sweep."""
-
-# Import all required packages
-
-# Internal dependencies.
 
 from absl.testing import absltest
 from absl.testing import parameterized

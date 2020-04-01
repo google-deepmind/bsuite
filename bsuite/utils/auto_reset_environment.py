@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -18,8 +19,6 @@
 The environment API states that stepping an environment after a LAST timestep
 should return the first timestep of a new episode.
 """
-
-# Import all required packages
 
 import abc
 import dm_env

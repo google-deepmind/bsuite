@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,20 +16,17 @@
 # ============================================================================
 """Read functionality for local csv-based experiments."""
 
-# Import all packages
-
 import glob
 import os
+from typing import List, Tuple
 
 from bsuite import sweep
 from bsuite.logging import csv_logging
 from bsuite.logging import logging_utils
-
 import pandas as pd
-from typing import List, Tuple, Text
 
 
-def load_one_result_set(results_dir: Text) -> pd.DataFrame:
+def load_one_result_set(results_dir: str) -> pd.DataFrame:
   """Returns a pandas DataFrame of bsuite results stored in results_dir."""
   data = []
   for file_path in glob.glob(os.path.join(results_dir, '*.csv')):
@@ -52,7 +50,7 @@ def load_one_result_set(results_dir: Text) -> pd.DataFrame:
 
 def load_bsuite(
     results_dirs: logging_utils.PathCollection
-) -> Tuple[pd.DataFrame, List[Text]]:
+) -> Tuple[pd.DataFrame, List[str]]:
   """Returns a pandas DataFrame of bsuite results."""
   return logging_utils.load_multiple_runs(
       path_collection=results_dirs,

@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -14,8 +15,6 @@
 # limitations under the License.
 # ============================================================================
 """Mountain car scale reinforcement learning environment."""
-
-# Import all packages
 
 from bsuite.experiments.mountain_car import mountain_car
 from bsuite.experiments.mountain_car_noise import sweep

@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,7 +16,7 @@
 # ============================================================================
 """Analysis for bandit_noise."""
 
-# Import all packages
+from typing import Sequence
 
 from bsuite.experiments.bandit import analysis as bandit_analysis
 from bsuite.experiments.bandit import sweep
@@ -23,7 +24,6 @@ from bsuite.utils import plotting
 import numpy as np
 import pandas as pd
 import plotnine as gg
-from typing import Text, Sequence
 
 NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('noise',)
@@ -39,8 +39,8 @@ def score(df: pd.DataFrame, scaling_var='noise_scale') -> float:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[Text] = None,
-                  group_col: Text = 'noise_scale') -> gg.ggplot:
+                  sweep_vars: Sequence[str] = None,
+                  group_col: str = 'noise_scale') -> gg.ggplot:
   """Plots the average regret through time."""
   p = plotting.plot_regret_learning(
       df_in=df, group_col=group_col, sweep_vars=sweep_vars,
@@ -49,8 +49,8 @@ def plot_learning(df: pd.DataFrame,
 
 
 def plot_average(df: pd.DataFrame,
-                 sweep_vars: Sequence[Text] = None,
-                 group_col: Text = 'noise_scale') -> gg.ggplot:
+                 sweep_vars: Sequence[str] = None,
+                 group_col: str = 'noise_scale') -> gg.ggplot:
   """Plots the average regret through time by noise_scale."""
   p = plotting.plot_regret_average(
       df_in=df,
@@ -68,7 +68,7 @@ def plot_average(df: pd.DataFrame,
 
 
 def plot_seeds(df: pd.DataFrame,
-               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+               sweep_vars: Sequence[str] = None) -> gg.ggplot:
   """Plot the performance by individual work unit."""
   return bandit_analysis.plot_seeds(
       df_in=df,

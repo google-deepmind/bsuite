@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,9 +16,6 @@
 # ============================================================================
 """Tests for bsuite.experiments.memory_len."""
 
-# Import all required packages
-
-# Internal dependencies.
 from absl.testing import absltest
 from bsuite.experiments.memory_len import memory_len
 from dm_env import test_utils

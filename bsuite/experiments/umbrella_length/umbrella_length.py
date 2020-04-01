@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -22,8 +23,6 @@ Only the first action takes any effect (pick up umbrella or not).
 All other actions take no effect and the reward is +1, -1 on the final step.
 Distractor states are always Bernoulli sampled  iid each step.
 """
-
-# Import all required packages
 
 from bsuite.experiments.umbrella_length import sweep
 from bsuite.utils import auto_reset_environment

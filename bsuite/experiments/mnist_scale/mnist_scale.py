@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -14,8 +15,6 @@
 # limitations under the License.
 # ============================================================================
 """MNIST bandit with reward scaling."""
-
-# Import all required packages
 
 from bsuite.experiments.mnist import mnist
 from bsuite.experiments.mnist_scale import sweep

@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,14 +16,12 @@
 # ============================================================================
 """Analysis functions for mountain_car experiment."""
 
-# Import all packages
+from typing import Sequence
 
 from bsuite.experiments.mountain_car import sweep
 from bsuite.utils import plotting
 import pandas as pd
 import plotnine as gg
-
-from typing import Text, Sequence
 
 _SOLVED_STEPS = 25
 NUM_EPISODES = sweep.NUM_EPISODES
@@ -47,7 +46,7 @@ def mountain_car_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
   """Simple learning curves for mountain_car."""
   df = mountain_car_preprocess(df)
   p = plotting.plot_regret_learning(
@@ -58,8 +57,8 @@ def plot_learning(df: pd.DataFrame,
 
 
 def plot_seeds(df_in: pd.DataFrame,
-               sweep_vars: Sequence[Text] = None,
-               colour_var: Text = None) -> gg.ggplot:
+               sweep_vars: Sequence[str] = None,
+               colour_var: str = None) -> gg.ggplot:
   """Plot the returns through time individually by run."""
   df = df_in.copy()
   df['average_return'] = df.raw_return.diff() / df.episode.diff()

@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -18,8 +19,6 @@
 Observation is a single pixel of 0 - this is an independent arm bandit problem!
 Rewards are [0, 0.1, .. 1] assigned randomly to 11 arms and deterministic
 """
-
-# Import all required packages
 
 from bsuite.experiments.bandit import sweep
 from bsuite.utils import auto_reset_environment

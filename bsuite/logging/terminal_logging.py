@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -14,16 +15,13 @@
 # limitations under the License.
 # ============================================================================
 """A simple logger that pretty-prints to terminal."""
-# Import all packages
 
 import numbers
+from typing import Any, Mapping
 
 from bsuite.logging import base
 from bsuite.utils import wrappers
-
 import dm_env
-
-from typing import Any, Mapping, Text
 
 
 def wrap_environment(env: dm_env.Environment,
@@ -42,7 +40,7 @@ class Logger(base.Logger):
   def __init__(self, pretty_print: bool = True):
     self._pretty_print = pretty_print
 
-  def write(self, data: Mapping[Text, Any]):
+  def write(self, data: Mapping[str, Any]):
     """Writes to terminal, pretty-printing the results."""
 
     if self._pretty_print:
@@ -57,7 +55,7 @@ class Logger(base.Logger):
     print(data)
 
 
-def value_format(value: Any) -> Text:
+def value_format(value: Any) -> str:
   """Convenience function for string formatting."""
   if isinstance(value, numbers.Real):
     return '{:0.4f}'.format(value)

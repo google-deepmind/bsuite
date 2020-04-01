@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -18,8 +19,6 @@
 In this environment, we test the agent's generalization ability, and abstract
 away exploration/planning/memory etc -- i.e. a bandit, with no 'state'.
 """
-
-# Import all packages
 
 from bsuite.experiments.mnist import sweep
 from bsuite.utils import auto_reset_environment

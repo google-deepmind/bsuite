@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,17 +16,16 @@
 # ============================================================================
 """bsuite adapter for OpenAI gym run-loops."""
 
-# Import all packages
+from typing import Any, Dict, Optional, Tuple, Union
 
 import dm_env
 from dm_env import specs
 import gym
 from gym import spaces
 import numpy as np
-from typing import Any, Dict, Optional, Text, Tuple, Union
 
 # OpenAI gym step format = obs, reward, is_finished, other_info
-_GymTimestep = Tuple[np.ndarray, float, bool, Dict[Text, Any]]
+_GymTimestep = Tuple[np.ndarray, float, bool, Dict[str, Any]]
 
 
 class GymFromDMEnv(gym.Env):
@@ -49,7 +49,7 @@ class GymFromDMEnv(gym.Env):
     self._last_observation = timestep.observation
     return timestep.observation
 
-  def render(self, mode: Text = 'rgb_array') -> Union[np.ndarray, bool]:
+  def render(self, mode: str = 'rgb_array') -> Union[np.ndarray, bool]:
     if self._last_observation is None:
       raise ValueError('Environment not ready to render. Call reset() first.')
 
@@ -58,7 +58,9 @@ class GymFromDMEnv(gym.Env):
 
     if mode == 'human':
       if self.viewer is None:
-        from gym.envs.classic_control import rendering  # pylint: disable=g-import-not-at-top
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=g-import-not-at-top
+        from gym.envs.classic_control import rendering
         self.viewer = rendering.SimpleImageViewer()
       self.viewer.imshow(self._last_observation)
       return self.viewer.isopen
@@ -95,7 +97,7 @@ class GymFromDMEnv(gym.Env):
     return getattr(self._env, attr)
 
 
-def space2spec(space: gym.Space, name: Text = None):
+def space2spec(space: gym.Space, name: str = None):
   """Converts an OpenAI Gym space to a dm_env spec or nested structure of specs.
 
   Box, MultiBinary and MultiDiscrete Gym spaces are converted to BoundedArray

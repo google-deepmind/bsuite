@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -18,8 +19,6 @@
 Observation is a single pixel of 0 - this is an indep arm bandit problem!
 Rewards are np.linspace(0, 1, 11) with no noise, but rescaled.
 """
-
-# Import all required packages
 
 from bsuite.experiments.bandit import bandit
 from bsuite.experiments.bandit import sweep

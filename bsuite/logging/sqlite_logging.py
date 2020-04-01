@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -14,11 +15,11 @@
 # limitations under the License.
 # ============================================================================
 """Logging functionality for local SQLite-based experiments."""
-# Import all packages
 
 import string
 import sys
 import traceback
+from typing import Any, Mapping
 
 from absl import logging
 
@@ -29,14 +30,12 @@ import dm_env
 import six
 import sqlite3
 
-from typing import Any, Mapping, Text
-
 _STEP_KEY = 'steps'
 
 
 def wrap_environment(env: dm_env.Environment,
-                     db_path: Text,
-                     experiment_name: Text,
+                     db_path: str,
+                     experiment_name: str,
                      setting_index: int,
                      log_by_step: bool = False) -> dm_env.Environment:
   """Returns a wrapped environment that logs using SQLite."""
@@ -53,8 +52,8 @@ class Logger(base.Logger):
   """
 
   def __init__(self,
-               db_path: Text,
-               experiment_name: Text,
+               db_path: str,
+               experiment_name: str,
                setting_index: int,
                connection: sqlite3.Connection = None,
                skip_name_validation: bool = False):
@@ -86,7 +85,7 @@ class Logger(base.Logger):
     self._db_path = db_path
     self._keys = None
 
-  def write(self, data: Mapping[Text, Any]):
+  def write(self, data: Mapping[str, Any]):
     """Writes a row to the experiment's table, creating the table if needed."""
     self._maybe_create_table(data)
 
@@ -107,7 +106,7 @@ class Logger(base.Logger):
              ' You may want to specify a different database file.').format(
                  self._experiment_name, self._db_path))
 
-  def _maybe_create_table(self, data: Mapping[Text, Any]):
+  def _maybe_create_table(self, data: Mapping[str, Any]):
     """Creates a table for this experiment, if it does not already exist."""
     if self._sure_that_table_exists:
       return

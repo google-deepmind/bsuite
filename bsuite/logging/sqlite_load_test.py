@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,11 +16,7 @@
 # ============================================================================
 """Tests for bsuite.utils.sqlite_load."""
 
-# Import all required packages
-
 import random
-
-# Internal dependencies.
 
 from absl.testing import absltest
 from bsuite.logging import sqlite_load

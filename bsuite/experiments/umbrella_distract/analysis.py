@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,14 +16,13 @@
 # ============================================================================
 """Analysis for umbrella_distract experiment."""
 
-# Import all packages
+from typing import Sequence
 
 from bsuite.experiments.umbrella_distract import sweep
 from bsuite.experiments.umbrella_length import analysis as umbrella_length_analysis
 from bsuite.utils import plotting
 import pandas as pd
 import plotnine as gg
-from typing import Sequence, Text
 
 NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('credit_assignment', 'noise')
@@ -33,7 +33,7 @@ def score(df: pd.DataFrame) -> float:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
   """Plots the average regret through time."""
   return plotting.plot_regret_group_nosmooth(
       df_in=df,
@@ -44,7 +44,7 @@ def plot_learning(df: pd.DataFrame,
 
 
 def plot_scale(df: pd.DataFrame,
-               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+               sweep_vars: Sequence[str] = None) -> gg.ggplot:
   """Plots the average return at end of learning investigating scaling."""
   return plotting.plot_regret_ave_scaling(
       df_in=df,
@@ -56,6 +56,6 @@ def plot_scale(df: pd.DataFrame,
 
 
 def plot_seeds(df_in: pd.DataFrame,
-               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+               sweep_vars: Sequence[str] = None) -> gg.ggplot:
   """Plot the returns through time individually by run."""
   return umbrella_length_analysis.plot_seeds(df_in, sweep_vars, 'n_distractor')

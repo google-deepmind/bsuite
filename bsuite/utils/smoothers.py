@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,13 +16,11 @@
 # ============================================================================
 """Collection of smoothers designed for plotnine ggplot."""
 
-# Import all packages
+from typing import Any, Dict
 
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
-from six.moves import range
-from typing import Any, Dict, Text
 
 
 def _mean(data: pd.DataFrame, span: float, edge_tolerance: float = 0.):
@@ -61,7 +60,7 @@ def mean(data: pd.DataFrame,
          span: float = 0.1,
          se: bool = True,
          level: float = 0.95,
-         method_args: Dict[Text, Any] = None,
+         method_args: Dict[str, Any] = None,
          **params) -> pd.DataFrame:
   """Computes the rolling mean over a portion of the data.
 

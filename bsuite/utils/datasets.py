@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -18,14 +19,12 @@
 Adapted from https://github.com/google/jax/blob/master/examples/datasets.py
 """
 
-# Import all required packages
-
-
 import array
 import gzip
 import os
 from os import path
 import struct
+
 from absl import logging
 import numpy as np
 from six.moves.urllib.request import urlretrieve
@@ -55,7 +54,7 @@ def load_mnist(directory="/tmp/mnist"):
     with gzip.open(filename, "rb") as fh:
       _, num_data, rows, cols = struct.unpack(">IIII", fh.read(16))
       return np.array(array.array("B", fh.read()),
-                      dtype=np.int8).reshape(num_data, rows, cols)
+                      dtype=np.int8).reshape(shape=(num_data, rows, cols))
 
   for filename in ["train-images-idx3-ubyte.gz", "train-labels-idx1-ubyte.gz",
                    "t10k-images-idx3-ubyte.gz", "t10k-labels-idx1-ubyte.gz"]:

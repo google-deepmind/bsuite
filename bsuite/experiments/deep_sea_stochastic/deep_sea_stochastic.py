@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -14,8 +15,6 @@
 # limitations under the License.
 # ============================================================================
 """Stochastic Deep Sea environment."""
-
-# Import all required packages
 
 from bsuite.experiments.deep_sea import deep_sea
 from bsuite.experiments.deep_sea_stochastic import sweep

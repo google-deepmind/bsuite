@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -14,8 +15,6 @@
 # limitations under the License.
 # ============================================================================
 """Catch environment with noisy rewards."""
-
-# Import all required packages
 
 from bsuite.experiments.catch import catch
 from bsuite.experiments.catch_noise import sweep

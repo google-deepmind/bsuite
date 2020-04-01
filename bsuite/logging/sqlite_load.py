@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,16 +16,15 @@
 # ============================================================================
 """Read functionality for local SQLite-based experiments."""
 
-# Import all packages
+from typing import List, Tuple
 
 from bsuite import sweep
 from bsuite.logging import logging_utils
 import pandas as pd
 import sqlite3
-from typing import List, Tuple, Text
 
 
-def load_one_result_set(db_path: Text,
+def load_one_result_set(db_path: str,
                         connection: sqlite3.Connection = None) -> pd.DataFrame:
   """Returns a pandas DataFrame of bsuite results.
 
@@ -58,7 +58,7 @@ def load_one_result_set(db_path: Text,
 
 def load_bsuite(
     results_dirs: logging_utils.PathCollection
-) -> Tuple[pd.DataFrame, List[Text]]:
+) -> Tuple[pd.DataFrame, List[str]]:
   """Returns a pandas DataFrame of bsuite results."""
   return logging_utils.load_multiple_runs(
       path_collection=results_dirs,

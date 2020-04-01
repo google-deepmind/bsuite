@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,7 +16,7 @@
 # ============================================================================
 """Analysis for umbrella_length experiment."""
 
-# Import all packages
+from typing import Sequence
 
 from bsuite.experiments.umbrella_length import sweep
 from bsuite.utils import plotting
@@ -23,14 +24,13 @@ import numpy as np
 import pandas as pd
 import plotnine as gg
 
-from typing import Sequence, Text
 
 NUM_EPISODES = sweep.NUM_EPISODES
 REGRET_THRESH = 0.5
 TAGS = ('credit_assignment', 'noise')
 
 
-def score_by_group(df: pd.DataFrame, group_col: Text) -> float:
+def score_by_group(df: pd.DataFrame, group_col: str) -> float:
   """Output a single score for umbrella_chain."""
   regret_list = []  # Loop to handle partially-finished runs.
   for _, sub_df in df.groupby(group_col):
@@ -46,7 +46,7 @@ def score(df: pd.DataFrame) -> float:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
   """Plots the average regret through time."""
   return plotting.plot_regret_group_nosmooth(
       df_in=df,
@@ -57,7 +57,7 @@ def plot_learning(df: pd.DataFrame,
 
 
 def plot_scale(df: pd.DataFrame,
-               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+               sweep_vars: Sequence[str] = None) -> gg.ggplot:
   """Plots the average return at end of learning investigating scaling."""
   return plotting.plot_regret_ave_scaling(
       df_in=df,
@@ -69,8 +69,8 @@ def plot_scale(df: pd.DataFrame,
 
 
 def plot_seeds(df_in: pd.DataFrame,
-               sweep_vars: Sequence[Text] = None,
-               colour_var: Text = 'chain_length') -> gg.ggplot:
+               sweep_vars: Sequence[str] = None,
+               colour_var: str = 'chain_length') -> gg.ggplot:
   """Plot the returns through time individually by run."""
   df = df_in.copy()
   df['average_return'] = 1.0 - (df.total_regret.diff() / df.episode.diff())

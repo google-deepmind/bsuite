@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -14,8 +15,6 @@
 # limitations under the License.
 # ============================================================================
 """Sweep definition for bandit_scale experiment."""
-
-# Import all required packages
 
 from bsuite.experiments.bandit import sweep as bandit_sweep
 

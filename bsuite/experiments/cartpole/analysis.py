@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -14,15 +15,14 @@
 # limitations under the License.
 # ============================================================================
 """Analysis for cartpole."""
-# Import all packages
+
+from typing import Sequence
 
 from bsuite.experiments.cartpole import sweep
 from bsuite.utils import plotting
 import numpy as np
 import pandas as pd
 import plotnine as gg
-
-from typing import Sequence, Text
 
 NUM_EPISODES = sweep.NUM_EPISODES
 BASE_REGRET = 1000
@@ -52,7 +52,7 @@ def cartpole_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
   """Simple learning curves for cartpole."""
   df = cartpole_preprocess(df)
   p = plotting.plot_regret_learning(
@@ -63,8 +63,8 @@ def plot_learning(df: pd.DataFrame,
 
 
 def plot_seeds(df_in: pd.DataFrame,
-               sweep_vars: Sequence[Text] = None,
-               colour_var: Text = None) -> gg.ggplot:
+               sweep_vars: Sequence[str] = None,
+               colour_var: str = None) -> gg.ggplot:
   """Plot the returns through time individually by run."""
   df = df_in.copy()
   df['average_return'] = df.raw_return.diff() / df.episode.diff()

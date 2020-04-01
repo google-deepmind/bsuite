@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -14,8 +15,6 @@
 # limitations under the License.
 # ============================================================================
 """Tests for bsuite.experiments.catch_noise."""
-
-# Import all required packages
 
 from absl.testing import absltest
 from bsuite.experiments.catch_noise import catch_noise

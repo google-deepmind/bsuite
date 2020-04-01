@@ -15,8 +15,6 @@
 # ============================================================================
 """Basic test coverage for agent training."""
 
-# Import all required packages
-
 from absl import flags
 from absl.testing import absltest
 

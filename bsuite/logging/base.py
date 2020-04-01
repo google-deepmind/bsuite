@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,17 +16,13 @@
 # ============================================================================
 """An abstract base class for loggers."""
 
-# Import all packages
-
 import abc
-import six
-from typing import Any, Mapping, Text
+from typing import Any, Mapping
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Logger(object):
+class Logger(abc.ABC):
   """A logger has a `write` method."""
 
   @abc.abstractmethod
-  def write(self, data: Mapping[Text, Any]):
+  def write(self, data: Mapping[str, Any]):
     """Writes `data` to destination (file, terminal, database, etc)."""

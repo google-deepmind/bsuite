@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -33,8 +34,6 @@ For more information, see papers:
 [1] https://arxiv.org/abs/1703.07608
 [2] https://arxiv.org/abs/1806.03335
 """
-
-# Import all packages
 
 from bsuite.experiments.deep_sea import sweep
 from bsuite.utils import auto_reset_environment

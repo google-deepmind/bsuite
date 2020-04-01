@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,14 +16,13 @@
 # ============================================================================
 """Read functionality for local csv-based experiments."""
 
-# Import all packages
-
 import collections
 import copy
+from typing import Any, Callable, List, Mapping, Sequence, Tuple, Union
+
 from bsuite import sweep
 import pandas as pd
 import six
-from typing import Callable, List, Mapping, Sequence, Text, Tuple, Union
 
 
 def join_metadata(df: pd.DataFrame) -> pd.DataFrame:
@@ -46,13 +46,13 @@ def join_metadata(df: pd.DataFrame) -> pd.DataFrame:
   return pd.merge(df, bsuite_df, on='bsuite_id')
 
 
-PathCollection = Union[Text, Sequence[Text], Mapping[Text, Text]]
-SingleLoadFn = Callable[[Text], pd.DataFrame]
+PathCollection = Union[str, Sequence[str], Mapping[str, Any]]
+SingleLoadFn = Callable[[str], pd.DataFrame]
 
 
 def load_multiple_runs(
     path_collection: PathCollection,
-    single_load_fn: SingleLoadFn) -> Tuple[pd.DataFrame, List[Text]]:
+    single_load_fn: SingleLoadFn) -> Tuple[pd.DataFrame, List[str]]:
   """Returns a pandas DataFrame of bsuite results.
 
   Args:

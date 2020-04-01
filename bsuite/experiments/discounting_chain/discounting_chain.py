@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -23,8 +24,6 @@ action. Reward of +1 come  at one of: 1, 3, 10, 30, 100
 
 However, depending on the seed, one of these chains has a 10% bonus.
 """
-
-# Import all required packages
 
 from bsuite.experiments.discounting_chain import sweep
 from bsuite.utils import auto_reset_environment

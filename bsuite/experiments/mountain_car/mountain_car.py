@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -20,8 +21,6 @@ This is a classic environment in RL research, first described by:
   A Moore, Efficient Memory-Based Learning for Robot Control,
   PhD thesis, University of Cambridge, 1990.
 """
-
-# Import all packages
 
 from bsuite.experiments.mountain_car import sweep
 from bsuite.utils import auto_reset_environment

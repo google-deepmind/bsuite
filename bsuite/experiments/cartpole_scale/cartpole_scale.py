@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -14,8 +15,6 @@
 # limitations under the License.
 # ============================================================================
 """Cartpole environment with scaled rewards."""
-
-# Import all packages
 
 from bsuite.experiments.cartpole import cartpole
 from bsuite.experiments.cartpole_scale import sweep

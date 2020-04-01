@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,15 +16,13 @@
 # ============================================================================
 """Analysis for memory_len."""
 
-# Import all packages
+from typing import Sequence
 
 from bsuite.experiments.memory_len import sweep
 from bsuite.utils import plotting
 import numpy as np
 import pandas as pd
 import plotnine as gg
-
-from typing import Text, Sequence
 
 NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('memory',)
@@ -41,7 +40,7 @@ def memory_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
   return df
 
 
-def score(df: pd.DataFrame, group_col: Text = 'memory_length') -> float:
+def score(df: pd.DataFrame, group_col: str = 'memory_length') -> float:
   """Output a single score for memory_len."""
   df = memory_preprocess(df_in=df)
   regret_list = []  # Loop to handle partially-finished runs.
@@ -54,8 +53,8 @@ def score(df: pd.DataFrame, group_col: Text = 'memory_length') -> float:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[Text] = None,
-                  group_col: Text = 'memory_length') -> gg.ggplot:
+                  sweep_vars: Sequence[str] = None,
+                  group_col: str = 'memory_length') -> gg.ggplot:
   """Plots the average return through time by memory_length."""
   df = memory_preprocess(df_in=df)
   p = plotting.plot_regret_group_nosmooth(
@@ -69,8 +68,8 @@ def plot_learning(df: pd.DataFrame,
 
 
 def plot_scale(df: pd.DataFrame,
-               sweep_vars: Sequence[Text] = None,
-               group_col: Text = 'memory_length') -> gg.ggplot:
+               sweep_vars: Sequence[str] = None,
+               group_col: str = 'memory_length') -> gg.ggplot:
   """Plots the regret_ratio through time by memory_length."""
   df = memory_preprocess(df_in=df)
   p = plotting.plot_regret_ave_scaling(
@@ -86,8 +85,8 @@ def plot_scale(df: pd.DataFrame,
 
 
 def plot_seeds(df_in: pd.DataFrame,
-               sweep_vars: Sequence[Text] = None,
-               colour_var: Text = 'memory_length') -> gg.ggplot:
+               sweep_vars: Sequence[str] = None,
+               colour_var: str = 'memory_length') -> gg.ggplot:
   """Plot the returns through time individually by run."""
   df = df_in.copy()
   df['average_return'] = df.total_return.diff() / df.episode.diff()

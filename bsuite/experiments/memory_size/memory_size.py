@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -21,8 +22,6 @@ Context will only be nonzero in the first step, when it will be +1 or -1 iid
 by component. All actions take no effect until time_to_live=0, then the agent
 must repeat the observations that it saw bit-by-bit.
 """
-
-# Import all packages
 
 from bsuite.experiments.memory_len import memory_len
 from bsuite.experiments.memory_size import sweep

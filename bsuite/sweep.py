@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -30,7 +31,7 @@ To iterate over the bsuite_ids for a single experiment, use
 sweep.EXPERIMENT_NAME. For example, sweep.DISCOUNTING_CHAIN.
 """
 
-# Import all packages
+from typing import Tuple
 
 from bsuite.experiments.bandit import sweep as bandit_sweep
 from bsuite.experiments.bandit_noise import sweep as bandit_noise_sweep
@@ -56,8 +57,6 @@ from bsuite.experiments.mountain_car_scale import sweep as mountain_car_scale_sw
 from bsuite.experiments.umbrella_distract import sweep as umbrella_distract_sweep
 from bsuite.experiments.umbrella_length import sweep as umbrella_length_sweep
 
-from typing import Text, Tuple
-
 SEPARATOR = '/'
 _SWEEP = []
 
@@ -65,7 +64,7 @@ _SWEEP = []
 SETTINGS = {}
 
 
-def _parse_sweep(package) -> Tuple[Text]:
+def _parse_sweep(package) -> Tuple[str]:
   """Returns the bsuite_id for each package."""
   results = []
   # package.__name__ is something like 'bsuite.experiments.bandit.sweep'

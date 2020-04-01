@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -21,7 +22,8 @@ means that the agent can have few 'bad' trajectories just by luck of the
 environment noise. To make sure that this is not by dumb luck, we use a more
 stringent threshold and only once the agent has done at least 100 episodes.
 """
-# Import all packages
+
+from typing import Sequence
 
 from bsuite.experiments.deep_sea import analysis as deep_sea_analysis
 from bsuite.experiments.deep_sea_stochastic import sweep
@@ -29,8 +31,6 @@ from bsuite.experiments.deep_sea_stochastic import sweep
 import numpy as np
 import pandas as pd
 import plotnine as gg
-
-from typing import Text, Sequence
 
 NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('exploration', 'noise')
@@ -41,7 +41,7 @@ plot_regret = deep_sea_analysis.plot_regret
 
 
 def find_solution(df_in: pd.DataFrame,
-                  sweep_vars: Sequence[Text] = None,
+                  sweep_vars: Sequence[str] = None,
                   num_episodes: int = NUM_EPISODES) -> pd.DataFrame:
   """Find first solution episode, with harsher thresh for stochastic domain."""
   df = df_in.copy()
@@ -60,7 +60,7 @@ def score(df: pd.DataFrame,
 
 
 def plot_seeds(df: pd.DataFrame,
-               sweep_vars: Sequence[Text] = None,
+               sweep_vars: Sequence[str] = None,
                num_episodes: int = NUM_EPISODES) -> gg.ggplot:
   """Plot the returns through time individually by run."""
   return deep_sea_analysis.plot_seeds(

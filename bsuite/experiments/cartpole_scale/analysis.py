@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,15 +16,13 @@
 # ============================================================================
 """Analysis for cartpole_scale environments."""
 
-# Import all packages
+from typing import Sequence
 
 from bsuite.experiments.cartpole import analysis as cartpole_analysis
 from bsuite.experiments.cartpole_noise import analysis as cartpole_noise_analysis
 from bsuite.experiments.cartpole_scale import sweep
 import pandas as pd
 import plotnine as gg
-
-from typing import Sequence, Text
 
 NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = ('scale', 'generalization')
@@ -34,17 +33,17 @@ def score(df: pd.DataFrame) -> float:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
   return cartpole_noise_analysis.plot_learning(df, sweep_vars, 'reward_scale')
 
 
 def plot_average(df: pd.DataFrame,
-                 sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+                 sweep_vars: Sequence[str] = None) -> gg.ggplot:
   return cartpole_noise_analysis.plot_average(df, sweep_vars, 'reward_scale')
 
 
 def plot_seeds(df: pd.DataFrame,
-               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+               sweep_vars: Sequence[str] = None) -> gg.ggplot:
   """Plot the performance by individual work unit."""
   return cartpole_analysis.plot_seeds(
       df_in=df,

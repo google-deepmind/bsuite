@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,7 +16,7 @@
 # ============================================================================
 """Analysis for discounting_chain."""
 
-# Import all packages
+from typing import Sequence
 
 from bsuite.experiments.discounting_chain import sweep
 from bsuite.utils import plotting
@@ -23,8 +24,6 @@ from bsuite.utils import plotting
 import numpy as np
 import pandas as pd
 import plotnine as gg
-
-from typing import Sequence, Text
 
 NUM_EPISODES = sweep.NUM_EPISODES
 BASE_REGRET = 0.08
@@ -49,7 +48,7 @@ def dc_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
   """Plots the average regret through time by optimal_horizon."""
   df = dc_preprocess(df_in=df)
   p = plotting.plot_regret_learning(
@@ -65,7 +64,7 @@ def plot_learning(df: pd.DataFrame,
 
 
 def plot_average(df: pd.DataFrame,
-                 sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+                 sweep_vars: Sequence[str] = None) -> gg.ggplot:
   """Plots the average regret at 1k episodes by optimal_horizon."""
   df = dc_preprocess(df_in=df)
   p = plotting.plot_regret_average(
@@ -80,7 +79,7 @@ def plot_average(df: pd.DataFrame,
 
 
 def plot_seeds(df_in: pd.DataFrame,
-               sweep_vars: Sequence[Text] = None) -> gg.ggplot:
+               sweep_vars: Sequence[str] = None) -> gg.ggplot:
   """Plot the returns through time individually by run."""
   df = dc_preprocess(df_in)
   df['average_return'] = 1.1 - (df.total_regret.diff() / df.episode.diff())

@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -14,8 +15,6 @@
 # limitations under the License.
 # ============================================================================
 """Catch reinforcement learning environment."""
-
-# Import all packages
 
 from bsuite.experiments.catch import sweep
 import dm_env

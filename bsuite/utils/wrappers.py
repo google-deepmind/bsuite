@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,16 +16,13 @@
 # ============================================================================
 """bsuite logging and image observation wrappers."""
 
-# Import all packages
+from typing import Sequence
 
 from bsuite.logging import base
-
 import dm_env
 from dm_env import specs
-
 import numpy as np
 from skimage import transform
-from typing import Sequence
 
 # Keys that are present for all experiments. These are computed from within
 # the `Logging` wrapper.
