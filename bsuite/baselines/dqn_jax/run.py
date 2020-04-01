@@ -22,12 +22,9 @@ from absl import flags
 from bsuite import bsuite
 from bsuite import sweep
 
+from bsuite.baselines import dqn_jax
 from bsuite.baselines import experiment
-from bsuite.baselines.dqn_jax import dqn
 from bsuite.baselines.utils import pool
-
-from jax import random
-from jax.experimental import stax
 
 # bsuite logging
 flags.DEFINE_string('bsuite_id', 'catch/0',
@@ -39,19 +36,6 @@ flags.DEFINE_enum('logging_mode', 'csv', ['csv', 'sqlite', 'terminal'],
                   'which form of logging to use for bsuite results')
 flags.DEFINE_boolean('overwrite', False, 'overwrite csv logging if found')
 flags.DEFINE_integer('num_episodes', None, 'Number of episodes to run for.')
-
-flags.DEFINE_integer('num_hidden_layers', 2, 'number of hidden layers')
-flags.DEFINE_integer('num_units', 50, 'number of units per hidden layer')
-flags.DEFINE_integer('batch_size', 32, 'size of batches sampled from replay')
-flags.DEFINE_float('discount', .99, 'discounting on the agent side')
-flags.DEFINE_integer('replay_capacity', 100000, 'size of the replay buffer')
-flags.DEFINE_integer('min_replay_size', 128, 'min replay size before training.')
-flags.DEFINE_integer('sgd_period', 1, 'steps between online net updates')
-flags.DEFINE_integer('target_update_period', 4,
-                     'steps between target net updates')
-flags.DEFINE_float('learning_rate', 1e-3, 'learning rate for optimizer')
-flags.DEFINE_float('epsilon', 0.05, 'fraction of exploratory random actions')
-flags.DEFINE_integer('seed', 42, 'seed for random number generation')
 flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
 
 FLAGS = flags.FLAGS
@@ -67,44 +51,20 @@ def run(bsuite_id: str) -> str:
       overwrite=FLAGS.overwrite,
   )
 
-  layers = [stax.Flatten]
-  for _ in range(FLAGS.num_hidden_layers):
-    layers.append(stax.Dense(FLAGS.num_units))
-    layers.append(stax.Relu)
-  layers.append(stax.Dense(env.action_spec().num_values))
+  agent = dqn_jax.default_agent(env.observation_spec(), env.action_spec())
 
-  network_init, network = stax.serial(*layers)
-
-  _, network_params = network_init(
-      random.PRNGKey(seed=1), (-1,) + env.observation_spec().shape)
-
-  agent = dqn.DQNJAX(
-      action_spec=env.action_spec(),
-      network=network,
-      parameters=network_params,
-      batch_size=FLAGS.batch_size,
-      discount=FLAGS.discount,
-      replay_capacity=FLAGS.replay_capacity,
-      min_replay_size=FLAGS.min_replay_size,
-      sgd_period=FLAGS.sgd_period,
-      target_update_period=FLAGS.target_update_period,
-      learning_rate=FLAGS.learning_rate,
-      epsilon=FLAGS.epsilon,
-      seed=FLAGS.seed,
-  )
-
+  num_episodes = getattr(env, 'bsuite_num_episodes', FLAGS.num_episodes)
   experiment.run(
       agent=agent,
       environment=env,
-      num_episodes=FLAGS.num_episodes or env.bsuite_num_episodes,  # pytype: disable=attribute-error
+      num_episodes=num_episodes,
       verbose=FLAGS.verbose)
 
   return bsuite_id
 
 
-def main(argv):
+def main(_):
   """Parses whether to run a single bsuite_id, or multiprocess sweep."""
-  del argv  # Unused.
   bsuite_id = FLAGS.bsuite_id
 
   if bsuite_id in sweep.SWEEP:

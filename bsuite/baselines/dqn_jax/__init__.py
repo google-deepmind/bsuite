@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -13,3 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
+"""A simple DQN agent implemented in JAX."""
+
+from bsuite.baselines.dqn_jax.dqn import default_agent
+from bsuite.baselines.dqn_jax.dqn import DQN

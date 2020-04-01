@@ -20,34 +20,40 @@ Reference: "Playing atari with deep reinforcement learning" (Mnih et al, 2015).
 Link: https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf.
 """
 
-from typing import Any, Callable, Sequence
+from typing import Any, Callable, NamedTuple, Sequence
 
 from bsuite.baselines import base
 from bsuite.baselines.utils import replay
 
 import dm_env
 from dm_env import specs
-
+import haiku as hk
 import jax
 from jax import lax
-from jax import numpy as jnp
-from jax import random
-from jax.experimental import optimizers
-from jax.experimental import stax
+from jax.experimental import optix
+import jax.numpy as jnp
 import numpy as np
+import rlax
 
-NetworkParameters = Sequence[Sequence[jnp.DeviceArray]]
-Network = Callable[[NetworkParameters, Any], jnp.DeviceArray]
+QNetwork = Callable[[jnp.ndarray], jnp.ndarray]  # observations -> action values
 
 
-class DQNJAX(base.Agent):
+class TrainingState(NamedTuple):
+  """Holds the agent's training state."""
+  params: hk.Params
+  target_params: hk.Params
+  opt_state: Any
+  step: int
+
+
+class DQN(base.Agent):
   """A simple DQN agent using JAX."""
 
   def __init__(
       self,
+      obs_spec: specs.Array,
       action_spec: specs.DiscreteArray,
-      network: Network,
-      parameters: NetworkParameters,
+      network: QNetwork,
       batch_size: int,
       discount: float,
       replay_capacity: int,
@@ -59,7 +65,7 @@ class DQNJAX(base.Agent):
       seed: int = None,
   ):
 
-    # DQN configuration and hyperparameters.
+    # Store hyperparameters.
     self._num_actions = action_spec.num_values
     self._discount = discount
     self._batch_size = batch_size
@@ -70,39 +76,67 @@ class DQNJAX(base.Agent):
     self._replay = replay.Replay(capacity=replay_capacity)
     self._min_replay_size = min_replay_size
 
-    self._rng = np.random.RandomState(seed)
-
-    def loss(online_params, target_params, transitions):
-      o_tm1, a_tm1, r_t, d_t, o_t = transitions
-      q_tm1 = network(online_params, o_tm1)
-      q_t = network(target_params, o_t)
-      q_target = r_t + d_t * discount * jnp.max(q_t, axis=-1)
-      q_a_tm1 = jax.vmap(lambda q, a: q[a])(q_tm1, a_tm1)
-      td_error = q_a_tm1 - lax.stop_gradient(q_target)
-
-      return jnp.mean(td_error**2)
-
     # Internalize the networks.
-    self._network = network
-    self._parameters = parameters
-    self._target_parameters = parameters
-
-    # This function computes dL/dTheta
-    self._grad = jax.jit(jax.grad(loss))
-    self._forward = jax.jit(network)
+    rng = hk.PRNGSequence(seed)
+    init, forward = hk.transform(network)
+    dummy_obs = np.zeros((1, *obs_spec.shape), obs_spec.dtype)
+    initial_params = init(next(rng), dummy_obs)
+    initial_target_params = init(next(rng), dummy_obs)
 
     # Make an Adam optimizer.
-    opt_init, opt_update, get_params = optimizers.adam(step_size=learning_rate)
-    self._opt_update = jax.jit(opt_update)
-    self._opt_state = opt_init(parameters)
-    self._get_params = get_params
+    opt_init, opt_update = optix.adam(learning_rate)
+    initial_opt_state = opt_init(initial_params)
+
+    # This carries the agent state relevant to training.
+    self._state = TrainingState(
+        params=initial_params,
+        target_params=initial_target_params,
+        opt_state=initial_opt_state,
+        step=0)
+
+    def loss(params: hk.Params,
+             target_params: hk.Params,
+             transitions: Sequence[jnp.ndarray]) -> jnp.ndarray:
+      """Computes the standard TD(0) Q-learning loss on batch of transitions."""
+      o_tm1, a_tm1, r_t, d_t, o_t = transitions
+      q_tm1 = forward(params, o_tm1)
+      q_t = forward(target_params, o_t)
+      td_error = jax.vmap(rlax.q_learning)(q_tm1, a_tm1, r_t, d_t, q_t)
+      return jnp.mean(td_error**2)
+
+    def update(state: TrainingState,
+               transitions: Sequence[jnp.ndarray]) -> TrainingState:
+      """Performs a batch of SGD."""
+      gradients = jax.grad(loss)(state.params, state.target_params, transitions)
+      updates, new_opt_state = opt_update(gradients, state.opt_state)
+      new_params = optix.apply_updates(state.params, updates)
+
+      # Periodically update the target network parameters.
+      target_params = lax.cond(
+          pred=jnp.mod(state.step, target_update_period) == 0,
+          true_operand=None,
+          true_fun=lambda _: new_params,
+          false_operand=None,
+          false_fun=lambda _: state.target_params)
+
+      return TrainingState(
+          params=new_params,
+          target_params=target_params,
+          opt_state=new_opt_state,
+          step=state.step + 1)
+
+    self._update = jax.jit(update)
+    self._forward = jax.jit(forward)
 
   def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
-    # Epsilon-greedy policy.
+    """Selects actions according to an epsilon-greedy policy."""
     if np.random.rand() < self._epsilon:
       return np.random.randint(self._num_actions)
-    q_values = self._forward(self._parameters, timestep.observation[None, ...])
-    return int(np.argmax(q_values))
+
+    observation = timestep.observation[None, ...]
+    q_values = self._forward(self._state.params, observation)
+    action = int(np.argmax(q_values))
+    return action
 
   def update(
       self,
@@ -110,6 +144,7 @@ class DQNJAX(base.Agent):
       action: base.Action,
       new_timestep: dm_env.TimeStep,
   ):
+    """Adds transition to replay and periodically does SGD."""
     # Add this transition to replay.
     self._replay.add([
         timestep.observation,
@@ -128,34 +163,23 @@ class DQNJAX(base.Agent):
 
     # Do a batch of SGD.
     transitions = self._replay.sample(self._batch_size)
-    gradient = self._grad(self._parameters, self._target_parameters,
-                          transitions)
-    self._opt_state = self._opt_update(self._total_steps, gradient,
-                                       self._opt_state)
-    self._parameters = self._get_params(self._opt_state)
-
-    # Periodically update target network variables.
-    if self._total_steps % self._target_update_period == 0:
-      self._target_parameters = self._parameters
+    self._state = self._update(self._state, transitions)
 
 
-def default_agent(obs_spec: specs.Array, action_spec: specs.DiscreteArray):
+def default_agent(obs_spec: specs.Array,
+                  action_spec: specs.DiscreteArray) -> base.Agent:
   """Initialize a DQN agent with default parameters."""
-  network_init, network = stax.serial(
-      stax.Flatten,
-      stax.Dense(50),
-      stax.Relu,
-      stax.Dense(50),
-      stax.Relu,
-      stax.Dense(action_spec.num_values),
-  )
-  _, network_params = network_init(
-      random.PRNGKey(seed=1), (-1,) + obs_spec.shape)
 
-  return DQNJAX(
+  def network(inputs: jnp.ndarray) -> jnp.ndarray:
+    flat_inputs = hk.Flatten()(inputs)
+    mlp = hk.nets.MLP([64, 64, action_spec.num_values])
+    action_values = mlp(flat_inputs)
+    return action_values
+
+  return DQN(
+      obs_spec=obs_spec,
       action_spec=action_spec,
       network=network,
-      parameters=network_params,
       batch_size=32,
       discount=0.99,
       replay_capacity=10000,
