@@ -76,8 +76,11 @@ class DQN(base.Agent):
     # Epsilon-greedy policy.
     if self._rng.rand() < self._epsilon:
       return np.random.randint(self._num_actions)
-    q_values = self._forward(timestep.observation[None, ...])
-    return int(np.argmax(q_values))
+
+    # Greedy policy, breaking ties uniformly at random.
+    q_values = self._forward(timestep.observation[None, ...]).numpy()
+    action = np.random.choice(np.flatnonzero(q_values == q_values.max()))
+    return int(action)
 
   def update(
       self,
