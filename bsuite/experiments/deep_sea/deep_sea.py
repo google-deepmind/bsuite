@@ -35,6 +35,8 @@ For more information, see papers:
 [2] https://arxiv.org/abs/1806.03335
 """
 
+import warnings
+
 from bsuite.experiments.deep_sea import sweep
 from bsuite.utils import auto_reset_environment
 
@@ -52,8 +54,21 @@ class DeepSea(auto_reset_environment.Base):
                unscaled_move_cost: float = 0.01,
                randomize_actions: bool = True,
                seed: int = None):
-    """Deep sea environment to test for deep exploration."""
-    super(DeepSea, self).__init__()
+    """Deep sea environment to test for deep exploration.
+
+    Args:
+      size: The size of `N` for the N x N grid of states.
+      deterministic: Whether transitions are deterministic (default) or 'windy',
+        i.e. the `right` action fails with probability 1/N.
+      unscaled_move_cost: The move cost for moving right, multiplied by N. The
+        default (0.01) means the optimal policy gets 0.99 episode return.
+      randomize_actions: The definition of DeepSea environment includes random
+        mappings of actions: (0,1) -> (left, right) by state. For debugging
+        purposes, we include the option to turn this randomization off and
+        let 0=left, 1=right in every state.
+      seed: Random seed for action mapping and/or transitions, if applicable.
+    """
+    super().__init__()
     self._size = size
     self._deterministic = deterministic
     self._unscaled_move_cost = unscaled_move_cost
@@ -62,6 +77,8 @@ class DeepSea(auto_reset_environment.Base):
     if randomize_actions:
       self._action_mapping = self._rng.binomial(1, 0.5, [size, size])
     else:
+      warnings.warn('Environment is in debug mode (randomize_actions=False).'
+                    'Only randomized_actions=True is the DeepSea environment.')
       self._action_mapping = np.ones([size, size])
 
     if not self._deterministic:  # action 'right' only succeeds (1 - 1/N)
@@ -134,5 +151,3 @@ class DeepSea(auto_reset_environment.Base):
   def bsuite_info(self):
     return dict(total_bad_episodes=self._total_bad_episodes,
                 denoised_return=self._denoised_return)
-
-
