@@ -54,48 +54,19 @@ class DQN(base.Agent):
       obs_spec: specs.Array,
       action_spec: specs.DiscreteArray,
       network: QNetwork,
+      optimizer: optix.InitUpdate,
       batch_size: int,
+      epsilon: float,
+      rng: hk.PRNGSequence,
       discount: float,
       replay_capacity: int,
       min_replay_size: int,
       sgd_period: int,
       target_update_period: int,
-      learning_rate: float,
-      epsilon: float,
-      seed: int = None,
   ):
 
-    # Store hyperparameters.
-    self._num_actions = action_spec.num_values
-    self._discount = discount
-    self._batch_size = batch_size
-    self._sgd_period = sgd_period
-    self._target_update_period = target_update_period
-    self._epsilon = epsilon
-    self._total_steps = 0
-    self._replay = replay.Replay(capacity=replay_capacity)
-    self._min_replay_size = min_replay_size
-
-    # Internalize the networks.
-    rng = hk.PRNGSequence(seed)
-    init, forward = hk.transform(network)
-    dummy_obs = np.zeros((1, *obs_spec.shape), obs_spec.dtype)
-    initial_params = init(next(rng), dummy_obs)
-    initial_target_params = init(next(rng), dummy_obs)
-
-    # Make an Adam optimizer.
-    opt_init, opt_update = optix.adam(learning_rate)
-    initial_opt_state = opt_init(initial_params)
-
-    # This carries the agent state relevant to training.
-    self._state = TrainingState(
-        params=initial_params,
-        target_params=initial_target_params,
-        opt_state=initial_opt_state,
-        step=0)
-
-    def loss(params: hk.Params,
-             target_params: hk.Params,
+    # Define loss function.
+    def loss(params: hk.Params, target_params: hk.Params,
              transitions: Sequence[jnp.ndarray]) -> jnp.ndarray:
       """Computes the standard TD(0) Q-learning loss on batch of transitions."""
       o_tm1, a_tm1, r_t, d_t, o_t = transitions
@@ -104,11 +75,13 @@ class DQN(base.Agent):
       td_error = jax.vmap(rlax.q_learning)(q_tm1, a_tm1, r_t, d_t, q_t)
       return jnp.mean(td_error**2)
 
-    def update(state: TrainingState,
-               transitions: Sequence[jnp.ndarray]) -> TrainingState:
-      """Performs a batch of SGD."""
+    # Define update function.
+    @jax.jit
+    def sgd_step(state: TrainingState,
+                 transitions: Sequence[jnp.ndarray]) -> TrainingState:
+      """Performs an SGD step on a batch of transitions."""
       gradients = jax.grad(loss)(state.params, state.target_params, transitions)
-      updates, new_opt_state = opt_update(gradients, state.opt_state)
+      updates, new_opt_state = optimizer.update(gradients, state.opt_state)
       new_params = optix.apply_updates(state.params, updates)
 
       # Periodically update the target network parameters.
@@ -125,8 +98,30 @@ class DQN(base.Agent):
           opt_state=new_opt_state,
           step=state.step + 1)
 
-    self._update = jax.jit(update)
+    # Internalize the networks.
+    init, forward = hk.transform(network)
+    dummy_observation = np.zeros((1, *obs_spec.shape), jnp.float32)
+    initial_params = init(next(rng), dummy_observation)
+    initial_target_params = init(next(rng), dummy_observation)
+    initial_opt_state = optimizer.init(initial_params)
+
+    # This carries the agent state relevant to training.
+    self._state = TrainingState(
+        params=initial_params,
+        target_params=initial_target_params,
+        opt_state=initial_opt_state,
+        step=0)
+    self._sgd_step = sgd_step
     self._forward = jax.jit(forward)
+    self._replay = replay.Replay(capacity=replay_capacity)
+
+    # Store hyperparameters.
+    self._num_actions = action_spec.num_values
+    self._batch_size = batch_size
+    self._sgd_period = sgd_period
+    self._epsilon = epsilon
+    self._total_steps = 0
+    self._min_replay_size = min_replay_size
 
   def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     """Selects actions according to an epsilon-greedy policy."""
@@ -135,8 +130,8 @@ class DQN(base.Agent):
 
     observation = timestep.observation[None, ...]
     q_values = self._forward(self._state.params, observation)
-    action = int(np.argmax(q_values))
-    return action
+    action = jnp.argmax(q_values)
+    return int(action)
 
   def update(
       self,
@@ -163,11 +158,12 @@ class DQN(base.Agent):
 
     # Do a batch of SGD.
     transitions = self._replay.sample(self._batch_size)
-    self._state = self._update(self._state, transitions)
+    self._state = self._sgd_step(self._state, transitions)
 
 
 def default_agent(obs_spec: specs.Array,
-                  action_spec: specs.DiscreteArray) -> base.Agent:
+                  action_spec: specs.DiscreteArray,
+                  seed: int = 0) -> base.Agent:
   """Initialize a DQN agent with default parameters."""
 
   def network(inputs: jnp.ndarray) -> jnp.ndarray:
@@ -180,12 +176,13 @@ def default_agent(obs_spec: specs.Array,
       obs_spec=obs_spec,
       action_spec=action_spec,
       network=network,
+      optimizer=optix.adam(1e-3),
       batch_size=32,
       discount=0.99,
       replay_capacity=10000,
       min_replay_size=100,
       sgd_period=1,
       target_update_period=4,
-      learning_rate=1e-3,
       epsilon=0.05,
-      seed=42)
+      rng=hk.PRNGSequence(seed),
+  )

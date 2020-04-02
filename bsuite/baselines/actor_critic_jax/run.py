@@ -36,6 +36,7 @@ flags.DEFINE_enum('logging_mode', 'csv', ['csv', 'sqlite', 'terminal'],
                   'which form of logging to use for bsuite results')
 flags.DEFINE_boolean('overwrite', False, 'overwrite csv logging if found')
 flags.DEFINE_integer('num_episodes', None, 'Overrides number of training eps.')
+flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
 
 FLAGS = flags.FLAGS
 
