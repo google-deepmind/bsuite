@@ -96,10 +96,11 @@ def run(bsuite_id: str) -> str:
       epsilon_fn=lambda x: FLAGS.epsilon,
       seed=FLAGS.seed)
 
+  num_episodes = FLAGS.num_episodes or getattr(env, 'bsuite_num_episodes')
   experiment.run(
       agent=agent,
       environment=env,
-      num_episodes=FLAGS.num_episodes or env.bsuite_num_episodes,  # pytype: disable=attribute-error
+      num_episodes=num_episodes,
       verbose=FLAGS.verbose)
 
   return bsuite_id

@@ -79,7 +79,7 @@ def run(bsuite_id: str) -> str:
       seed=FLAGS.seed,
   )
 
-  num_episodes = getattr(env, 'bsuite_num_episodes', FLAGS.num_episodes)
+  num_episodes = FLAGS.num_episodes or getattr(env, 'bsuite_num_episodes')
   experiment.run(
       agent=agent,
       environment=env,

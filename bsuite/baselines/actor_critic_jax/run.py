@@ -53,7 +53,7 @@ def run(bsuite_id: str) -> str:
   agent = actor_critic_jax.default_agent(
       env.observation_spec(), env.action_spec())
 
-  num_episodes = getattr(env, 'bsuite_num_episodes', FLAGS.num_episodes)
+  num_episodes = FLAGS.num_episodes or getattr(env, 'bsuite_num_episodes')
   experiment.run(
       agent=agent,
       environment=env,
