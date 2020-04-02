@@ -94,15 +94,23 @@ class Buffer:
       self._needs_reset = True
 
   def drain(self) -> Trajectory:
-    """Empties the buffer, return the (possibly partial) trajectory."""
-    self._needs_reset = True  # Mark all the data as consumed.
-    return Trajectory(
+    """Empties the buffer and returns the (possibly partial) trajectory."""
+    if self.empty():
+      raise ValueError('Cannot drain; sequence buffer is empty.')
+    trajectory = Trajectory(
         self._observations[:self._t + 1],
         self._actions[:self._t],
         self._rewards[:self._t],
         self._discounts[:self._t],
     )
+    self._t = 0  # Mark sequences as consumed.
+    self._needs_reset = True
+    return trajectory
+
+  def empty(self) -> bool:
+    """Returns whether or not the trajectory buffer is empty."""
+    return self._t == 0
 
   def full(self) -> bool:
     """Returns whether or not the trajectory buffer is full."""
-    return self._t == self._max_sequence_length - 1
+    return self._t == self._max_sequence_length
