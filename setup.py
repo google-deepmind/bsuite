@@ -19,14 +19,25 @@
 from setuptools import find_packages
 from setuptools import setup
 
-# Additional requirements for bsuite/baselines, excluding OpenAI, Dopamine and
-# JAX examples.
+# Additional requirements for TensorFlow baselines, excluding OpenAI & Dopamine.
+# See baselines/README.md for more information.
 baselines_require = [
-    'dm-sonnet>=2.0.0b0',
+    'dm-sonnet',
     'dm-tree',
-    'tensorflow>=2.0.0',
+    'tensorflow',
     'tensorflow_probability',
     'trfl',
+    'tqdm',
+]
+
+# Additional requirements for JAX baselines.
+# See baselines/README.md for more information.
+baselines_jax_require = [
+    'dm-haiku',
+    'dm-tree',
+    'jax',
+    'jaxlib',
+    'git+git://github.com/deepmind/rlax.git'
     'tqdm',
 ]
 
@@ -61,6 +72,7 @@ setup(
     ],
     extras_require={
         'baselines': baselines_require,
+        'baselines_jax': baselines_jax_require,
     },
     test_suite='nose.collector',
     classifiers=[
@@ -71,10 +83,9 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: MacOS :: MacOS X',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
     ],
 )
