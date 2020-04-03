@@ -23,7 +23,7 @@ from bsuite import bsuite
 from bsuite import sweep
 
 from bsuite.baselines import experiment
-from bsuite.baselines.random import random
+from bsuite.baselines import random
 from bsuite.baselines.utils import pool
 
 # bsuite logging

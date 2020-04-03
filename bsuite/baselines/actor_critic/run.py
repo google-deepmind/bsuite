@@ -22,8 +22,8 @@ from absl import flags
 from bsuite import bsuite
 from bsuite import sweep
 
+from bsuite.baselines import actor_critic
 from bsuite.baselines import experiment
-from bsuite.baselines.actor_critic import actor_critic
 from bsuite.baselines.utils import pool
 
 import sonnet as snt

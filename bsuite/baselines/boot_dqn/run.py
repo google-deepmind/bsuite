@@ -21,8 +21,9 @@ from absl import flags
 
 from bsuite import bsuite
 from bsuite import sweep
+
+from bsuite.baselines import boot_dqn
 from bsuite.baselines import experiment
-from bsuite.baselines.boot_dqn import boot_dqn
 from bsuite.baselines.utils import pool
 
 import sonnet as snt
