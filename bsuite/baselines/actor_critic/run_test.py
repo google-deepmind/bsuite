@@ -18,18 +18,25 @@
 
 from absl import flags
 from absl.testing import absltest
+from absl.testing import parameterized
 
+from bsuite import sweep
 from bsuite.baselines.actor_critic import run
 
 FLAGS = flags.FLAGS
 
 
-class RunTest(absltest.TestCase):
+class RunTest(parameterized.TestCase):
 
-  def test_run(self):
+  @classmethod
+  def setUpClass(cls):
+    super().setUpClass()
     FLAGS.num_episodes = 5
     FLAGS.logging_mode = 'terminal'
-    run.run('catch/0')
+
+  @parameterized.parameters(*sweep.TESTING)
+  def test_run(self, bsuite_id: str):
+    run.run(bsuite_id)
 
 
 if __name__ == '__main__':

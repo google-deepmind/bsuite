@@ -48,7 +48,7 @@ flags.DEFINE_boolean('verbose', True, 'whether to log to std output')
 flags.DEFINE_string('network', 'mlp', 'name of network architecture')
 flags.DEFINE_float('agent_discount', .99, 'discounting on the agent side')
 flags.DEFINE_integer('nsteps', 100, 'number of steps per ppo rollout')
-flags.DEFINE_integer('total_timesteps', 1000000, 'total steps for experiment')
+flags.DEFINE_integer('total_timesteps', 1_000_000, 'total steps for experiment')
 flags.DEFINE_float('learning_rate', 1e-3, 'learning rate for optimizer')
 
 FLAGS = flags.FLAGS

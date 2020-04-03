@@ -25,10 +25,10 @@ where i is the index of the setting in that experiments sweep.py file.
 Each bsuite_id can be used to load an environment, via the bsuite.load*
 functions.
 
-To iterate over the bsuite_ids for all experiments, use sweep.SWEEP
+To iterate over the bsuite_ids for all experiments, use `sweep.SWEEP`.
 
 To iterate over the bsuite_ids for a single experiment, use
-sweep.EXPERIMENT_NAME. For example, sweep.DISCOUNTING_CHAIN.
+`sweep.<EXPERIMENT_NAME>``. For example, `sweep.DISCOUNTING_CHAIN`.
 """
 
 from typing import Tuple
@@ -59,23 +59,28 @@ from bsuite.experiments.umbrella_length import sweep as umbrella_length_sweep
 
 SEPARATOR = '/'
 _SWEEP = []
+_TESTING = []
 
 # Mapping from bsuite id to keyword arguments for the corresponding environment.
 SETTINGS = {}
 
 
-def _parse_sweep(package) -> Tuple[str]:
+def _parse_sweep(package) -> Tuple[str, ...]:
   """Returns the bsuite_id for each package."""
   results = []
   # package.__name__ is something like 'bsuite.experiments.bandit.sweep'
   experiment_name = package.__name__.split('.')[-2]
   for i, setting in enumerate(package.SETTINGS):
-    bsuite_id = experiment_name + SEPARATOR + str(i)
+    bsuite_id = f'{experiment_name}{SEPARATOR}{i}'
+    if i == 0:
+      # For each environment, add one `bsuite_id` to the TESTING sweep.
+      _TESTING.append(bsuite_id)
     results.append(bsuite_id)
     SETTINGS[bsuite_id] = setting
   _SWEEP.extend(results)
   return tuple(results)
 
+# bsuite_ids broken down by environment.
 BANDIT = _parse_sweep(bandit_sweep)
 BANDIT_NOISE = _parse_sweep(bandit_noise_sweep)
 BANDIT_SCALE = _parse_sweep(bandit_scale_sweep)
@@ -100,5 +105,8 @@ MOUNTAIN_CAR_SCALE = _parse_sweep(mountain_car_scale_sweep)
 UMBRELLA_DISTRACT = _parse_sweep(umbrella_distract_sweep)
 UMBRELLA_LENGTH = _parse_sweep(umbrella_length_sweep)
 
-# Tuple containing all bsuite_id. Used for hyperparameter sweeps.
+# Tuple containing all bsuite_ids. Used for hyperparameter sweeps.
 SWEEP = tuple(_SWEEP)
+
+# Tuple containing representative bsuite_ids for testing.
+TESTING = tuple(_TESTING)
