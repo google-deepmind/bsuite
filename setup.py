@@ -37,12 +37,8 @@ baselines_jax_require = [
     'dm-tree',
     'jax',
     'jaxlib',
-    'git+git://github.com/deepmind/rlax.git'
+    'rlax @ git+git://github.com/deepmind/rlax.git#egg=rlax'
     'tqdm',
-]
-
-dependency_links = [
-    'http://github.com/google/dopamine/tarball/master#egg=dopamine_rl',
 ]
 
 
