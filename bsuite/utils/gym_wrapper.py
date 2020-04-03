@@ -37,14 +37,18 @@ class GymFromDMEnv(gym.Env):
     self._env = env  # type: dm_env.Environment
     self._last_observation = None  # type: Optional[np.ndarray]
     self.viewer = None
+    self.game_over = False  # Needed for Dopamine agents.
 
   def step(self, action: int) -> _GymTimestep:
     timestep = self._env.step(action)
     self._last_observation = timestep.observation
     reward = timestep.reward or 0.
+    if timestep.last():
+      self.game_over = True
     return timestep.observation, reward, timestep.last(), {}
 
   def reset(self) -> np.ndarray:
+    self.game_over = False
     timestep = self._env.reset()
     self._last_observation = timestep.observation
     return timestep.observation

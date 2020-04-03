@@ -1,3 +1,4 @@
+# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -26,7 +27,7 @@ FLAGS = flags.FLAGS
 class RunTest(absltest.TestCase):
 
   def test_run(self):
-    FLAGS.total_timesteps = 500
+    FLAGS.num_episodes = 5
     FLAGS.logging_mode = 'terminal'
     run.run('catch/0')
 

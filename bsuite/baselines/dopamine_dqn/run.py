@@ -49,7 +49,7 @@ flags.DEFINE_enum('logging_mode', 'csv', ['csv', 'sqlite', 'terminal'],
 flags.DEFINE_boolean('overwrite', False, 'overwrite csv logging if found')
 
 # algorithm
-flags.DEFINE_integer('training_steps', 1000000, 'number of steps to run')
+flags.DEFINE_integer('num_episodes', None, 'number of steps to run')
 flags.DEFINE_integer('num_hidden_layers', 2, 'number of hidden layers')
 flags.DEFINE_integer('num_units', 50, 'number of units per hidden layer')
 flags.DEFINE_float('agent_discount', .99, 'discounting on the agent side')
@@ -72,6 +72,13 @@ OBSERVATION_SHAPE = (20, 20)
 
 def run(bsuite_id: str) -> str:
   """Runs Dopamine DQN on a given bsuite environment, logging to CSV."""
+
+  raw_env = bsuite.load_and_record(
+      bsuite_id=bsuite_id,
+      save_path=FLAGS.save_path,
+      logging_mode=FLAGS.logging_mode,
+      overwrite=FLAGS.overwrite,
+  )
 
   class Network(tf.keras.Model):
     """Build deep network compatible with dopamine/discrete_domains/gym_lib."""
@@ -113,13 +120,7 @@ def run(bsuite_id: str) -> str:
 
   def create_environment() -> gym.Env:
     """Factory method for environment initialization in Dopmamine."""
-    env = bsuite.load_and_record(
-        bsuite_id=bsuite_id,
-        save_path=FLAGS.save_path,
-        logging_mode=FLAGS.logging_mode,
-        overwrite=FLAGS.overwrite,
-    )
-    env = wrappers.ImageObservation(env, OBSERVATION_SHAPE)
+    env = wrappers.ImageObservation(raw_env, OBSERVATION_SHAPE)
     if FLAGS.verbose:
       env = terminal_logging.wrap_environment(env, log_every=True)
     env = gym_wrapper.GymFromDMEnv(env)
@@ -130,13 +131,11 @@ def run(bsuite_id: str) -> str:
       base_dir=FLAGS.base_dir,
       create_agent_fn=create_agent,
       create_environment_fn=create_environment,
-      log_every_n=1,
-      num_iterations=1,
-      training_steps=FLAGS.training_steps,  # Make sure large enough for bsuite
-      evaluation_steps=0,
-      max_steps_per_episode=1000,
   )
-  runner.run_experiment()
+
+  num_episodes = FLAGS.num_episodes or getattr(raw_env, 'bsuite_num_episodes')
+  for _ in range(num_episodes):
+    runner._run_one_episode()  # pylint: disable=protected-access
 
   return bsuite_id
 

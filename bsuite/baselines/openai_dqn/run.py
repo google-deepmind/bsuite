@@ -57,7 +57,8 @@ flags.DEFINE_integer('target_update_period', 4,
 flags.DEFINE_float('learning_rate', 1e-3, 'learning rate for optimizer')
 flags.DEFINE_float('epsilon', 0.05, 'fraction of exploratory random actions')
 flags.DEFINE_integer('seed', 42, 'seed for random number generation')
-flags.DEFINE_integer('total_timesteps', 10000000,
+flags.DEFINE_integer('num_episodes', None, 'Number of episodes to run for.')
+flags.DEFINE_integer('total_timesteps', 10_000_000,
                      'maximum steps if not caught by bsuite_num_episodes')
 
 FLAGS = flags.FLAGS
@@ -72,11 +73,11 @@ def run(bsuite_id: str) -> str:
       logging_mode=FLAGS.logging_mode,
       overwrite=FLAGS.overwrite,
   )
-  num_episodes = raw_env.bsuite_num_episodes  # pytype: disable=attribute-error
   if FLAGS.verbose:
     raw_env = terminal_logging.wrap_environment(raw_env, log_every=True)
   env = gym_wrapper.GymFromDMEnv(raw_env)
 
+  num_episodes = FLAGS.num_episodes or getattr(raw_env, 'bsuite_num_episodes')
   def callback(lcl, unused_glb):
     # Terminate after `num_episodes`.
     try:
@@ -102,6 +103,7 @@ def run(bsuite_id: str) -> str:
       target_network_update_freq=FLAGS.target_update_period,
       callback=callback,  # pytype: disable=wrong-arg-types
       gamma=FLAGS.agent_discount,
+      checkpoint_freq=None,
   )
 
   return bsuite_id

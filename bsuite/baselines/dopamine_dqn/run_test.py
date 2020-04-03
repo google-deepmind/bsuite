@@ -27,7 +27,7 @@ FLAGS = flags.FLAGS
 class RunTest(absltest.TestCase):
 
   def test_run(self):
-    FLAGS.training_steps = 500
+    FLAGS.num_episodes = 5
     FLAGS.logging_mode = 'terminal'
     run.run('catch/0')
 
