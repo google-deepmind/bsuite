@@ -101,7 +101,11 @@ def load_from_id(bsuite_id: str) -> dm_env.Environment:
   """Returns a bsuite environment given a bsuite_id."""
   kwargs = sweep.SETTINGS[bsuite_id]
   experiment_name, _ = unpack_bsuite_id(bsuite_id)
-  return load(experiment_name, kwargs)
+  env = load(experiment_name, kwargs)
+  termcolor.cprint(f'Loaded bsuite_id: {bsuite_id}.',
+                   color='white',
+                   attrs=['bold'])
+  return env
 
 
 def load_and_record(bsuite_id: str,
@@ -121,8 +125,8 @@ def load_and_record(bsuite_id: str,
     return load_and_record_to_terminal(bsuite_id)
   else:
     raise ValueError(
-        ('Unrecognised logging_mode "{}". '
-         'Must be "csv", "sqlite", or "terminal".').format(logging_mode))
+        (f'Unrecognised logging_mode "{logging_mode}". '
+         'Must be "csv", "sqlite", or "terminal".'))
 
 
 def load_and_record_to_sqlite(bsuite_id: str,
@@ -155,7 +159,7 @@ def load_and_record_to_sqlite(bsuite_id: str,
   raw_env = load_from_id(bsuite_id)
   experiment_name, setting_index = unpack_bsuite_id(bsuite_id)
   termcolor.cprint(
-      'Logging results to SQLite database in {}.'.format(db_path),
+      f'Logging results to SQLite database in {db_path}.',
       color='yellow',
       attrs=['bold'])
   return sqlite_logging.wrap_environment(
@@ -192,8 +196,7 @@ def load_and_record_to_csv(bsuite_id: str,
   """
   raw_env = load_from_id(bsuite_id)
   termcolor.cprint(
-      'Logging results to CSV file for each bsuite_id in {}.'.format(
-          results_dir),
+      f'Logging results to CSV file for each bsuite_id in {results_dir}.',
       color='yellow',
       attrs=['bold'])
   return csv_logging.wrap_environment(
