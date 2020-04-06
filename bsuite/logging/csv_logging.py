@@ -26,7 +26,6 @@ from bsuite.utils import wrappers
 import dm_env
 import pandas as pd
 
-
 SAFE_SEPARATOR = '-'
 INITIAL_SEPARATOR = '_-_'
 BSUITE_PREFIX = 'bsuite_id' + INITIAL_SEPARATOR
@@ -63,7 +62,6 @@ class Logger(base.Logger):
                results_dir: str = '/tmp/bsuite',
                overwrite: bool = False):
     """Initializes a new CSV logger."""
-    self._data = []
 
     if not os.path.exists(results_dir):
       try:
@@ -73,13 +71,16 @@ class Logger(base.Logger):
 
     # The default '/' symbol is dangerous for file systems!
     safe_bsuite_id = bsuite_id.replace(sweep.SEPARATOR, SAFE_SEPARATOR)
-    filename = '{}{}.csv'.format(BSUITE_PREFIX, safe_bsuite_id)
-    self._save_path = os.path.join(results_dir, filename)
+    filename = f'{BSUITE_PREFIX}{safe_bsuite_id}.csv'
+    save_path = os.path.join(results_dir, filename)
 
-    if os.path.exists(self._save_path) and not overwrite:
-      msg = ('File {} already exists. Specify a different directory, or set '
-             'overwrite=True to overwrite existing data.')
-      raise ValueError(msg.format(self._save_path))
+    if os.path.exists(save_path) and not overwrite:
+      raise ValueError(
+          f'File {save_path} already exists. Specify a different '
+          'directory, or set overwrite=True to overwrite existing data.')
+
+    self._data = []
+    self._save_path = save_path
 
   def write(self, data: Mapping[str, Any]):
     """Adds a row to the internal list of data and saves to CSV."""

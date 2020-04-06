@@ -19,6 +19,7 @@
 import numbers
 from typing import Any, Mapping
 
+from absl import logging
 from bsuite.logging import base
 from bsuite.utils import wrappers
 import dm_env
@@ -37,26 +38,34 @@ def wrap_environment(env: dm_env.Environment,
 class Logger(base.Logger):
   """Writes data to terminal."""
 
-  def __init__(self, pretty_print: bool = True):
+  def __init__(self, pretty_print: bool = True, absl_logging: bool = False):
     self._pretty_print = pretty_print
+    self._print_fn = logging.info if absl_logging else print
 
   def write(self, data: Mapping[str, Any]):
     """Writes to terminal, pretty-printing the results."""
 
     if self._pretty_print:
-      msg = []
-      for key in sorted(data):
-        value = data[key]
-        msg_pair = '{} = {}'.format(key, value_format(value))
-        msg.append(msg_pair)
+      data = pretty_dict(data)
 
-      data = '{}\n'.format(' | '.join(msg))
+    self._print_fn(data)
 
-    print(data)
+
+def pretty_dict(data: Mapping[str, Any]) -> str:
+  """Prettifies a dictionary into a string as `k1 = v1 | ... | kn = vn`."""
+  msg = []
+  for key in sorted(data):
+    value = value_format(data[key])
+    msg_pair = f'{key} = {value}'
+    msg.append(msg_pair)
+
+  return ' | '.join(msg)
 
 
 def value_format(value: Any) -> str:
   """Convenience function for string formatting."""
-  if isinstance(value, numbers.Real):
-    return '{:0.4f}'.format(value)
-  return '{}'.format(value)
+  if isinstance(value, numbers.Integral):
+    return str(value)
+  if isinstance(value, numbers.Number):
+    return f'{value:0.4f}'
+  return str(value)
