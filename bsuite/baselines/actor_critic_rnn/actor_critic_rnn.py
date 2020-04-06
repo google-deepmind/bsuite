@@ -52,6 +52,7 @@ class ActorCriticRNN(base.Agent):
       td_lambda: float,
       discount: float,
       seed: int,
+      entropy_cost: float = 0.,
   ):
     """A recurrent actor-critic agent."""
 
@@ -68,6 +69,7 @@ class ActorCriticRNN(base.Agent):
     tf.random.set_seed(seed)
     self._discount = discount
     self._td_lambda = td_lambda
+    self._entropy_cost = entropy_cost
 
     # Initialise rolling experience buffer.
     self._buffer = sequence.Buffer(obs_spec, action_spec, max_sequence_length)
@@ -101,7 +103,9 @@ class ActorCriticRNN(base.Agent):
           lambda_=self._td_lambda)
       actor_loss = trfl.discrete_policy_gradient_loss(
           logits, actions, advantages)
-      loss = tf.reduce_mean(actor_loss + critic_loss)
+      entropy_loss = trfl.discrete_policy_entropy_loss(logits).loss
+      loss = actor_loss + critic_loss + self._entropy_cost * entropy_loss
+      loss = tf.reduce_mean(loss)
 
     gradients = tape.gradient(loss, self._network.trainable_variables)
     gradients, _ = tf.clip_by_global_norm(gradients, 5.)
@@ -138,7 +142,6 @@ class PolicyValueRNN(snt.RNNCore):
 
   def __init__(self, hidden_sizes: Sequence[int], num_actions: int):
     super().__init__(name='policy_value_net')
-    self._num_actions = num_actions
     self._torso = snt.nets.MLP(hidden_sizes, activate_final=True, name='torso')
     self._core = snt.LSTM(hidden_sizes[-1], name='rnn')
     self._policy_head = snt.Linear(num_actions, name='policy_head')
