@@ -102,9 +102,8 @@ def load_from_id(bsuite_id: str) -> dm_env.Environment:
   kwargs = sweep.SETTINGS[bsuite_id]
   experiment_name, _ = unpack_bsuite_id(bsuite_id)
   env = load(experiment_name, kwargs)
-  termcolor.cprint(f'Loaded bsuite_id: {bsuite_id}.',
-                   color='white',
-                   attrs=['bold'])
+  termcolor.cprint(
+      f'Loaded bsuite_id: {bsuite_id}.', color='white', attrs=['bold'])
   return env
 
 
@@ -124,9 +123,8 @@ def load_and_record(bsuite_id: str,
   elif logging_mode == 'terminal':
     return load_and_record_to_terminal(bsuite_id)
   else:
-    raise ValueError(
-        (f'Unrecognised logging_mode "{logging_mode}". '
-         'Must be "csv", "sqlite", or "terminal".'))
+    raise ValueError((f'Unrecognised logging_mode "{logging_mode}". '
+                      'Must be "csv", "sqlite", or "terminal".'))
 
 
 def load_and_record_to_sqlite(bsuite_id: str,

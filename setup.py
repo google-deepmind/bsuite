@@ -26,7 +26,7 @@ baselines_require = [
     'dm-tree',
     'tensorflow',
     'tensorflow_probability',
-    'trfl',
+    'trfl @ git+git://github.com/deepmind/trfl.git#egg=trfl',
     'tqdm',
 ]
 
@@ -37,7 +37,7 @@ baselines_jax_require = [
     'dm-tree',
     'jax',
     'jaxlib',
-    'rlax @ git+git://github.com/deepmind/rlax.git#egg=rlax'
+    'rlax @ git+git://github.com/deepmind/rlax.git#egg=rlax',
     'tqdm',
 ]
 

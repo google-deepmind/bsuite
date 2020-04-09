@@ -27,18 +27,19 @@ from absl import flags
 from baselines.common.vec_env import dummy_vec_env
 from baselines.ppo2 import ppo2
 
-from bsuite import bsuite
+import bsuite
 from bsuite import sweep
 
 from bsuite.baselines.utils import pool
 from bsuite.logging import terminal_logging
 from bsuite.utils import gym_wrapper
 
-# bsuite logging
-flags.DEFINE_string('bsuite_id', 'catch/0',
-                    'specify either a single bsuite_id (e.g. catch/0)\n'
-                    'or a global variable from bsuite.sweep (e.g. SWEEP for '
-                    'all of bsuite, or DEEP_SEA for just deep_sea experiment).')
+# Internal imports.
+
+# Experiment flags.
+flags.DEFINE_string(
+    'bsuite_id', 'catch/0', 'BSuite identifier. '
+    'This global flag can be used to control which environment is loaded.')
 flags.DEFINE_string('save_path', '/tmp/bsuite', 'where to save bsuite results')
 flags.DEFINE_enum('logging_mode', 'csv', ['csv', 'sqlite', 'terminal'],
                   'which form of logging to use for bsuite results')
@@ -59,11 +60,11 @@ def run(bsuite_id: str) -> str:
 
   def _load_env():
     raw_env = bsuite.load_and_record(
-        bsuite_id=bsuite_id,
-        save_path=FLAGS.save_path,
-        logging_mode=FLAGS.logging_mode,
-        overwrite=FLAGS.overwrite,
-    )
+      bsuite_id=bsuite_id,
+      save_path=FLAGS.save_path,
+      logging_mode=FLAGS.logging_mode,
+      overwrite=FLAGS.overwrite,
+  )
     if FLAGS.verbose:
       raw_env = terminal_logging.wrap_environment(raw_env, log_every=True)
     return gym_wrapper.GymFromDMEnv(raw_env)
@@ -82,22 +83,22 @@ def run(bsuite_id: str) -> str:
 
 
 def main(argv):
-  """Parses whether to run a single bsuite_id, or multiprocess sweep."""
+  # Parses whether to run a single bsuite_id, or multiprocess sweep.
   del argv  # Unused.
   bsuite_id = FLAGS.bsuite_id
 
   if bsuite_id in sweep.SWEEP:
-    print('Running a single bsuite_id={}'.format(bsuite_id))
+    print(f'Running single experiment: bsuite_id={bsuite_id}.')
     run(bsuite_id)
 
   elif hasattr(sweep, bsuite_id):
     bsuite_sweep = getattr(sweep, bsuite_id)
-    print('Running a sweep over bsuite_id in sweep.{}'.format(bsuite_sweep))
+    print(f'Running sweep over bsuite_id in sweep.{bsuite_sweep}')
     FLAGS.verbose = False
     pool.map_mpi(run, bsuite_sweep)
 
   else:
-    raise ValueError('Invalid flag bsuite_id={}'.format(bsuite_id))
+    raise ValueError(f'Invalid flag: bsuite_id={bsuite_id}.')
 
 
 if __name__ == '__main__':

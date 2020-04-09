@@ -16,6 +16,7 @@
 # ============================================================================
 """A simple logger that pretty-prints to terminal."""
 
+import logging as std_logging
 import numbers
 from typing import Any, Mapping
 
@@ -30,7 +31,9 @@ def wrap_environment(env: dm_env.Environment,
                      log_every: bool = False,
                      log_by_step: bool = False) -> dm_env.Environment:
   """Returns a wrapped environment that logs to terminal."""
-  logger = Logger(pretty_print)
+  # Set logging up to show up in STDERR.
+  std_logging.getLogger().addHandler(logging.PythonHandler())
+  logger = Logger(pretty_print, absl_logging=True)
   return wrappers.Logging(
       env, logger, log_by_step=log_by_step, log_every=log_every)
 
