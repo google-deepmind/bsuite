@@ -14,7 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""An agent that takes uniformly random actions."""
+"""Basic test coverage for agent training."""
 
-from bsuite.baselines.random.agent import default_agent
-from bsuite.baselines.random.agent import Random
+from absl import flags
+from absl.testing import absltest
+
+from bsuite.baselines.third_party.openai_ppo import run
+
+FLAGS = flags.FLAGS
+
+
+class RunTest(absltest.TestCase):
+
+  def test_run(self):
+    FLAGS.total_timesteps = 500
+    FLAGS.logging_mode = 'terminal'
+    run.run('catch/0')
+
+
+if __name__ == '__main__':
+  absltest.main()

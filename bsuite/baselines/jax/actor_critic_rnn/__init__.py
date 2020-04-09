@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""An agent that takes uniformly random actions."""
+"""A simple actor-critic implementation in JAX."""
 
-from bsuite.baselines.random.agent import default_agent
-from bsuite.baselines.random.agent import Random
+from bsuite.baselines.jax.actor_critic_rnn.agent import ActorCriticRNN
+from bsuite.baselines.jax.actor_critic_rnn.agent import default_agent

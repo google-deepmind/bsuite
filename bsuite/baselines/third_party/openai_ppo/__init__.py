@@ -14,7 +14,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""An agent that takes uniformly random actions."""
-
-from bsuite.baselines.random.agent import default_agent
-from bsuite.baselines.random.agent import Random

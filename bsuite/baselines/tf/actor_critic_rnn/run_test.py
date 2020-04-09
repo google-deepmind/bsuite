@@ -14,7 +14,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""An agent that takes uniformly random actions."""
+"""Basic test coverage for agent training."""
 
-from bsuite.baselines.random.agent import default_agent
-from bsuite.baselines.random.agent import Random
+from absl import flags
+from absl.testing import absltest
+from absl.testing import parameterized
+
+from bsuite import sweep
+from bsuite.baselines.tf.actor_critic_rnn import run
+
+FLAGS = flags.FLAGS
+
+
+class RunTest(parameterized.TestCase):
+
+  @classmethod
+  def setUpClass(cls):
+    super().setUpClass()
+    FLAGS.num_episodes = 5
+    FLAGS.logging_mode = 'terminal'
+
+  @parameterized.parameters(*sweep.TESTING)
+  def test_run(self, bsuite_id: str):
+    run.run(bsuite_id)
+
+
+if __name__ == '__main__':
+  absltest.main()

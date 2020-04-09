@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""An agent that takes uniformly random actions."""
+"""A simple DQN agent implemented in JAX."""
 
-from bsuite.baselines.random.agent import default_agent
-from bsuite.baselines.random.agent import Random
+from bsuite.baselines.jax.dqn.agent import default_agent
+from bsuite.baselines.jax.dqn.agent import DQN

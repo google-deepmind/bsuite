@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""An agent that takes uniformly random actions."""
+"""A simple TensorFlow 2-based implementation of a recurrent actor-critic."""
 
-from bsuite.baselines.random.agent import default_agent
-from bsuite.baselines.random.agent import Random
+from bsuite.baselines.tf.actor_critic_rnn.agent import ActorCriticRNN
+from bsuite.baselines.tf.actor_critic_rnn.agent import default_agent
+from bsuite.baselines.tf.actor_critic_rnn.agent import PolicyValueRNN
