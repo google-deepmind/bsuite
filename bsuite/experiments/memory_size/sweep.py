@@ -26,3 +26,4 @@ _log_spaced.extend([12, 14, 17, 20, 25])
 _log_spaced.extend(range(30, 50, 10))
 
 SETTINGS = tuple({'num_bits': n} for n in _log_spaced)
+TAGS = ('memory',)

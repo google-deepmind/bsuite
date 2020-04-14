@@ -19,3 +19,4 @@
 NUM_EPISODES = 10000
 
 SETTINGS = tuple({'size': n} for n in range(10, 51, 2))
+TAGS = ('exploration',)

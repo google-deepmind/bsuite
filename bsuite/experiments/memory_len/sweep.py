@@ -24,3 +24,4 @@ _log_spaced.extend([12, 14, 17, 20, 25])
 _log_spaced.extend(range(30, 105, 10))
 
 SETTINGS = tuple({'memory_length': n} for n in _log_spaced)
+TAGS = ('memory',)

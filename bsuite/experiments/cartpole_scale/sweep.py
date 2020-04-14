@@ -26,3 +26,4 @@ for scale in [0.001, 0.03, 1.0, 30., 1000.]:
     _settings.append({'reward_scale': scale, 'seed': seed})
 
 SETTINGS = tuple(_settings)
+TAGS = ('scale', 'generalization')

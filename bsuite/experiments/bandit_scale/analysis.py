@@ -26,7 +26,7 @@ import plotnine as gg
 
 
 NUM_EPISODES = sweep.NUM_EPISODES
-TAGS = ('scale',)
+TAGS = sweep.TAGS
 
 
 def score(df: pd.DataFrame) -> float:

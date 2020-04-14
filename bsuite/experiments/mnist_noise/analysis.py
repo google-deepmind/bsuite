@@ -25,7 +25,7 @@ import pandas as pd
 import plotnine as gg
 
 NUM_EPISODES = sweep.NUM_EPISODES
-TAGS = ('noise', 'generalization')
+TAGS = sweep.TAGS
 
 
 def score(df: pd.DataFrame, scaling_var='noise_scale') -> float:

@@ -16,8 +16,7 @@
 # ============================================================================
 """Plots for summary data across all experiments, e.g. the radar plot."""
 
-import collections
-from typing import Mapping, Sequence, Union
+from typing import Callable, Mapping, NamedTuple, Sequence, Union
 
 from bsuite.experiments.bandit import analysis as bandit_analysis
 from bsuite.experiments.bandit_noise import analysis as bandit_noise_analysis
@@ -52,13 +51,19 @@ import plotnine as gg
 
 ################################################################################
 # Summarizing scores
-BsuiteSummary = collections.namedtuple(
-    'BsuiteSummary', ['score', 'type', 'tags', 'episode'])
 
 
-def _parse_bsuite(package) -> BsuiteSummary:
+class BSuiteSummary(NamedTuple):
+  """Container for summary metadata for a given bsuite experiment."""
+  score: Callable[[pd.DataFrame], float]
+  type: str
+  tags: Sequence[str]
+  episode: int
+
+
+def _parse_bsuite(package) -> BSuiteSummary:
   """Returns a Bsuite summary from a package."""
-  return BsuiteSummary(
+  return BSuiteSummary(
       score=package.score,
       type=package.TAGS[0],
       tags=package.TAGS,
@@ -105,7 +110,7 @@ def _is_finished(df: pd.DataFrame, n_min: int) -> bool:
 
 
 def _bsuite_score_single(df: pd.DataFrame,
-                         experiment_info: Mapping[str, BsuiteSummary],
+                         experiment_info: Mapping[str, BSuiteSummary],
                          verbose: bool = False) -> pd.DataFrame:
   """Score the bsuite across all domains for a single agent."""
   data = []

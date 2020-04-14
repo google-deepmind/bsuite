@@ -19,4 +19,4 @@
 NUM_EPISODES = 1000
 
 SETTINGS = tuple({'seed': n} for n in range(20))
-
+TAGS = ('credit_assignment',)

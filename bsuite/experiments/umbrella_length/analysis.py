@@ -27,7 +27,7 @@ import plotnine as gg
 
 NUM_EPISODES = sweep.NUM_EPISODES
 REGRET_THRESH = 0.5
-TAGS = ('credit_assignment', 'noise')
+TAGS = sweep.TAGS
 
 
 def score_by_group(df: pd.DataFrame, group_col: str) -> float:

@@ -26,3 +26,4 @@ for scale in [0.1, 0.3, 1.0, 3., 10.]:
     _settings.append({'noise_scale': scale, 'seed': seed})
 
 SETTINGS = tuple(_settings)
+TAGS = ('noise', 'generalization')

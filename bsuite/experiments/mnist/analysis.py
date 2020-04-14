@@ -26,7 +26,7 @@ import plotnine as gg
 
 NUM_EPISODES = sweep.NUM_EPISODES
 BASE_REGRET = 1.8
-TAGS = ('basic', 'generalization')
+TAGS = sweep.TAGS
 
 
 def score(df: pd.DataFrame) -> float:

@@ -25,7 +25,7 @@ import pandas as pd
 import plotnine as gg
 
 NUM_EPISODES = sweep.NUM_EPISODES
-TAGS = ('exploration',)
+TAGS = sweep.TAGS
 
 
 def _check_data(df: pd.DataFrame) -> None:

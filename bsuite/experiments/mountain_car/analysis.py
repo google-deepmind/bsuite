@@ -25,7 +25,7 @@ import plotnine as gg
 
 _SOLVED_STEPS = 25
 NUM_EPISODES = sweep.NUM_EPISODES
-TAGS = ('basic', 'generalization')
+TAGS = sweep.TAGS
 BASE_REGRET = 415  # Regret of the random policy empirically
 
 

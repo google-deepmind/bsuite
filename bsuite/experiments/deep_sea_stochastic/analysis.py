@@ -33,7 +33,7 @@ import pandas as pd
 import plotnine as gg
 
 NUM_EPISODES = sweep.NUM_EPISODES
-TAGS = ('exploration', 'noise')
+TAGS = sweep.TAGS
 
 plot_scaling = deep_sea_analysis.plot_scaling
 plot_scaling_log = deep_sea_analysis.plot_scaling_log

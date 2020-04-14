@@ -27,7 +27,7 @@ import plotnine as gg
 
 NUM_EPISODES = sweep.NUM_EPISODES
 BASE_REGRET = 0.08
-TAGS = ('credit_assignment',)
+TAGS = sweep.TAGS
 _HORIZONS = np.array([1, 3, 10, 30, 100])
 
 

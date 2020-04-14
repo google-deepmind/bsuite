@@ -22,3 +22,4 @@ NUM_EPISODES = cartpole_sweep.NUM_EPISODES
 
 SETTINGS = tuple({'height_threshold': n / 20, 'x_reward_threshold': 1 - n / 20}
                  for n in range(20))
+TAGS = ('exploration', 'generalization')

@@ -27,7 +27,7 @@ import plotnine as gg
 NUM_EPISODES = sweep.NUM_EPISODES
 BASE_REGRET = 700
 GOOD_EPISODE = 100
-TAGS = ('exploration', 'generalization')
+TAGS = sweep.TAGS
 
 
 def cp_swingup_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:

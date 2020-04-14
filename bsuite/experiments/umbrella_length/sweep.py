@@ -25,4 +25,4 @@ _log_spaced.extend(range(30, 105, 10))
 
 
 SETTINGS = tuple({'chain_length': n, 'n_distractor': 20} for n in _log_spaced)
-
+TAGS = ('credit_assignment', 'noise')
