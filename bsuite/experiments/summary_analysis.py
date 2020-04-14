@@ -230,7 +230,7 @@ def bsuite_bar_plot(df_in: pd.DataFrame,
       )
   if not all(df.finished):  # add a layer of alpha for unfinished jobs
     p += gg.aes(alpha='finished')
-    p += gg.scale_alpha_discrete([0.3, 1.0])
+    p += gg.scale_alpha_discrete(range=[0.3, 1.0])
 
   # Compute the necessary size of the plot
   if sweep_vars:
