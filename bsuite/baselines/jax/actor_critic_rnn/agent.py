@@ -105,7 +105,7 @@ class ActorCriticRNN(base.Agent):
 
     # Initialize network parameters and optimiser state.
     init, forward = hk.transform(network)
-    dummy_observation = jnp.zeros((1, *obs_spec.shape), dtype=jnp.float32)
+    dummy_observation = jnp.zeros((1, *obs_spec.shape), dtype=obs_spec.dtype)
     initial_params = init(next(rng), dummy_observation, initial_rnn_state)
     initial_opt_state = optimizer.init(initial_params)
 
