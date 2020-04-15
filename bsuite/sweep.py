@@ -69,6 +69,8 @@ EnvKWargs = Dict[str, Any]  # Keyword arguments to environment constructors.
 
 # bsuite_ids are strings of the form {environment_name}{SEPARATOR}{index}.
 SEPARATOR = '/'
+# Exclude environment names ending with the following from the testing sweep.
+IGNORE_FOR_TESTING = ('_noise', '_scale')
 
 _SETTINGS = {}
 _SWEEP = []
@@ -81,11 +83,13 @@ def _parse_sweep(experiment_package) -> Tuple[BSuiteId, ...]:
   results = []
   # package.__name__ is something like 'bsuite.experiments.bandit.sweep'
   experiment_name = experiment_package.__name__.split('.')[-2]
+  eligible_for_test_sweep = not any(experiment_name.endswith(s)
+                                    for s in IGNORE_FOR_TESTING)
 
   # Construct bsuite_ids for each setting defined by the experiment.
   for i, setting in enumerate(experiment_package.SETTINGS):
     bsuite_id = f'{experiment_name}{SEPARATOR}{i}'
-    if i == 0:
+    if i == 0 and eligible_for_test_sweep:
       # For each environment, add one `bsuite_id` to the TESTING sweep.
       _TESTING.append(bsuite_id)
     results.append(bsuite_id)
