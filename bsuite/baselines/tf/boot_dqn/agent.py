@@ -203,7 +203,7 @@ class NetworkWithPrior(snt.Module):
 
 
 def make_ensemble(num_actions: int,
-                  num_ensemble: int = 16,
+                  num_ensemble: int = 20,
                   num_hidden_layers: int = 2,
                   num_units: int = 50,
                   prior_scale: float = 3.) -> Sequence[snt.Module]:
@@ -232,7 +232,7 @@ def default_agent(obs_spec: specs.Array,
       obs_spec=obs_spec,
       action_spec=action_spec,
       ensemble=ensemble,
-      batch_size=32,
+      batch_size=128,
       discount=.99,
       replay_capacity=10000,
       min_replay_size=128,

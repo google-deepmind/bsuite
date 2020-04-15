@@ -41,9 +41,10 @@ To install these dependencies, run:
 pip install bsuite[baselines_jax]
 ```
 
-*   `actor_critic_jax`: A feed-forward implementation of the advantage
-    actor-critic (A2C) algorithm, with TD(lambda).
-*   `dqn_jax`: An implementation of the deep Q-networks (DQN) algorithm.
+*   `actor_critic`: A feed-forward implementation of the advantage actor-critic
+    (A2C) algorithm, with TD(lambda).
+*   `actor_critic_rnn`: A recurrent version of the above agent.
+*   `dqn`: An implementation of the deep Q-networks (DQN) algorithm.
 
 ### Third-party agents
 

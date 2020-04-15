@@ -20,7 +20,7 @@ Reference: "Playing atari with deep reinforcement learning" (Mnih et al, 2015).
 Link: https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf.
 """
 
-from typing import Any, Callable, NamedTuple, Sequence
+from typing import Any, NamedTuple, Sequence
 
 from bsuite.baselines import base
 from bsuite.baselines.utils import replay
@@ -29,13 +29,10 @@ import dm_env
 from dm_env import specs
 import haiku as hk
 import jax
-from jax import lax
 from jax.experimental import optix
 import jax.numpy as jnp
 import numpy as np
 import rlax
-
-QNetwork = Callable[[jnp.ndarray], jnp.ndarray]  # observations -> action values
 
 
 class TrainingState(NamedTuple):
@@ -53,7 +50,7 @@ class DQN(base.Agent):
       self,
       obs_spec: specs.Array,
       action_spec: specs.DiscreteArray,
-      network: QNetwork,
+      network: hk.Transformed,
       optimizer: optix.InitUpdate,
       batch_size: int,
       epsilon: float,
@@ -66,13 +63,15 @@ class DQN(base.Agent):
   ):
 
     # Define loss function.
-    def loss(params: hk.Params, target_params: hk.Params,
+    def loss(params: hk.Params,
+             target_params: hk.Params,
              transitions: Sequence[jnp.ndarray]) -> jnp.ndarray:
       """Computes the standard TD(0) Q-learning loss on batch of transitions."""
       o_tm1, a_tm1, r_t, d_t, o_t = transitions
-      q_tm1 = forward(params, o_tm1)
-      q_t = forward(target_params, o_t)
-      td_error = jax.vmap(rlax.q_learning)(q_tm1, a_tm1, r_t, d_t, q_t)
+      q_tm1 = network.apply(params, o_tm1)
+      q_t = network.apply(target_params, o_t)
+      batch_q_learning = jax.vmap(rlax.q_learning)
+      td_error = batch_q_learning(q_tm1, a_tm1, r_t, discount * d_t, q_t)
       return jnp.mean(td_error**2)
 
     # Define update function.
@@ -84,25 +83,16 @@ class DQN(base.Agent):
       updates, new_opt_state = optimizer.update(gradients, state.opt_state)
       new_params = optix.apply_updates(state.params, updates)
 
-      # Periodically update the target network parameters.
-      target_params = lax.cond(
-          pred=jnp.mod(state.step, target_update_period) == 0,
-          true_operand=None,
-          true_fun=lambda _: new_params,
-          false_operand=None,
-          false_fun=lambda _: state.target_params)
-
       return TrainingState(
           params=new_params,
-          target_params=target_params,
+          target_params=state.target_params,
           opt_state=new_opt_state,
           step=state.step + 1)
 
-    # Internalize the networks.
-    init, forward = hk.transform(network)
+    # Initialize the networks and optimizer.
     dummy_observation = np.zeros((1, *obs_spec.shape), jnp.float32)
-    initial_params = init(next(rng), dummy_observation)
-    initial_target_params = init(next(rng), dummy_observation)
+    initial_params = network.init(next(rng), dummy_observation)
+    initial_target_params = network.init(next(rng), dummy_observation)
     initial_opt_state = optimizer.init(initial_params)
 
     # This carries the agent state relevant to training.
@@ -112,13 +102,14 @@ class DQN(base.Agent):
         opt_state=initial_opt_state,
         step=0)
     self._sgd_step = sgd_step
-    self._forward = jax.jit(forward)
+    self._forward = jax.jit(network.apply)
     self._replay = replay.Replay(capacity=replay_capacity)
 
     # Store hyperparameters.
     self._num_actions = action_spec.num_values
     self._batch_size = batch_size
     self._sgd_period = sgd_period
+    self._target_update_period = target_update_period
     self._epsilon = epsilon
     self._total_steps = 0
     self._min_replay_size = min_replay_size
@@ -161,6 +152,10 @@ class DQN(base.Agent):
     transitions = self._replay.sample(self._batch_size)
     self._state = self._sgd_step(self._state, transitions)
 
+    # Periodically update target parameters.
+    if self._state.step % self._target_update_period == 0:
+      self._state = self._state._replace(target_params=self._state.params)
+
 
 def default_agent(obs_spec: specs.Array,
                   action_spec: specs.DiscreteArray,
@@ -176,7 +171,7 @@ def default_agent(obs_spec: specs.Array,
   return DQN(
       obs_spec=obs_spec,
       action_spec=action_spec,
-      network=network,
+      network=hk.transform(network),
       optimizer=optix.adam(1e-3),
       batch_size=32,
       discount=0.99,
