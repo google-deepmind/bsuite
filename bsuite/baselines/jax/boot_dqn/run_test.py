@@ -31,7 +31,8 @@ class RunTest(parameterized.TestCase):
   @classmethod
   def setUpClass(cls):
     super().setUpClass()
-    FLAGS.num_episodes = 5
+    FLAGS.num_ensemble = 8
+    FLAGS.num_episodes = 2
     FLAGS.logging_mode = 'terminal'
 
   @parameterized.parameters(*sweep.TESTING)
