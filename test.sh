@@ -1,15 +1,19 @@
+#!/bin/bash
+
+# Fail on any error.
 set -e
+# Display commands being run.
 set -x
 
 cd ~/
 rm -rf bsuite/
 
-# Same as installation instructions in README.
+# Similar to installation instructions in README.
 # 1. Clone repo.
 git clone https://github.com/deepmind/bsuite
 
 # 2. Set up virtual environment.
-python3 -m venv bsuite
+virtualenv -p python3 bsuite
 source bsuite/bin/activate
 
 # 3. Pip install.
