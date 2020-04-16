@@ -72,7 +72,7 @@ version for Python 2.7.
     `setup.py`:
 
     ```bash
-    pip install --upgrade pip
+    pip install --upgrade pip setuptools
     pip install bsuite/
     ```
 
