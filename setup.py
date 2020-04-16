@@ -53,6 +53,7 @@ setup(
     install_requires=[
         'absl-py',
         'dm_env',
+        'frozendict',
         'matplotlib',
         'numpy',
         'pandas',
