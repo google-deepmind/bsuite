@@ -253,7 +253,7 @@ def _bar_plot_compare(df: pd.DataFrame) -> gg.ggplot:
       )
   if not all(df.finished):  # add a layer of alpha for unfinished jobs
     p += gg.aes(alpha='finished')
-    p += gg.scale_alpha_discrete([0.3, 1.0])
+    p += gg.scale_alpha_discrete(range=[0.3, 1.0])
   return p
 
 
