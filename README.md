@@ -40,6 +40,8 @@ This means any experiment will automatically output data in the correct format
 for analysis using the notebook, without any constraints on the structure of
 agents or algorithms.
 
+We collate all of the results and analysis in a pre-made jupyter notebook [bit.ly/bsuite-colab](https://bit.ly/bsuite-colab).
+
 ## Getting started
 
 If you are new to `bsuite` you can get started in our
