@@ -25,7 +25,7 @@ baselines_require = [
     'dm-sonnet',
     'dm-tree',
     'tensorflow',
-    'tensorflow_probability',
+    'tensorflow_probability >= 0.8, < 0.9',
     'trfl @ git+git://github.com/deepmind/trfl.git#egg=trfl',
     'tqdm',
 ]

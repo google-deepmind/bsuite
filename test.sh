@@ -31,5 +31,8 @@ env.reset()"
 pip install bsuite[baselines_jax]
 python3 -c "from bsuite.baselines.jax import dqn"
 
+pip install bsuite[baselines]
+python3 -c "from bsuite.baselines.tf import dqn"
+
 deactivate
 rm -rf bsuite/
