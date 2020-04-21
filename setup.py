@@ -24,7 +24,7 @@ from setuptools import setup
 baselines_require = [
     'dm-sonnet',
     'dm-tree',
-    'tensorflow',
+    'tensorflow == 2.1',
     'tensorflow_probability >= 0.8, < 0.9',
     'trfl @ git+git://github.com/deepmind/trfl.git#egg=trfl',
     'tqdm',
