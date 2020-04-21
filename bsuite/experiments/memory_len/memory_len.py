@@ -23,94 +23,15 @@ by component. All actions take no effect until time_to_live=0, then the agent
 must repeat the observations that it saw bit-by-bit.
 """
 
+from typing import Optional
+
+from bsuite.environments import memory_chain
 from bsuite.experiments.memory_len import sweep
-from bsuite.utils import auto_reset_environment
-import dm_env
-from dm_env import specs
-import numpy as np
 
 
-class MemoryChain(auto_reset_environment.Base):
-  """Memory Chain environment, implementing the environment API."""
-
-  def __init__(self,
-               memory_length: int,
-               num_bits: int = 1,
-               seed=None):
-    """Builds the memory chain environment."""
-    super(MemoryChain, self).__init__()
-    self._memory_length = memory_length
-    self._num_bits = num_bits
-    self._rng = np.random.RandomState(seed)
-
-    # Contextual information per episode
-    self._timestep = 0
-    self._context = self._rng.binomial(1, 0.5, num_bits)
-    self._query = self._rng.randint(num_bits)
-
-    # Logging info
-    self._total_perfect = 0
-    self._total_regret = 0
-
-    # bsuite experiment length.
-    self.bsuite_num_episodes = sweep.NUM_EPISODES
-
-  def _get_observation(self):
-    """Observation of form [time, query, num_bits of context]."""
-    obs = np.zeros(shape=(1, self._num_bits + 2), dtype=np.float32)
-    # Show the time, on every step.
-    obs[0, 0] = 1 - self._timestep / self._memory_length
-    # Show the query, on the last step
-    if self._timestep == self._memory_length - 1:
-      obs[0, 1] = self._query
-    # Show the context, on the first step
-    if self._timestep == 0:
-      obs[0, 2:] = 2 * self._context - 1
-    return obs
-
-  def _step(self, action):
-    observation = self._get_observation()
-    self._timestep += 1
-
-    # on all but the last step provide a reward of 0.
-    if self._timestep - 1 < self._memory_length:
-      return dm_env.transition(reward=0., observation=observation)
-
-    elif self._timestep - 1 == self._memory_length:
-      if action == self._context[self._query]:
-        reward = 1.
-        self._total_perfect += 1
-      else:
-        reward = -1.
-        self._total_regret += 2.
-      return dm_env.termination(reward=reward, observation=observation)
-
-  def _reset(self):
-    self._timestep = 0
-    self._episode_mistakes = 0
-    self._context = self._rng.binomial(1, 0.5, self._num_bits)
-    self._query = self._rng.randint(self._num_bits)
-    observation = self._get_observation()
-    return dm_env.restart(observation)
-
-  def observation_spec(self):
-    return specs.Array(shape=(1, self._num_bits + 2), dtype=np.float32)
-
-  def action_spec(self):
-    return specs.DiscreteArray(2, name='action')
-
-  def _save(self, observation):
-    self._raw_observation = (observation * 255).astype(np.uint8)
-
-  def bsuite_info(self):
-    return dict(
-        total_perfect=self._total_perfect,
-        total_regret=self._total_regret)
-
-
-def load(memory_length, seed=0):
+def load(memory_length: int, seed: Optional[int] = 0):
   """Memory Chain environment, with variable delay between cue and decision."""
-  env = MemoryChain(
+  env = memory_chain.MemoryChain(
       memory_length=memory_length,
       num_bits=1,
       seed=seed,

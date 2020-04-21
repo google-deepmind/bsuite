@@ -14,18 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.deep_sea."""
+"""Tests for bsuite.experiments.umbrella_distract."""
 
 from absl.testing import absltest
-from bsuite.experiments.deep_sea import deep_sea
+from bsuite.environments import umbrella_chain
 from dm_env import test_utils
+
 import numpy as np
 
 
-class DeepSeaInterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
+class UmbrellaDistractInterfaceTest(test_utils.EnvironmentTestMixin,
+                                    absltest.TestCase):
 
   def make_object_under_test(self):
-    return deep_sea.DeepSea(10)
+    return umbrella_chain.UmbrellaChain(chain_length=20, n_distractor=22)
 
   def make_action_sequence(self):
     valid_actions = [0, 1]
@@ -35,11 +37,11 @@ class DeepSeaInterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
       yield rng.choice(valid_actions)
 
 
-class StochasticDeepSeaInterfaceTest(test_utils.EnvironmentTestMixin,
-                                     absltest.TestCase):
+class UmbrellaLengthInterfaceTest(test_utils.EnvironmentTestMixin,
+                                  absltest.TestCase):
 
   def make_object_under_test(self):
-    return deep_sea.DeepSea(5, deterministic=False)
+    return umbrella_chain.UmbrellaChain(chain_length=10, n_distractor=0)
 
   def make_action_sequence(self):
     valid_actions = [0, 1]

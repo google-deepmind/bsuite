@@ -16,13 +16,13 @@
 # ============================================================================
 """Unbrella chain environment with varying distractor observations."""
 
+from bsuite.environments import umbrella_chain
 from bsuite.experiments.umbrella_distract import sweep
-from bsuite.experiments.umbrella_length import umbrella_length
 
 
-def load(n_distractor, seed=0):
+def load(n_distractor: int, seed=0):
   """Load a deep sea experiment with the prescribed settings."""
-  env = umbrella_length.UmbrellaChain(
+  env = umbrella_chain.UmbrellaChain(
       chain_length=20,
       n_distractor=n_distractor,
       seed=seed,

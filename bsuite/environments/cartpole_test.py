@@ -14,26 +14,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.memory_len."""
+"""Tests for bsuite.experiments.cartpole."""
 
 from absl.testing import absltest
-from bsuite.experiments.memory_len import memory_len
+from bsuite.environments import cartpole
 from dm_env import test_utils
+
 import numpy as np
 
 
-class MemoryChainInterfaceTest(test_utils.EnvironmentTestMixin,
-                               absltest.TestCase):
+class InterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
-    return memory_len.MemoryChain(10)
+    return cartpole.Cartpole(seed=22)
 
   def make_action_sequence(self):
-    valid_actions = [0, 1]
+    valid_actions = [0, 1, 2]
     rng = np.random.RandomState(42)
 
     for _ in range(100):
       yield rng.choice(valid_actions)
+
 
 if __name__ == '__main__':
   absltest.main()

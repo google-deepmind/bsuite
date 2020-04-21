@@ -19,6 +19,7 @@
 import os
 from typing import Any, Mapping
 
+from bsuite import environments
 from bsuite import sweep
 from bsuite.logging import base
 from bsuite.utils import wrappers
@@ -31,7 +32,7 @@ INITIAL_SEPARATOR = '_-_'
 BSUITE_PREFIX = 'bsuite_id' + INITIAL_SEPARATOR
 
 
-def wrap_environment(env: dm_env.Environment,
+def wrap_environment(env: environments.Environment,
                      bsuite_id: str,
                      results_dir: str,
                      overwrite: bool = False,

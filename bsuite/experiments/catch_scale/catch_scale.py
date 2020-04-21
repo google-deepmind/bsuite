@@ -16,7 +16,7 @@
 # ============================================================================
 """Catch environment with scaled rewards."""
 
-from bsuite.experiments.catch import catch
+from bsuite.environments import catch
 from bsuite.experiments.catch_scale import sweep
 from bsuite.utils import wrappers
 

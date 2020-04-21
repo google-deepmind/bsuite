@@ -19,6 +19,7 @@
 from typing import Any, Mapping, Tuple
 
 from bsuite import sweep
+from bsuite.environments import base
 from bsuite.experiments.bandit import bandit
 from bsuite.experiments.bandit_noise import bandit_noise
 from bsuite.experiments.bandit_scale import bandit_scale
@@ -54,29 +55,29 @@ import termcolor
 # Each constructor or load function accepts keyword arguments as defined in
 # each experiment's sweep.py file.
 EXPERIMENT_NAME_TO_ENVIRONMENT = dict(
-    bandit=bandit.SimpleBandit,
+    bandit=bandit.load,
     bandit_noise=bandit_noise.load,
     bandit_scale=bandit_scale.load,
-    cartpole=cartpole.Cartpole,
+    cartpole=cartpole.load,
     cartpole_noise=cartpole_noise.load,
     cartpole_scale=cartpole_scale.load,
     cartpole_swingup=cartpole_swingup.CartpoleSwingup,
-    catch=catch.Catch,
+    catch=catch.load,
     catch_noise=catch_noise.load,
     catch_scale=catch_scale.load,
-    deep_sea=deep_sea.DeepSea,
+    deep_sea=deep_sea.load,
     deep_sea_stochastic=deep_sea_stochastic.load,
-    discounting_chain=discounting_chain.DiscountingChain,
+    discounting_chain=discounting_chain.load,
     memory_len=memory_len.load,
     memory_size=memory_size.load,
-    mnist=mnist.MNISTBandit,
+    mnist=mnist.load,
     mnist_noise=mnist_noise.load,
     mnist_scale=mnist_scale.load,
-    mountain_car=mountain_car.MountainCar,
+    mountain_car=mountain_car.load,
     mountain_car_noise=mountain_car_noise.load,
     mountain_car_scale=mountain_car_scale.load,
     umbrella_distract=umbrella_distract.load,
-    umbrella_length=umbrella_length.UmbrellaChain,
+    umbrella_length=umbrella_length.load,
 )
 
 
@@ -92,12 +93,12 @@ def unpack_bsuite_id(bsuite_id: str) -> Tuple[str, int]:
 def load(
     experiment_name: str,
     kwargs: Mapping[str, Any],
-) -> dm_env.Environment:
+) -> base.Environment:
   """Returns a bsuite environment given an experiment name and settings."""
   return EXPERIMENT_NAME_TO_ENVIRONMENT[experiment_name](**kwargs)
 
 
-def load_from_id(bsuite_id: str) -> dm_env.Environment:
+def load_from_id(bsuite_id: str) -> base.Environment:
   """Returns a bsuite environment given a bsuite_id."""
   kwargs = sweep.SETTINGS[bsuite_id]
   experiment_name, _ = unpack_bsuite_id(bsuite_id)

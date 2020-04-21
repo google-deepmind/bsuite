@@ -123,7 +123,7 @@ def run(bsuite_id: str) -> str:
     """Factory method for environment initialization in Dopmamine."""
     env = wrappers.ImageObservation(raw_env, OBSERVATION_SHAPE)
     if FLAGS.verbose:
-      env = terminal_logging.wrap_environment(env, log_every=True)
+      env = terminal_logging.wrap_environment(env, log_every=True)  # pytype: disable=wrong-arg-types
     env = gym_wrapper.GymFromDMEnv(env)
     env.game_over = False  # Dopamine looks for this
     return env

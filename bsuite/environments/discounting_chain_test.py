@@ -17,7 +17,7 @@
 """Tests for bsuite.experiments.discounting_chain."""
 
 from absl.testing import absltest
-from bsuite.experiments.discounting_chain import discounting_chain
+from bsuite.environments import discounting_chain
 from dm_env import test_utils
 
 import numpy as np

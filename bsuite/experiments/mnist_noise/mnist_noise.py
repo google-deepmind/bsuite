@@ -16,7 +16,7 @@
 # ============================================================================
 """MNIST bandit with noisy rewards."""
 
-from bsuite.experiments.mnist import mnist
+from bsuite.environments import mnist
 from bsuite.experiments.mnist_noise import sweep
 from bsuite.utils import wrappers
 

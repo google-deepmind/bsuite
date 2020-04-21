@@ -14,10 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.cartpole."""
+"""Tests for bsuite.experiments.catch."""
 
 from absl.testing import absltest
-from bsuite.experiments.cartpole import cartpole
+from bsuite.environments import catch
 from dm_env import test_utils
 
 import numpy as np
@@ -26,7 +26,7 @@ import numpy as np
 class InterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
-    return cartpole.Cartpole(seed=22)
+    return catch.Catch(rows=10, columns=5)
 
   def make_action_sequence(self):
     valid_actions = [0, 1, 2]
@@ -34,7 +34,6 @@ class InterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
 
     for _ in range(100):
       yield rng.choice(valid_actions)
-
 
 if __name__ == '__main__':
   absltest.main()

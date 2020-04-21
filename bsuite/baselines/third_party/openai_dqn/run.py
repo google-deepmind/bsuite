@@ -75,7 +75,7 @@ def run(bsuite_id: str) -> str:
       overwrite=FLAGS.overwrite,
   )
   if FLAGS.verbose:
-    raw_env = terminal_logging.wrap_environment(raw_env, log_every=True)
+    raw_env = terminal_logging.wrap_environment(raw_env, log_every=True)  # pytype: disable=wrong-arg-types
   env = gym_wrapper.GymFromDMEnv(raw_env)
 
   num_episodes = FLAGS.num_episodes or getattr(raw_env, 'bsuite_num_episodes')

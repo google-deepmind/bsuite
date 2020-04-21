@@ -23,13 +23,15 @@ by component. All actions take no effect until time_to_live=0, then the agent
 must repeat the observations that it saw bit-by-bit.
 """
 
-from bsuite.experiments.memory_len import memory_len
+from typing import Optional
+
+from bsuite.environments import memory_chain
 from bsuite.experiments.memory_size import sweep
 
 
-def load(num_bits, seed=0):
+def load(num_bits: int, seed: Optional[int] = 0):
   """Memory Chain environment, with variable number of bits."""
-  env = memory_len.MemoryChain(
+  env = memory_chain.MemoryChain(
       memory_length=2,
       num_bits=num_bits,
       seed=seed,

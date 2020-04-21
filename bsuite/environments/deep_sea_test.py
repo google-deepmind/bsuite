@@ -14,18 +14,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.memory_len."""
+"""Tests for bsuite.experiments.deep_sea."""
 
 from absl.testing import absltest
-from bsuite.experiments.memory_size import memory_size
+from bsuite.environments import deep_sea
 from dm_env import test_utils
 import numpy as np
 
 
-class InterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
+class DeepSeaInterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
-    return memory_size.load(10)
+    return deep_sea.DeepSea(10)
+
+  def make_action_sequence(self):
+    valid_actions = [0, 1]
+    rng = np.random.RandomState(42)
+
+    for _ in range(100):
+      yield rng.choice(valid_actions)
+
+
+class StochasticDeepSeaInterfaceTest(test_utils.EnvironmentTestMixin,
+                                     absltest.TestCase):
+
+  def make_object_under_test(self):
+    return deep_sea.DeepSea(5, deterministic=False)
 
   def make_action_sequence(self):
     valid_actions = [0, 1]

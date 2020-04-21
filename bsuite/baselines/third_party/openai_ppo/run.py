@@ -66,7 +66,7 @@ def run(bsuite_id: str) -> str:
       overwrite=FLAGS.overwrite,
   )
     if FLAGS.verbose:
-      raw_env = terminal_logging.wrap_environment(raw_env, log_every=True)
+      raw_env = terminal_logging.wrap_environment(raw_env, log_every=True)  # pytype: disable=wrong-arg-types
     return gym_wrapper.GymFromDMEnv(raw_env)
   env = dummy_vec_env.DummyVecEnv([_load_env])
 

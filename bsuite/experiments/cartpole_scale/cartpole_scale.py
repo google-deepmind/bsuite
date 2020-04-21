@@ -16,7 +16,7 @@
 # ============================================================================
 """Cartpole environment with scaled rewards."""
 
-from bsuite.experiments.cartpole import cartpole
+from bsuite.environments import cartpole
 from bsuite.experiments.cartpole_scale import sweep
 from bsuite.utils import wrappers
 

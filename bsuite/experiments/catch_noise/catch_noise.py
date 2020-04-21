@@ -16,7 +16,7 @@
 # ============================================================================
 """Catch environment with noisy rewards."""
 
-from bsuite.experiments.catch import catch
+from bsuite.environments import catch
 from bsuite.experiments.catch_noise import sweep
 from bsuite.utils import wrappers
 

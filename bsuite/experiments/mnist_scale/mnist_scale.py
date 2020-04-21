@@ -16,7 +16,7 @@
 # ============================================================================
 """MNIST bandit with reward scaling."""
 
-from bsuite.experiments.mnist import mnist
+from bsuite.environments import mnist
 from bsuite.experiments.mnist_scale import sweep
 from bsuite.utils import wrappers
 

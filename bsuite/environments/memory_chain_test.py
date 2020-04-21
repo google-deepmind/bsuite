@@ -14,21 +14,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.bandit."""
+"""Tests for bsuite.experiments.memory_len."""
 
 from absl.testing import absltest
-from bsuite.experiments.bandit import bandit
+from absl.testing import parameterized
+from bsuite.environments import memory_chain
 from dm_env import test_utils
 import numpy as np
 
 
-class InterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
+class MemoryLengthInterfaceTest(test_utils.EnvironmentTestMixin,
+                                parameterized.TestCase):
 
   def make_object_under_test(self):
-    return bandit.SimpleBandit(5)
+    return memory_chain.MemoryChain(memory_length=10, num_bits=1)
 
   def make_action_sequence(self):
-    valid_actions = range(11)
+    valid_actions = [0, 1]
+    rng = np.random.RandomState(42)
+
+    for _ in range(100):
+      yield rng.choice(valid_actions)
+
+
+class MemorySizeInterfaceTest(test_utils.EnvironmentTestMixin,
+                              parameterized.TestCase):
+
+  def make_object_under_test(self):
+    return memory_chain.MemoryChain(memory_length=2, num_bits=10)
+
+  def make_action_sequence(self):
+    valid_actions = [0, 1]
     rng = np.random.RandomState(42)
 
     for _ in range(100):

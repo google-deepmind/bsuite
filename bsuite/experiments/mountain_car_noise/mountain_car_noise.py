@@ -16,7 +16,7 @@
 # ============================================================================
 """Mountain car environment with noisy rewards."""
 
-from bsuite.experiments.mountain_car import mountain_car
+from bsuite.environments import mountain_car
 from bsuite.experiments.mountain_car_noise import sweep
 from bsuite.utils import wrappers
 

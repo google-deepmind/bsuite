@@ -16,7 +16,7 @@
 # ============================================================================
 """Cartpole environment with noisy rewards."""
 
-from bsuite.experiments.cartpole import cartpole
+from bsuite.environments import cartpole
 from bsuite.experiments.cartpole_noise import sweep
 from bsuite.utils import wrappers
 

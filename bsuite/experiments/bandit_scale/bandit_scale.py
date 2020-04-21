@@ -20,7 +20,7 @@ Observation is a single pixel of 0 - this is an indep arm bandit problem!
 Rewards are np.linspace(0, 1, 11) with no noise, but rescaled.
 """
 
-from bsuite.experiments.bandit import bandit
+from bsuite.environments import bandit
 from bsuite.experiments.bandit import sweep
 from bsuite.utils import wrappers
 

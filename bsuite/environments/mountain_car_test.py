@@ -17,7 +17,7 @@
 """Tests for bsuite.experiments.mountain_car."""
 
 from absl.testing import absltest
-from bsuite.experiments.mountain_car import mountain_car
+from bsuite.environments import mountain_car
 from dm_env import test_utils
 import numpy as np
 

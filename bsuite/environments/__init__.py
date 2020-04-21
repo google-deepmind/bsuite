@@ -14,26 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.umbrella_distract."""
+"""bsuite environments package."""
 
-from absl.testing import absltest
-from bsuite.experiments.umbrella_distract import umbrella_distract
-from dm_env import test_utils
-
-import numpy as np
-
-
-class InterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
-
-  def make_object_under_test(self):
-    return umbrella_distract.load(22)
-
-  def make_action_sequence(self):
-    valid_actions = [0, 1]
-    rng = np.random.RandomState(42)
-
-    for _ in range(100):
-      yield rng.choice(valid_actions)
-
-if __name__ == '__main__':
-  absltest.main()
+from bsuite.environments.base import Environment

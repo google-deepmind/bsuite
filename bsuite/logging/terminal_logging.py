@@ -21,12 +21,13 @@ import numbers
 from typing import Any, Mapping
 
 from absl import logging
+from bsuite import environments
 from bsuite.logging import base
 from bsuite.utils import wrappers
 import dm_env
 
 
-def wrap_environment(env: dm_env.Environment,
+def wrap_environment(env: environments.Environment,
                      pretty_print: bool = True,
                      log_every: bool = False,
                      log_by_step: bool = False) -> dm_env.Environment:

@@ -14,26 +14,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Tests for bsuite.experiments.mnist."""
+"""Tests for bsuite.experiments.bandit."""
 
 from absl.testing import absltest
-from bsuite.experiments.mnist import mnist
+from bsuite.environments import bandit
 from dm_env import test_utils
-
 import numpy as np
 
 
-class CatchInterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
+class InterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
-    return mnist.MNISTBandit(seed=101)
+    return bandit.SimpleBandit(5)
 
   def make_action_sequence(self):
-    num_actions = self.environment.action_spec().num_values
+    valid_actions = range(11)
     rng = np.random.RandomState(42)
 
     for _ in range(100):
-      yield rng.randint(num_actions)
+      yield rng.choice(valid_actions)
 
 if __name__ == '__main__':
   absltest.main()

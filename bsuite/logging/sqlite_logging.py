@@ -22,7 +22,7 @@ import traceback
 from typing import Any, Mapping
 
 from absl import logging
-
+from bsuite import environments
 from bsuite.logging import base
 from bsuite.utils import wrappers
 
@@ -33,7 +33,7 @@ import sqlite3
 _STEP_KEY = 'steps'
 
 
-def wrap_environment(env: dm_env.Environment,
+def wrap_environment(env: environments.Environment,
                      db_path: str,
                      experiment_name: str,
                      setting_index: int,

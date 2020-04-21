@@ -19,7 +19,8 @@
 from absl.testing import absltest
 from absl.testing import parameterized
 
-from bsuite.experiments.catch import catch
+from bsuite import environments
+from bsuite.environments import catch
 from bsuite.utils import wrappers
 
 import dm_env
@@ -29,7 +30,7 @@ import mock
 import numpy as np
 
 
-class FakeEnvironment(dm_env.Environment):
+class FakeEnvironment(environments.Environment):
   """An environment that returns pre-determined rewards and observations."""
 
   def __init__(self, time_steps):
@@ -40,6 +41,7 @@ class FakeEnvironment(dm_env.Environment):
         one episode, or several. This class just repeatedly plays through the
         sequence and doesn't inspect the contents.
     """
+    super().__init__()
     self._time_steps = time_steps
 
     obs = np.asarray(self._time_steps[0].observation)
@@ -61,11 +63,20 @@ class FakeEnvironment(dm_env.Environment):
     self._step_index %= len(self._time_steps)
     return self._time_steps[self._step_index]
 
+  def _reset(self):
+    raise NotImplementedError
+
+  def _step(self, action: int):
+    raise NotImplementedError
+
   def observation_spec(self):
     return self._observation_spec
 
   def action_spec(self):
     return specs.Array(shape=(), dtype=np.int32)
+
+  def bsuite_info(self):
+    return {}
 
 
 class WrapperTest(absltest.TestCase):
@@ -84,7 +95,7 @@ class WrapperTest(absltest.TestCase):
     ]
     expected_episode_return = 6
     fake_env = FakeEnvironment(timesteps)
-    env = wrappers.Logging(env=fake_env, logger=mock_logger, log_every=True)
+    env = wrappers.Logging(env=fake_env, logger=mock_logger, log_every=True)  # pytype: disable=wrong-arg-types
 
     num_episodes = 5
 

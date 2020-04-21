@@ -38,7 +38,8 @@ def run(agent: base.Agent,
   """
 
   if verbose:
-    environment = terminal_logging.wrap_environment(environment, log_every=True)
+    environment = terminal_logging.wrap_environment(
+        environment, log_every=True)  # pytype: disable=wrong-arg-types
 
   for _ in range(num_episodes):
     # Run an episode.

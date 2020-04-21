@@ -16,9 +16,11 @@
 # ============================================================================
 """bsuite logging and image observation wrappers."""
 
-from typing import Sequence
+from typing import Any, Dict, Sequence
 
+from bsuite import environments
 from bsuite.logging import base
+
 import dm_env
 from dm_env import specs
 import numpy as np
@@ -34,7 +36,7 @@ class Logging(dm_env.Environment):
   """Environment wrapper to track and log bsuite stats."""
 
   def __init__(self,
-               env: dm_env.Environment,
+               env: environments.Environment,
                logger: base.Logger,
                log_by_step: bool = False,
                log_every: bool = False):
@@ -112,10 +114,8 @@ class Logging(dm_env.Environment):
         episode_len=self._episode_len,
         episode_return=self._episode_return,
     )
-    try:
-      data.update(self._env.bsuite_info())  # pytype: disable=attribute-error
-    except AttributeError:
-      pass
+    # Environment-specific metadata used for scoring.
+    data.update(self._env.bsuite_info())
     self._logger.write(data)
 
   @property
@@ -240,11 +240,11 @@ def to_image(shape: Sequence[int], observation: np.ndarray) -> np.ndarray:
             observation.shape, shape))
 
 
-class RewardNoise(dm_env.Environment):
+class RewardNoise(environments.Environment):
   """Reward Noise environment wrapper."""
 
   def __init__(self,
-               env: dm_env.Environment,
+               env: environments.Environment,
                noise_scale: float,
                seed: int = None):
     """Builds the Reward Noise environment wrapper.
@@ -289,16 +289,25 @@ class RewardNoise(dm_env.Environment):
       return wrapped.raw_env
     return wrapped
 
+  def _step(self, action: int) -> dm_env.TimeStep:
+    raise NotImplementedError('Please call step() instead of _step().')
+
+  def _reset(self) -> dm_env.TimeStep:
+    raise NotImplementedError('Please call reset() instead of _reset().')
+
+  def bsuite_info(self) -> Dict[str, Any]:
+    return self._env.bsuite_info()
+
   def __getattr__(self, attr):
     """Delegate attribute access to underlying environment."""
     return getattr(self._env, attr)
 
 
-class RewardScale(dm_env.Environment):
+class RewardScale(environments.Environment):
   """Reward Scale environment wrapper."""
 
   def __init__(self,
-               env: dm_env.Environment,
+               env: environments.Environment,
                reward_scale: float,
                seed: int = None):
     """Builds the Reward Scale environment wrapper.
@@ -335,6 +344,12 @@ class RewardScale(dm_env.Environment):
   def action_spec(self):
     return self._env.action_spec()
 
+  def _step(self, action: int) -> dm_env.TimeStep:
+    raise NotImplementedError('Please call step() instead of _step().')
+
+  def _reset(self) -> dm_env.TimeStep:
+    raise NotImplementedError('Please call reset() instead of _reset().')
+
   @property
   def raw_env(self):
     # Recursively unwrap until we reach the true 'raw' env.
@@ -342,6 +357,9 @@ class RewardScale(dm_env.Environment):
     if hasattr(wrapped, 'raw_env'):
       return wrapped.raw_env
     return wrapped
+
+  def bsuite_info(self) -> Dict[str, Any]:
+    return self._env.bsuite_info()
 
   def __getattr__(self, attr):
     """Delegate attribute access to underlying environment."""
