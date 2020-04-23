@@ -111,11 +111,11 @@ class CartpoleSwingup(base.Environment):
       self._total_upright += 1
     self._raw_return += reward
     self._episode_return += reward
-    self._best_episode = max(self._episode_return, self._best_episode)
 
     is_end_of_episode = (self._state.time_elapsed > self._max_time
                          or np.abs(self._state.x) > self._x_threshold)
     if is_end_of_episode:
+      self._best_episode = max(self._episode_return, self._best_episode)
       self._reset_next_step = True
       return dm_env.termination(reward=reward, observation=self.observation)
     else:  # continuing transition.

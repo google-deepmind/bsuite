@@ -145,9 +145,9 @@ class Cartpole(base.Environment):
     reward = 1. if is_reward else 0.
     self._raw_return += reward
     self._episode_return += reward
-    self._best_episode = max(self._episode_return, self._best_episode)
 
     if self._state.time_elapsed > self._max_time or not is_reward:
+      self._best_episode = max(self._episode_return, self._best_episode)
       self._reset_next_step = True
       return dm_env.termination(reward=reward, observation=self.observation)
     return dm_env.transition(reward=reward, observation=self.observation)
