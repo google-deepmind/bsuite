@@ -126,7 +126,7 @@ class DQN(base.Agent):
       # One-step Q-learning loss.
       target = r_t + d_t * self._discount * qa_t
       td_error = qa_tm1 - target
-      loss = 0.5 * tf.reduce_sum(td_error**2)  # []
+      loss = 0.5 * tf.reduce_mean(td_error**2)  # []
 
     # Update the online network via SGD.
     variables = self._online_network.trainable_variables
