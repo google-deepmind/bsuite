@@ -44,7 +44,7 @@ import dm_env
 from dm_env import specs
 import numpy as np
 import sonnet as snt
-import tensorflow.compat.v2 as tf
+import tensorflow as tf
 import tree
 
 

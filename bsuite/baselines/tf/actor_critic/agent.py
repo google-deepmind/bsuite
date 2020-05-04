@@ -30,7 +30,7 @@ from bsuite.baselines.utils import sequence
 import dm_env
 from dm_env import specs
 import sonnet as snt
-import tensorflow.compat.v2 as tf
+import tensorflow as tf
 import tensorflow_probability as tfp
 import tree
 import trfl
