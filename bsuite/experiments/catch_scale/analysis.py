@@ -20,7 +20,7 @@ from typing import Sequence
 
 from bsuite.experiments.catch import analysis as catch_analysis
 from bsuite.experiments.catch_noise import analysis as catch_noise_analysis
-from bsuite.experiments.catch_noise import sweep
+from bsuite.experiments.catch_scale import sweep
 import pandas as pd
 import plotnine as gg
 

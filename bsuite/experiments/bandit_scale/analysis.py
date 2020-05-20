@@ -20,7 +20,7 @@ from typing import Sequence
 
 from bsuite.experiments.bandit import analysis as bandit_analysis
 from bsuite.experiments.bandit_noise import analysis as bandit_noise_analysis
-from bsuite.experiments.bandit_noise import sweep
+from bsuite.experiments.bandit_scale import sweep
 import pandas as pd
 import plotnine as gg
 

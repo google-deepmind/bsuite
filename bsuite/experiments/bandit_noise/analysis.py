@@ -19,7 +19,7 @@
 from typing import Sequence
 
 from bsuite.experiments.bandit import analysis as bandit_analysis
-from bsuite.experiments.bandit import sweep
+from bsuite.experiments.bandit_noise import sweep
 from bsuite.utils import plotting
 import numpy as np
 import pandas as pd
