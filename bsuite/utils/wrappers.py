@@ -63,6 +63,10 @@ class Logging(dm_env.Environment):
     self._episode_len = 0
     self._episode_return = 0.0
 
+  def flush(self):
+    if hasattr(self._logger, 'flush'):
+      self._logger.flush()
+
   def reset(self):
     timestep = self._env.reset()
     self._track(timestep)
