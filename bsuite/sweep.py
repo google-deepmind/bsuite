@@ -76,6 +76,7 @@ _SETTINGS = {}
 _SWEEP = []
 _TAGS = {}
 _TESTING = []
+_EPISODES = {}
 
 
 def _parse_sweep(experiment_package) -> Tuple[BSuiteId, ...]:
@@ -94,6 +95,7 @@ def _parse_sweep(experiment_package) -> Tuple[BSuiteId, ...]:
       _TESTING.append(bsuite_id)
     results.append(bsuite_id)
     _SETTINGS[bsuite_id] = setting
+    _EPISODES[bsuite_id] = experiment_package.NUM_EPISODES
 
   # Add bsuite_ids to corresponding tag sweeps.
   for tag in experiment_package.TAGS:
@@ -141,3 +143,6 @@ TAGS: Mapping[Tag, Tuple[BSuiteId, ...]] = frozendict.frozendict(
 
 # Tuple containing a representative subset bsuite_ids used for agent tests.
 TESTING: Tuple[BSuiteId, ...] = tuple(_TESTING)
+
+# Mapping from bsuite_id to bsuite_num_episodes = how many episodes to run.
+EPISODES: Mapping[BSuiteId, int] = frozendict.frozendict(**_EPISODES)
