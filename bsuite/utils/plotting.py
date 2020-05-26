@@ -122,7 +122,7 @@ def plot_regret_learning(df_in: pd.DataFrame,
   """Plots the average regret through time, grouped by group_var."""
   df = df_in.copy()
   df['average_regret'] = df[regret_col] / df.episode
-  df = df[df.episode <= max_episode]
+  df = df[df.episode <= (max_episode or np.inf)]
   if group_col is None:
     p = _plot_regret_single(df)
   else:
@@ -234,7 +234,7 @@ def plot_regret_ave_scaling(df_in: pd.DataFrame,
 
 
 def _make_unique_group_col(df: pd.DataFrame,
-                           sweep_vars: Sequence[str] = None) -> None:
+                           sweep_vars: Sequence[str] = None) -> pd.DataFrame:
   """Adds a unique_group column based on sweep_vars + bsuite_id."""
   unique_vars = ['bsuite_id']
   if sweep_vars:
