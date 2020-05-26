@@ -149,8 +149,9 @@ def default_agent(obs_spec: specs.Array,
   """Creates an actor-critic agent with default hyperparameters."""
 
   hidden_size = 256
-  initial_rnn_state = (jnp.zeros((1, hidden_size), dtype=jnp.float32),
-                       jnp.zeros((1, hidden_size), dtype=jnp.float32))
+  initial_rnn_state = hk.LSTMState(
+      hidden=jnp.zeros((1, hidden_size), dtype=jnp.float32),
+      cell=jnp.zeros((1, hidden_size), dtype=jnp.float32))
 
   def network(inputs: jnp.ndarray,
               state) -> Tuple[Tuple[Logits, Value], LSTMState]:
