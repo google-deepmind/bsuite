@@ -13,8 +13,8 @@ rm -rf bsuite/
 git clone https://github.com/deepmind/bsuite
 
 # 2. Set up virtual environment.
-virtualenv -p python3 bsuite
-source bsuite/bin/activate
+python3 -m venv bsuite_testing
+source bsuite_testing/bin/activate
 
 # 3. Pip install.
 pip install --upgrade pip setuptools
@@ -35,4 +35,4 @@ pip install bsuite[baselines]
 python3 -c "from bsuite.baselines.tf import dqn"
 
 deactivate
-rm -rf bsuite/
+rm -rf bsuite_testing/
