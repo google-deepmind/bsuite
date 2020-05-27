@@ -14,13 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-"""Behaviour Suite for Reinforcement Learning."""
+"""Package metadata for bsuite.
 
-from . import bsuite as _bsuite
-from bsuite._metadata import __version__
+This is kept in a separate module so that it can be imported from setup.py, at
+a time when bsuite's dependencies may not have been installed yet.
+"""
 
-load = _bsuite.load
-load_from_id = _bsuite.load_from_id
-load_and_record = _bsuite.load_and_record
-load_and_record_to_sqlite = _bsuite.load_and_record_to_sqlite
-load_and_record_to_csv = _bsuite.load_and_record_to_csv
+__version__ = '0.3'

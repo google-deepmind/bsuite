@@ -16,6 +16,8 @@
 # ============================================================================
 """Install script for setuptools."""
 
+import imp
+
 from setuptools import find_packages
 from setuptools import setup
 
@@ -48,6 +50,7 @@ setup(
                  'A collection of reinforcement learning experiments.'),
     author='DeepMind',
     license='Apache License, Version 2.0',
+    version=imp.load_source('_metadata', 'bsuite/_metadata.py').__version__,
     keywords='reinforcement-learning python machine learning',
     packages=find_packages(),
     install_requires=[
