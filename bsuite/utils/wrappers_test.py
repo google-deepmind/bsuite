@@ -124,7 +124,7 @@ class WrapperTest(absltest.TestCase):
     raw_env = FakeEnvironment([dm_env.restart([])])
     scale_env = wrappers.RewardScale(raw_env, reward_scale=1.)
     noise_env = wrappers.RewardNoise(scale_env, noise_scale=1.)
-    logging_env = wrappers.Logging(noise_env, logger=None)
+    logging_env = wrappers.Logging(noise_env, logger=None)  # pytype: disable=wrong-arg-types
 
     unwrapped = logging_env.raw_env
     self.assertEqual(id(raw_env), id(unwrapped))

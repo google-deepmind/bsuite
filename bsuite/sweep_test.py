@@ -50,10 +50,12 @@ class SweepTest(absltest.TestCase):
 
     with self.assertRaises(TypeError):
       # pytype: disable=attribute-error
+      # pytype: disable=unsupported-operands
       sweep.BANDIT[0] = 'new_bsuite_id'
       sweep.SWEEP[0] = 'new_bsuite_id'
       sweep.TESTING[0] = 'new_bsuite_id'
       sweep.TAGS['new_tag'] = 42
+      # pytype: enable=unsupported-operands
       # pytype: enable=attribute-error
 
 if __name__ == '__main__':

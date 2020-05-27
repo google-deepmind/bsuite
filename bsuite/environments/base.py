@@ -32,7 +32,7 @@ from typing import Any, Dict
 import dm_env
 
 
-class Environment(dm_env.Environment):
+class Environment(dm_env.Environment, abc.ABC):
   """Base clas for bsuite environments.
 
   A bsuite environment is a dm_env environment with extra metadata:
