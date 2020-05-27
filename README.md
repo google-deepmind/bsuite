@@ -54,8 +54,7 @@ can follow the instructions below to get `bsuite` running on your local machine.
 
 ### Installation
 
-We have tested `bsuite` on Python 3.6. We do not attempt to maintain a working
-version for Python 2.7.
+We have tested `bsuite` on Python 3.6 & 3.7.
 
 1.  First clone the repository to your machine:
 
