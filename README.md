@@ -1,5 +1,7 @@
 # Behaviour Suite for Reinforcement Learning (`bsuite`)
 
+![pytest](https://github.com/deepmind/bsuite/workflows/pytest/badge.svg)
+
 ![radar plot](reports/standalone/images/radar_plot.png)
 
 ## Introduction
