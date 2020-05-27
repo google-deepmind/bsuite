@@ -59,6 +59,8 @@ setup(
     name='bsuite',
     description=('Core RL Behaviour Suite. '
                  'A collection of reinforcement learning experiments.'),
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     author='DeepMind',
     license='Apache License, Version 2.0',
     version=imp.load_source('_metadata', 'bsuite/_metadata.py').__version__,
