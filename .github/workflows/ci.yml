@@ -1,0 +1,29 @@
+name: pytest
+
+on: [push, pull_request]
+
+jobs:
+  test-ubuntu:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip setuptools
+        pip install .
+        pip install .[baselines_jax]
+        pip install .[baselines]
+        pip install .[testing]
+    - name: Check types with pytype
+      run: |
+        pytype -j "$(grep -c ^processor /proc/cpuinfo)" bsuite
+    - name: Test with pytest
+      run: |
+        pytest -n "$(grep -c ^processor /proc/cpuinfo)" bsuite
