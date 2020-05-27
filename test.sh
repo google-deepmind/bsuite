@@ -5,34 +5,29 @@ set -e
 # Display commands being run.
 set -x
 
-cd ~/
-rm -rf bsuite/
-
-# Similar to installation instructions in README.
-# 1. Clone repo.
-git clone https://github.com/deepmind/bsuite
-
-# 2. Set up virtual environment.
+# Set up a new virtual environment.
 python3 -m venv bsuite_testing
 source bsuite_testing/bin/activate
 
-# 3. Pip install.
+# Install all dependencies.
 pip install --upgrade pip setuptools
-pip install bsuite/
+pip install .
+pip install .[baselines_jax]
+pip install .[baselines]
 
-# Check environment tests & that we can import and instantiate envs.
-pip install nose
-nosetests bsuite/bsuite/tests/environments_test.py
-python3 -c "import bsuite
-env = bsuite.load_from_id('catch/0')
-env.reset()"
+# Install test dependencies.
+pip install mock pytest-xdist pytype
 
-# Check that we can install + import baselines.
-pip install bsuite[baselines_jax]
-python3 -c "from bsuite.baselines.jax import dqn"
+N_CPU=$(grep -c ^processor /proc/cpuinfo)
 
-pip install bsuite[baselines]
-python3 -c "from bsuite.baselines.tf import dqn"
+# Run static type-checking.
+pip install pytype
+pytype -j "${N_CPU}" bsuite
 
+# Run all tests.
+pip install pytest-xdist
+pytest -n "${N_CPU}" bsuite
+
+# Clean-up.
 deactivate
 rm -rf bsuite_testing/

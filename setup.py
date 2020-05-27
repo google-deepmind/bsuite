@@ -35,12 +35,18 @@ baselines_require = [
 # Additional requirements for JAX baselines.
 # See baselines/README.md for more information.
 baselines_jax_require = [
-    'dm-haiku',
+    'dm-haiku @ git+git://github.com/deepmind/dm-haiku.git#egg=dm-haiku',
     'dm-tree',
     'jax',
     'jaxlib',
     'rlax @ git+git://github.com/deepmind/rlax.git#egg=rlax',
     'tqdm',
+]
+
+baselines_third_party_require = [
+    'tensorflow == 1.15',
+    'dopamine-rl',
+    'baselines',
 ]
 
 
@@ -57,6 +63,7 @@ setup(
         'absl-py',
         'dm_env',
         'frozendict',
+        'gym',
         'matplotlib',
         'numpy',
         'pandas',
@@ -67,16 +74,16 @@ setup(
         'termcolor',
     ],
     tests_require=[
-        'absl-py',
-        'nose',
+        'pytest-xdist',
+        'mock',
     ],
     extras_require={
         'baselines': baselines_require,
         'baselines_jax': baselines_jax_require,
+        'baselines_third_party': baselines_third_party_require,
     },
-    test_suite='nose.collector',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Environment :: Console',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: Apache Software License',
