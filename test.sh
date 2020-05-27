@@ -16,16 +16,14 @@ pip install .[baselines_jax]
 pip install .[baselines]
 
 # Install test dependencies.
-pip install mock pytest-xdist pytype
+pip install .[testing]
 
 N_CPU=$(grep -c ^processor /proc/cpuinfo)
 
 # Run static type-checking.
-pip install pytype
 pytype -j "${N_CPU}" bsuite
 
 # Run all tests.
-pip install pytest-xdist
 pytest -n "${N_CPU}" bsuite
 
 # Clean-up.

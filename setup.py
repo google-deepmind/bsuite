@@ -49,6 +49,11 @@ baselines_third_party_require = [
     'baselines',
 ]
 
+testing_require = [
+    'mock',
+    'pytest-xdist',
+    'pytype',
+]
 
 setup(
     name='bsuite',
@@ -73,14 +78,11 @@ setup(
         'six',
         'termcolor',
     ],
-    tests_require=[
-        'pytest-xdist',
-        'mock',
-    ],
     extras_require={
         'baselines': baselines_require,
         'baselines_jax': baselines_jax_require,
         'baselines_third_party': baselines_third_party_require,
+        'testing': testing_require,
     },
     classifiers=[
         'Development Status :: 3 - Alpha',
