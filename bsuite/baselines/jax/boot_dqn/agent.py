@@ -81,8 +81,7 @@ class BootstrappedDqn(base.Agent):
     """Bootstrapped DQN with randomized prior functions."""
 
     # Define loss function, including bootstrap mask `m_t` & reward noise `z_t`.
-    def loss(params: hk.Params,
-             target_params: hk.Params,
+    def loss(params: hk.Params, target_params: hk.Params,
              transitions: Sequence[jnp.ndarray]) -> jnp.ndarray:
       """Q-learning loss with added reward noise + half-in bootstrap."""
       o_tm1, a_tm1, r_t, d_t, o_t, m_t, z_t = transitions
@@ -95,9 +94,8 @@ class BootstrappedDqn(base.Agent):
 
     # Define update function for each member of ensemble..
     @jax.jit
-    def sgd_step(
-        state: TrainingState,
-        transitions: Sequence[jnp.ndarray]) -> TrainingState:
+    def sgd_step(state: TrainingState,
+                 transitions: Sequence[jnp.ndarray]) -> TrainingState:
       """Does a step of SGD for the whole ensemble over `transitions`."""
 
       gradients = jax.grad(loss)(state.params, state.target_params, transitions)
@@ -203,9 +201,12 @@ class BootstrappedDqn(base.Agent):
         self._ensemble[k] = state._replace(target_params=state.params)
 
 
-def default_agent(obs_spec: specs.Array,
-                  action_spec: specs.DiscreteArray,
-                  seed: int = 0) -> BootstrappedDqn:
+def default_agent(
+    obs_spec: specs.Array,
+    action_spec: specs.DiscreteArray,
+    seed: int = 0,
+    num_ensemble: int = 20,
+) -> BootstrappedDqn:
   """Initialize a Bootstrapped DQN agent with default parameters."""
 
   # Define network.
@@ -226,7 +227,7 @@ def default_agent(obs_spec: specs.Array,
       network=hk.transform(network),
       batch_size=128,
       discount=.99,
-      num_ensemble=20,
+      num_ensemble=num_ensemble,
       replay_capacity=10000,
       min_replay_size=128,
       sgd_period=1,

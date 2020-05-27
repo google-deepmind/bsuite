@@ -223,10 +223,14 @@ def make_ensemble(num_actions: int,
   return ensemble
 
 
-def default_agent(obs_spec: specs.Array,
-                  action_spec: specs.DiscreteArray) -> BootstrappedDqn:
+def default_agent(
+    obs_spec: specs.Array,
+    action_spec: specs.DiscreteArray,
+    num_ensemble: int = 20,
+) -> BootstrappedDqn:
   """Initialize a Bootstrapped DQN agent with default parameters."""
-  ensemble = make_ensemble(num_actions=action_spec.num_values)
+  ensemble = make_ensemble(
+      num_actions=action_spec.num_values, num_ensemble=num_ensemble)
   optimizer = snt.optimizers.Adam(learning_rate=1e-3)
   return BootstrappedDqn(
       obs_spec=obs_spec,

@@ -16,27 +16,28 @@
 # ============================================================================
 """Basic test coverage for agent training."""
 
-from absl import flags
 from absl.testing import absltest
 from absl.testing import parameterized
 
+from bsuite import bsuite
 from bsuite import sweep
-from bsuite.baselines.tf.dqn import run
-
-FLAGS = flags.FLAGS
+from bsuite.baselines import experiment
+from bsuite.baselines.tf import dqn
 
 
 class RunTest(parameterized.TestCase):
 
-  @classmethod
-  def setUpClass(cls):
-    super().setUpClass()
-    FLAGS.num_episodes = 5
-    FLAGS.logging_mode = 'terminal'
-
   @parameterized.parameters(*sweep.TESTING)
   def test_run(self, bsuite_id: str):
-    run.run(bsuite_id)
+    env = bsuite.load_from_id(bsuite_id)
+
+    agent = dqn.default_agent(
+        env.observation_spec(), env.action_spec())
+
+    experiment.run(
+        agent=agent,
+        environment=env,
+        num_episodes=5)
 
 
 if __name__ == '__main__':
