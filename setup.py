@@ -28,7 +28,7 @@ baselines_require = [
     'dm-tree',
     'tensorflow == 2.1',
     'tensorflow_probability >= 0.8, < 0.9',
-    'trfl @ git+git://github.com/deepmind/trfl.git#egg=trfl',
+    'trfl',
     'tqdm',
 ]
 
