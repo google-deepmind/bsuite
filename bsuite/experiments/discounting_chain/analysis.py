@@ -35,7 +35,8 @@ def score(df: pd.DataFrame) -> float:
   """Output a single score for discounting_chain."""
   n_eps = np.minimum(df.episode.max(), sweep.NUM_EPISODES)
   ave_return = df.loc[df.episode == n_eps, 'total_return'].mean() / n_eps
-  return 1. - 10. * (1.1 - ave_return)
+  raw_score = 1. - 10. * (1.1 - ave_return)
+  return np.clip(raw_score, 0, 1)
 
 
 def dc_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
