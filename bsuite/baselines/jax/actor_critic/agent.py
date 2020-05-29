@@ -74,12 +74,14 @@ class ActorCritic(base.Agent):
 
       return actor_loss + critic_loss
 
+    # Transform the loss into a pure function.
+    loss_fn = hk.transform(loss).apply
+
     # Define update function.
     @jax.jit
     def sgd_step(state: TrainingState,
                  trajectory: sequence.Trajectory) -> TrainingState:
       """Does a step of SGD over a trajectory."""
-      _, loss_fn = hk.transform(loss)
       gradients = jax.grad(loss_fn)(state.params, trajectory)
       updates, new_opt_state = optimizer.update(gradients, state.opt_state)
       new_params = optix.apply_updates(state.params, updates)

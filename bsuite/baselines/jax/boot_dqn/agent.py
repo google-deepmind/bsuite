@@ -58,13 +58,13 @@ class TrainingState(NamedTuple):
 
 
 class BootstrappedDqn(base.Agent):
-  """Bootstrapped DQN with additive prior functions."""
+  """Bootstrapped DQN with randomized prior functions."""
 
   def __init__(
       self,
       obs_spec: specs.Array,
       action_spec: specs.DiscreteArray,
-      network: hk.Transformed,
+      network: Callable[[jnp.ndarray], jnp.ndarray],
       num_ensemble: int,
       batch_size: int,
       discount: float,
@@ -78,7 +78,8 @@ class BootstrappedDqn(base.Agent):
       epsilon_fn: Callable[[int], float] = lambda _: 0.,
       seed: int = 1,
   ):
-    """Bootstrapped DQN with randomized prior functions."""
+    # Transform the (impure) network into a pure function.
+    network = hk.transform(network)
 
     # Define loss function, including bootstrap mask `m_t` & reward noise `z_t`.
     def loss(params: hk.Params, target_params: hk.Params,
@@ -224,7 +225,7 @@ def default_agent(
   return BootstrappedDqn(
       obs_spec=obs_spec,
       action_spec=action_spec,
-      network=hk.transform(network),
+      network=network,
       batch_size=128,
       discount=.99,
       num_ensemble=num_ensemble,

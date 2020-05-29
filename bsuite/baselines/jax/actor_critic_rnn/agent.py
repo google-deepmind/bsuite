@@ -87,12 +87,14 @@ class ActorCriticRNN(base.Agent):
 
       return combined_loss, new_rnn_unroll_state
 
+    # Transform the loss into a pure function.
+    loss_fn = hk.transform(loss).apply
+
     # Define update function.
     @jax.jit
     def sgd_step(state: AgentState,
                  trajectory: sequence.Trajectory) -> AgentState:
       """Does a step of SGD over a trajectory."""
-      _, loss_fn = hk.transform(loss)
       gradients, new_rnn_state = jax.grad(
           loss_fn, has_aux=True)(state.params, trajectory,
                                  state.rnn_unroll_state)

@@ -75,7 +75,7 @@ def run(bsuite_id: str) -> str:
   agent = boot_dqn.BootstrappedDqn(
       obs_spec=env.observation_spec(),
       action_spec=action_spec,
-      network=hk.transform(network),
+      network=network,
       optimizer=optimizer,
       num_ensemble=FLAGS.num_ensemble,
       batch_size=128,

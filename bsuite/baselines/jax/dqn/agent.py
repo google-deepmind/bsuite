@@ -20,7 +20,7 @@ Reference: "Playing atari with deep reinforcement learning" (Mnih et al, 2015).
 Link: https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf.
 """
 
-from typing import Any, NamedTuple, Sequence
+from typing import Any, Callable, NamedTuple, Sequence
 
 from bsuite.baselines import base
 from bsuite.baselines.utils import replay
@@ -50,7 +50,7 @@ class DQN(base.Agent):
       self,
       obs_spec: specs.Array,
       action_spec: specs.DiscreteArray,
-      network: hk.Transformed,
+      network: Callable[[jnp.ndarray], jnp.ndarray],
       optimizer: optix.InitUpdate,
       batch_size: int,
       epsilon: float,
@@ -61,6 +61,8 @@ class DQN(base.Agent):
       sgd_period: int,
       target_update_period: int,
   ):
+    # Transform the (impure) network into a pure function.
+    network = hk.transform(network)
 
     # Define loss function.
     def loss(params: hk.Params,
@@ -171,7 +173,7 @@ def default_agent(obs_spec: specs.Array,
   return DQN(
       obs_spec=obs_spec,
       action_spec=action_spec,
-      network=hk.transform(network),
+      network=network,
       optimizer=optix.adam(1e-3),
       batch_size=32,
       discount=0.99,
