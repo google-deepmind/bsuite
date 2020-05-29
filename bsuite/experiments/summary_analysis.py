@@ -143,7 +143,7 @@ def bsuite_score(df: pd.DataFrame,
   # Groupby has a habit of adding meaningless columns to dataframe.
   for col in df.columns:
     if col in ['level_0', 'level_1', 'level_2']:
-      df.drop(col, axis=1, inplace=True)
+      score_df.drop(col, axis=1, inplace=True)
   return score_df
 
 
