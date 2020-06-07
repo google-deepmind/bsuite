@@ -1,5 +1,6 @@
 # Behaviour Suite for Reinforcement Learning (`bsuite`)
 
+![PyPI version](https://badge.fury.io/py/bsuite.svg)
 ![pytest](https://github.com/deepmind/bsuite/workflows/pytest/badge.svg)
 
 ![radar plot](reports/standalone/images/radar_plot.png)
@@ -54,29 +55,22 @@ can follow the instructions below to get `bsuite` running on your local machine.
 
 ### Installation
 
-We have tested `bsuite` on Python 3.6 & 3.7.
+We have tested `bsuite` on Python 3.6 & 3.7. To install the dependencies:
 
-1.  First clone the repository to your machine:
-
-    ```bash
-    git clone https://github.com/deepmind/bsuite.git
-    ```
-
-1.  **Optional**: You may wish to use a
+1.  **Optional**: We recommend using a
     [Python virtual environment](https://docs.python.org/3/tutorial/venv.html)
     to manage your dependencies, so as not to clobber your system installation:
 
     ```bash
     python3 -m venv bsuite
     source bsuite/bin/activate
+    pip install --upgrade pip setuptools
     ```
 
-1.  Use `pip` to install the required dependencies, which are listed in
-    `setup.py`:
+1.  Install `bsuite` directly from [PyPI](https://pypi.org/project/bsuite):
 
     ```bash
-    pip install --upgrade pip setuptools
-    pip install bsuite/
+    pip install bsuite
     ```
 
 1.  **Optional**: To also install dependencies for the [`baselines`] examples
