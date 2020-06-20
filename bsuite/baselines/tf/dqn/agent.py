@@ -30,7 +30,7 @@ import dm_env
 from dm_env import specs
 import numpy as np
 import sonnet as snt
-import tensorflow.compat.v2 as tf
+import tensorflow as tf
 
 
 class DQN(base.Agent):
@@ -77,8 +77,9 @@ class DQN(base.Agent):
     if self._rng.rand() < self._epsilon:
       return np.random.randint(self._num_actions)
 
+    observation = tf.convert_to_tensor(timestep.observation[None, ...])
     # Greedy policy, breaking ties uniformly at random.
-    q_values = self._forward(timestep.observation[None, ...]).numpy()
+    q_values = self._forward(observation).numpy()
     action = np.random.choice(np.flatnonzero(q_values == q_values.max()))
     return int(action)
 
@@ -114,6 +115,8 @@ class DQN(base.Agent):
     o_tm1, a_tm1, r_t, d_t, o_t = transitions
     r_t = tf.cast(r_t, tf.float32)  # [B]
     d_t = tf.cast(d_t, tf.float32)  # [B]
+    o_tm1 = tf.convert_to_tensor(o_tm1)
+    o_t = tf.convert_to_tensor(o_t)
 
     with tf.GradientTape() as tape:
       q_tm1 = self._online_network(o_tm1)  # [B, A]
