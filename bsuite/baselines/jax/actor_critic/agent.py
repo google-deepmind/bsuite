@@ -75,7 +75,7 @@ class ActorCritic(base.Agent):
       return actor_loss + critic_loss
 
     # Transform the loss into a pure function.
-    loss_fn = hk.transform(loss).apply
+    loss_fn = hk.without_apply_rng(hk.transform(loss, apply_rng=True)).apply
 
     # Define update function.
     @jax.jit
@@ -88,7 +88,7 @@ class ActorCritic(base.Agent):
       return TrainingState(params=new_params, opt_state=new_opt_state)
 
     # Initialize network parameters and optimiser state.
-    init, forward = hk.transform(network)
+    init, forward = hk.without_apply_rng(hk.transform(network, apply_rng=True))
     dummy_observation = jnp.zeros((1, *obs_spec.shape), dtype=jnp.float32)
     initial_params = init(next(rng), dummy_observation)
     initial_opt_state = optimizer.init(initial_params)

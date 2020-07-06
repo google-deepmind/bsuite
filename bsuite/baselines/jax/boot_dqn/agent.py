@@ -79,7 +79,7 @@ class BootstrappedDqn(base.Agent):
       seed: int = 1,
   ):
     # Transform the (impure) network into a pure function.
-    network = hk.transform(network)
+    network = hk.without_apply_rng(hk.transform(network, apply_rng=True))
 
     # Define loss function, including bootstrap mask `m_t` & reward noise `z_t`.
     def loss(params: hk.Params, target_params: hk.Params,

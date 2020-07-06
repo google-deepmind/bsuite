@@ -62,7 +62,7 @@ class DQN(base.Agent):
       target_update_period: int,
   ):
     # Transform the (impure) network into a pure function.
-    network = hk.transform(network)
+    network = hk.without_apply_rng(hk.transform(network, apply_rng=True))
 
     # Define loss function.
     def loss(params: hk.Params,
