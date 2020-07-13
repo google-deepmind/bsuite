@@ -114,18 +114,19 @@ def load_from_id(bsuite_id: str, log: bool = True) -> base.Environment:
 def load_and_record(bsuite_id: str,
                     save_path: str,
                     logging_mode: str = 'csv',
-                    overwrite: bool = False) -> dm_env.Environment:
+                    overwrite: bool = False,
+                    log: bool = True) -> dm_env.Environment:
   """Returns a bsuite environment wrapped with either CSV or SQLite logging."""
   if logging_mode == 'csv':
-    return load_and_record_to_csv(bsuite_id, save_path, overwrite)
+    return load_and_record_to_csv(bsuite_id, save_path, overwrite, log)
   elif logging_mode == 'sqlite':
     if not save_path.endswith('.db'):
       save_path += '.db'
     if overwrite:
       print('WARNING: overwrite option is ignored for SQLite logging.')
-    return load_and_record_to_sqlite(bsuite_id, save_path)
+    return load_and_record_to_sqlite(bsuite_id, save_path, log)
   elif logging_mode == 'terminal':
-    return load_and_record_to_terminal(bsuite_id)
+    return load_and_record_to_terminal(bsuite_id, log)
   else:
     raise ValueError((f'Unrecognised logging_mode "{logging_mode}". '
                       'Must be "csv", "sqlite", or "terminal".'))
