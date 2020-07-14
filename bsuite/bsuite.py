@@ -100,12 +100,12 @@ def load(
   return EXPERIMENT_NAME_TO_ENVIRONMENT[experiment_name](**kwargs)
 
 
-def load_from_id(bsuite_id: str, log: bool = True) -> base.Environment:
+def load_from_id(bsuite_id: str, loading_message: bool = True) -> base.Environment:
   """Returns a bsuite environment given a bsuite_id."""
   kwargs = sweep.SETTINGS[bsuite_id]
   experiment_name, _ = unpack_bsuite_id(bsuite_id)
   env = load(experiment_name, kwargs)
-  if log:
+  if loading_message:
       termcolor.cprint(
           f'Loaded bsuite_id: {bsuite_id}.', color='white', attrs=['bold'])
   return env
@@ -115,18 +115,18 @@ def load_and_record(bsuite_id: str,
                     save_path: str,
                     logging_mode: str = 'csv',
                     overwrite: bool = False,
-                    log: bool = True) -> dm_env.Environment:
+                    loading_message: bool = True) -> dm_env.Environment:
   """Returns a bsuite environment wrapped with either CSV or SQLite logging."""
   if logging_mode == 'csv':
-    return load_and_record_to_csv(bsuite_id, save_path, overwrite, log)
+    return load_and_record_to_csv(bsuite_id, save_path, overwrite, loading_message)
   elif logging_mode == 'sqlite':
     if not save_path.endswith('.db'):
       save_path += '.db'
     if overwrite:
       print('WARNING: overwrite option is ignored for SQLite logging.')
-    return load_and_record_to_sqlite(bsuite_id, save_path, log)
+    return load_and_record_to_sqlite(bsuite_id, save_path, loading_message)
   elif logging_mode == 'terminal':
-    return load_and_record_to_terminal(bsuite_id, log)
+    return load_and_record_to_terminal(bsuite_id, loading_message)
   else:
     raise ValueError((f'Unrecognised logging_mode "{logging_mode}". '
                       'Must be "csv", "sqlite", or "terminal".'))
@@ -134,7 +134,7 @@ def load_and_record(bsuite_id: str,
 
 def load_and_record_to_sqlite(bsuite_id: str,
                               db_path: str,
-                              log: bool = True) -> dm_env.Environment:
+                              loading_message: bool = True) -> dm_env.Environment:
   """Returns a bsuite environment that saves results to an SQLite database.
 
   The returned environment will automatically save the results required for
@@ -156,13 +156,14 @@ def load_and_record_to_sqlite(bsuite_id: str,
       created if it does not already exist. When generating results using
       multiple different processes, specify the *same* db_path for every
       bsuite_id.
+    loading_message: boolean flag (default true) for env loading messages
 
   Returns:
     A bsuite environment determined by the bsuite_id.
   """
   raw_env = load_from_id(bsuite_id)
   experiment_name, setting_index = unpack_bsuite_id(bsuite_id)
-  if log:
+  if loading_message:
       termcolor.cprint(
           f'Logging results to SQLite database in {db_path}.',
           color='yellow',
