@@ -139,7 +139,7 @@ class BootstrappedDqn(base.Agent):
     # Greedy policy, breaking ties uniformly at random.
     batched_obs = tf.expand_dims(timestep.observation, axis=0)
     q_values = self._forward[self._active_head](batched_obs)[0].numpy()
-    action = np.random.choice(np.flatnonzero(q_values == q_values.max()))
+    action = self._rng.choice(np.flatnonzero(q_values == q_values.max()))
     return int(action)
 
   def update(
@@ -150,7 +150,7 @@ class BootstrappedDqn(base.Agent):
   ):
     """Update the agent: add transition to replay and periodically do SGD."""
     if new_timestep.last():
-      self._active_head = np.random.randint(self._num_ensemble)
+      self._active_head = self._rng.randint(self._num_ensemble)
 
     self._replay.add(
         TransitionWithMaskAndNoise(

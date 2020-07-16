@@ -75,12 +75,12 @@ class DQN(base.Agent):
   def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     # Epsilon-greedy policy.
     if self._rng.rand() < self._epsilon:
-      return np.random.randint(self._num_actions)
+      return self._rng.randint(self._num_actions)
 
     observation = tf.convert_to_tensor(timestep.observation[None, ...])
     # Greedy policy, breaking ties uniformly at random.
     q_values = self._forward(observation).numpy()
-    action = np.random.choice(np.flatnonzero(q_values == q_values.max()))
+    action = self._rng.choice(np.flatnonzero(q_values == q_values.max()))
     return int(action)
 
   def update(
