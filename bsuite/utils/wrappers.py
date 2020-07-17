@@ -107,6 +107,9 @@ class Logging(dm_env.Environment):
       self._episode_len = 0
       self._episode_return = 0.0
 
+    if self._episode == self._env.bsuite_num_episodes:
+      self.flush()
+
   def _log_bsuite_data(self):
     """Log summary data for bsuite."""
     data = dict(

@@ -42,6 +42,7 @@ class FakeEnvironment(environments.Environment):
         sequence and doesn't inspect the contents.
     """
     super().__init__()
+    self.bsuite_num_episodes = 1000
     self._time_steps = time_steps
 
     obs = np.asarray(self._time_steps[0].observation)
