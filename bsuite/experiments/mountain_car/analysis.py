@@ -23,10 +23,10 @@ from bsuite.utils import plotting
 import pandas as pd
 import plotnine as gg
 
-_SOLVED_STEPS = 25
+_SOLVED_STEPS = 100
 NUM_EPISODES = sweep.NUM_EPISODES
 TAGS = sweep.TAGS
-BASE_REGRET = 415  # Regret of the random policy empirically
+BASE_REGRET = 1000  # Maximum regret staying at bottom for 1000 steps
 
 
 def score(df: pd.DataFrame) -> float:
