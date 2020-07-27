@@ -33,7 +33,7 @@ import jax.numpy as jnp
 
 # Internal imports.
 
-flags.DEFINE_integer('num_ensemble', 20, 'Size of ensemble.')
+flags.DEFINE_integer('num_ensemble', 1, 'Size of ensemble.')
 
 # Experiment flags.
 flags.DEFINE_string(
@@ -61,8 +61,8 @@ def run(bsuite_id: str) -> str:
   action_spec = env.action_spec()
 
   # Define network.
-  prior_scale = 3.
-  hidden_sizes = [64, 64]
+  prior_scale = 5.
+  hidden_sizes = [50, 50]
   def network(inputs: jnp.ndarray) -> jnp.ndarray:
     """Simple Q-network with randomized prior function."""
     net = hk.nets.MLP([*hidden_sizes, action_spec.num_values])
@@ -84,7 +84,7 @@ def run(bsuite_id: str) -> str:
       min_replay_size=128,
       sgd_period=1,
       target_update_period=4,
-      mask_prob=0.5,
+      mask_prob=1.0,
       noise_scale=0.,
   )
 

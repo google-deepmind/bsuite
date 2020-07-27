@@ -211,7 +211,7 @@ def default_agent(
   """Initialize a Bootstrapped DQN agent with default parameters."""
 
   # Define network.
-  prior_scale = 3.
+  prior_scale = 5.
   hidden_sizes = [50, 50]
 
   def network(inputs: jnp.ndarray) -> jnp.ndarray:
@@ -234,7 +234,7 @@ def default_agent(
       sgd_period=1,
       target_update_period=4,
       optimizer=optimizer,
-      mask_prob=0.5,
+      mask_prob=1.,
       noise_scale=0.,
       epsilon_fn=lambda _: 0.,
       seed=seed,
