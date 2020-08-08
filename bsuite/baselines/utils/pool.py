@@ -22,8 +22,16 @@ from typing import Callable, Optional, Sequence
 
 import termcolor
 import tqdm
+import threadpoolctl
 
 BsuiteId = str
+
+
+def thread_limit_run_fn(run_fn, limit=1):
+  def _run_fn(*args, **kwargs)
+    with threadpoolctl.threadpool_limits(limit=limit):
+      return run_fn(*args, **kwargs)
+  return _run_fn
 
 
 def map_mpi(
@@ -48,6 +56,8 @@ def map_mpi(
   # Create a pool of processes, dispatch the experiments to them, show progress.
   pool = futures.ProcessPoolExecutor(num_processes)
   progress_bar = tqdm.tqdm(total=num_experiments)
+
+  run_fn = thread_limit_run_fn(run_fn, limit=1)
 
   for bsuite_id in pool.map(run_fn, bsuite_ids):
     description = '[Last finished: {}]'.format(bsuite_id)

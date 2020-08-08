@@ -78,6 +78,7 @@ setup(
         'scipy',
         'scikit-image',
         'six',
+        'threadpoolctl',
         'termcolor',
     ],
     extras_require={
