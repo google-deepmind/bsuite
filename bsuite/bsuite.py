@@ -141,7 +141,7 @@ def load_and_record_to_sqlite(bsuite_id: str,
   manually inspect the results use:
 
   ```python
-  from bsuite.utils import sqlite_load
+  from bsuite.logging import sqlite_load
 
   results_df, sweep_vars = sqlite_load.load_bsuite('/path/to/database.db')
   ```
@@ -180,7 +180,7 @@ def load_and_record_to_csv(bsuite_id: str,
   manually inspect the results use:
 
   ```python
-  from bsuite.utils import csv_load
+  from bsuite.logging import csv_load
 
   results_df, sweep_vars = csv_load.load_bsuite(results_dir)
   ```
