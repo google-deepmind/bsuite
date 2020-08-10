@@ -18,8 +18,7 @@
 
 import imp
 
-from setuptools import find_packages
-from setuptools import setup
+import setuptools
 
 # Additional requirements for TensorFlow baselines, excluding OpenAI & Dopamine.
 # See baselines/README.md for more information.
@@ -35,7 +34,8 @@ baselines_require = [
 # Additional requirements for JAX baselines.
 # See baselines/README.md for more information.
 baselines_jax_require = [
-    'dm-haiku @ git+git://github.com/deepmind/dm-haiku.git#egg=dm-haiku',
+    'dataclasses',
+    'dm-haiku',
     'dm-tree',
     'jax',
     'jaxlib',
@@ -55,7 +55,7 @@ testing_require = [
     'pytype',
 ]
 
-setup(
+setuptools.setup(
     name='bsuite',
     description=('Core RL Behaviour Suite. '
                  'A collection of reinforcement learning experiments.'),
@@ -65,7 +65,7 @@ setup(
     license='Apache License, Version 2.0',
     version=imp.load_source('_metadata', 'bsuite/_metadata.py').__version__,
     keywords='reinforcement-learning python machine learning',
-    packages=find_packages(),
+    packages=setuptools.find_packages(),
     install_requires=[
         'absl-py',
         'dm_env',
