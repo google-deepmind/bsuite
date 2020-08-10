@@ -29,7 +29,7 @@ BsuiteId = str
 
 def thread_limit_run_fn(run_fn, limit=1):
   def _run_fn(*args, **kwargs)
-    with threadpoolctl.threadpool_limits(limit=limit):
+    with threadpoolctl.threadpool_limits(limits=limit):
       return run_fn(*args, **kwargs)
   return _run_fn
 
