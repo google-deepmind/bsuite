@@ -31,7 +31,7 @@ import numpy as np
 class SimpleBandit(base.Environment):
   """SimpleBandit environment."""
 
-  def __init__(self, seed=None):
+  def __init__(self, seed: int = None):
     """Builds a simple bandit environment.
 
     Args:

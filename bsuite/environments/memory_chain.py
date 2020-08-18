@@ -36,7 +36,7 @@ class MemoryChain(base.Environment):
   def __init__(self,
                memory_length: int,
                num_bits: int = 1,
-               seed=None):
+               seed: int = None):
     """Builds the memory chain environment."""
     super(MemoryChain, self).__init__()
     self._memory_length = memory_length

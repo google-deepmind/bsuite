@@ -53,7 +53,8 @@ class DeepSea(base.Environment):
                deterministic: bool = True,
                unscaled_move_cost: float = 0.01,
                randomize_actions: bool = True,
-               seed: int = None):
+               seed: int = None,
+               mapping_seed: int = None):
     """Deep sea environment to test for deep exploration.
 
     Args:
@@ -66,7 +67,8 @@ class DeepSea(base.Environment):
         mappings of actions: (0,1) -> (left, right) by state. For debugging
         purposes, we include the option to turn this randomization off and
         let 0=left, 1=right in every state.
-      seed: Random seed for action mapping and/or transitions, if applicable.
+      seed: Random seed for rewards and transitions, if applicable.
+      mapping_seed: Random seed for action mapping, if applicable.
     """
     super().__init__()
     self._size = size
@@ -75,7 +77,8 @@ class DeepSea(base.Environment):
     self._rng = np.random.RandomState(seed)
 
     if randomize_actions:
-      self._action_mapping = self._rng.binomial(1, 0.5, [size, size])
+      self._mapping_rng = np.random.RandomState(mapping_seed)
+      self._action_mapping = self._mapping_rng.binomial(1, 0.5, [size, size])
     else:
       warnings.warn('Environment is in debug mode (randomize_actions=False).'
                     'Only randomized_actions=True is the DeepSea environment.')

@@ -23,7 +23,7 @@ NUM_EPISODES = catch_sweep.NUM_EPISODES
 _settings = []
 for scale in [0.1, 0.3, 1.0, 3., 10.]:
   for seed in range(4):
-    _settings.append({'noise_scale': scale, 'seed': seed})
+    _settings.append({'noise_scale': scale, 'seed': None})
 
 SETTINGS = tuple(_settings)
 TAGS = ('noise', 'credit_assignment')

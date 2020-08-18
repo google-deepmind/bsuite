@@ -18,5 +18,5 @@
 
 NUM_EPISODES = 1000
 
-SETTINGS = tuple({'seed': n} for n in range(20))
+SETTINGS = tuple({'seed': None} for n in range(20))
 TAGS = ('basic', 'generalization')

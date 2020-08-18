@@ -41,7 +41,7 @@ class Catch(base.Environment):
   The episode terminates when the ball reaches the bottom of the screen.
   """
 
-  def __init__(self, rows: int = 10, columns: int = 5, seed: int = 1):
+  def __init__(self, rows: int = 10, columns: int = 5, seed: int = None):
     """Initializes a new Catch environment.
 
     Args:

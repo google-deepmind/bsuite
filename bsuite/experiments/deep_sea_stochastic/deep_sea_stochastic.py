@@ -20,12 +20,12 @@ from bsuite.environments import deep_sea
 from bsuite.experiments.deep_sea_stochastic import sweep
 
 
-def load(size: int, seed=0):
+def load(size: int, mapping_seed=0):
   """Load a deep sea experiment with the prescribed settings."""
   env = deep_sea.DeepSea(
       size=size,
       deterministic=False,
-      seed=seed,
+      mapping_seed=mapping_seed,
   )
   env.bsuite_num_episodes = sweep.NUM_EPISODES
   return env
