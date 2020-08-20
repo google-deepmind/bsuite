@@ -38,7 +38,7 @@ def score(df: pd.DataFrame) -> float:
 
   # Give 50% of score if your "best" episode > GOOD_EPISODE threshold.
   solve_score = np.mean(
-      cp_df.groupby('seed')['best_episode'].max() > GOOD_EPISODE)
+      cp_df.groupby('bsuite_id')['best_episode'].max() > GOOD_EPISODE)
 
   return 0.5 * (regret_score + solve_score)
 
