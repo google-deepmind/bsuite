@@ -42,7 +42,8 @@ def score(df: pd.DataFrame) -> float:
 def dc_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
   """Preprocess discounting chain data for use with regret metrics."""
   df = df_in.copy()
-  df['optimal_horizon'] = _HORIZONS[(df.seed % len(_HORIZONS)).astype(int)]
+  df['optimal_horizon'] = _HORIZONS[
+      (df.mapping_seed % len(_HORIZONS)).astype(int)]
   df['total_regret'] = 1.1 * df.episode - df.total_return
   df['optimal_horizon'] = df.optimal_horizon.astype('category')
   return df

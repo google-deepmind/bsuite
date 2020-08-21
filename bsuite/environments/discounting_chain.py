@@ -38,23 +38,23 @@ import numpy as np
 class DiscountingChain(base.Environment):
   """Discounting Chain environment."""
 
-  def __init__(self, seed: Optional[int] = None):
+  def __init__(self, mapping_seed: Optional[int] = None):
     """Builds the Discounting Chain environment.
 
     Args:
-      seed: Optional integer, if specified determines which reward is bonus.
+      mapping_seed: Optional integer, specifies which reward is bonus.
     """
     super().__init__()
     self._episode_len = 100
     self._reward_timestep = [1, 3, 10, 30, 100]
     self._n_actions = len(self._reward_timestep)
-    if seed is None:
-      seed = np.random.randint(0, self._n_actions)
+    if mapping_seed is None:
+      mapping_seed = np.random.randint(0, self._n_actions)
     else:
-      seed = seed % self._n_actions
+      mapping_seed = mapping_seed % self._n_actions
 
     self._rewards = np.ones(self._n_actions)
-    self._rewards[seed] += 0.1
+    self._rewards[mapping_seed] += 0.1
 
     self._timestep = 0
     self._context = -1
