@@ -44,9 +44,9 @@ from dm_env import specs
 import haiku as hk
 import jax
 from jax import lax
-from jax.experimental import optix
 import jax.numpy as jnp
 import numpy as np
+import optax
 import rlax
 
 
@@ -72,7 +72,7 @@ class BootstrappedDqn(base.Agent):
       min_replay_size: int,
       sgd_period: int,
       target_update_period: int,
-      optimizer: optix.InitUpdate,
+      optimizer: optax.GradientTransformation,
       mask_prob: float,
       noise_scale: float,
       epsilon_fn: Callable[[int], float] = lambda _: 0.,
@@ -101,7 +101,7 @@ class BootstrappedDqn(base.Agent):
 
       gradients = jax.grad(loss)(state.params, state.target_params, transitions)
       updates, new_opt_state = optimizer.update(gradients, state.opt_state)
-      new_params = optix.apply_updates(state.params, updates)
+      new_params = optax.apply_updates(state.params, updates)
 
       return TrainingState(
           params=new_params,
@@ -221,7 +221,7 @@ def default_agent(
     x = hk.Flatten()(inputs)
     return net(x) + prior_scale * lax.stop_gradient(prior_net(x))
 
-  optimizer = optix.adam(learning_rate=1e-3)
+  optimizer = optax.adam(learning_rate=1e-3)
   return BootstrappedDqn(
       obs_spec=obs_spec,
       action_spec=action_spec,

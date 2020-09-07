@@ -39,6 +39,7 @@ baselines_jax_require = [
     'dm-tree',
     'jax',
     'jaxlib',
+    'optax',
     'rlax @ git+git://github.com/deepmind/rlax.git#egg=rlax',
     'tqdm',
 ]

@@ -29,9 +29,9 @@ import dm_env
 from dm_env import specs
 import haiku as hk
 import jax
-from jax.experimental import optix
 import jax.numpy as jnp
 import numpy as np
+import optax
 import rlax
 
 
@@ -51,7 +51,7 @@ class DQN(base.Agent):
       obs_spec: specs.Array,
       action_spec: specs.DiscreteArray,
       network: Callable[[jnp.ndarray], jnp.ndarray],
-      optimizer: optix.InitUpdate,
+      optimizer: optax.GradientTransformation,
       batch_size: int,
       epsilon: float,
       rng: hk.PRNGSequence,
@@ -83,7 +83,7 @@ class DQN(base.Agent):
       """Performs an SGD step on a batch of transitions."""
       gradients = jax.grad(loss)(state.params, state.target_params, transitions)
       updates, new_opt_state = optimizer.update(gradients, state.opt_state)
-      new_params = optix.apply_updates(state.params, updates)
+      new_params = optax.apply_updates(state.params, updates)
 
       return TrainingState(
           params=new_params,
@@ -174,7 +174,7 @@ def default_agent(obs_spec: specs.Array,
       obs_spec=obs_spec,
       action_spec=action_spec,
       network=network,
-      optimizer=optix.adam(1e-3),
+      optimizer=optax.adam(1e-3),
       batch_size=32,
       discount=0.99,
       replay_capacity=10000,

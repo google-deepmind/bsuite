@@ -25,8 +25,8 @@ import dm_env
 from dm_env import specs
 import haiku as hk
 import jax
-from jax.experimental import optix
 import jax.numpy as jnp
+import optax
 import rlax
 
 Logits = jnp.ndarray
@@ -53,7 +53,7 @@ class ActorCriticRNN(base.Agent):
       action_spec: specs.DiscreteArray,
       network: RecurrentPolicyValueNet,
       initial_rnn_state: LSTMState,
-      optimizer: optix.InitUpdate,
+      optimizer: optax.GradientTransformation,
       rng: hk.PRNGSequence,
       sequence_length: int,
       discount: float,
@@ -99,7 +99,7 @@ class ActorCriticRNN(base.Agent):
           loss_fn, has_aux=True)(state.params, trajectory,
                                  state.rnn_unroll_state)
       updates, new_opt_state = optimizer.update(gradients, state.opt_state)
-      new_params = optix.apply_updates(state.params, updates)
+      new_params = optax.apply_updates(state.params, updates)
       return state._replace(
           params=new_params,
           opt_state=new_opt_state,
@@ -174,7 +174,7 @@ def default_agent(obs_spec: specs.Array,
       action_spec=action_spec,
       network=network,
       initial_rnn_state=initial_rnn_state,
-      optimizer=optix.adam(3e-3),
+      optimizer=optax.adam(3e-3),
       rng=hk.PRNGSequence(seed),
       sequence_length=32,
       discount=0.99,
