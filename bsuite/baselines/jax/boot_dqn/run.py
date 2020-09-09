@@ -28,8 +28,8 @@ from bsuite.baselines.utils import pool
 
 import haiku as hk
 from jax import lax
-from jax.experimental import optix
 import jax.numpy as jnp
+import optax
 
 # Internal imports.
 
@@ -70,7 +70,7 @@ def run(bsuite_id: str) -> str:
     x = hk.Flatten()(inputs)
     return net(x) + prior_scale * lax.stop_gradient(prior_net(x))
 
-  optimizer = optix.adam(learning_rate=1e-3)
+  optimizer = optax.adam(learning_rate=1e-3)
 
   agent = boot_dqn.BootstrappedDqn(
       obs_spec=env.observation_spec(),
