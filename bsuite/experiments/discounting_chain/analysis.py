@@ -39,9 +39,27 @@ def score(df: pd.DataFrame) -> float:
   return np.clip(raw_score, 0, 1)
 
 
+def _mapping_seed_compatibility(df: pd.DataFrame) -> pd.DataFrame:
+  """Utility function to maintain compatibility with old bsuite runs."""
+  # Discounting chain kwarg "seed" was renamed to "mapping_seed"
+  if 'mapping_seed' in df.columns:
+    nan_seeds = df.mapping_seed.isna()
+    if np.any(nan_seeds):
+      df.loc[nan_seeds, 'mapping_seed'] = df.loc[nan_seeds, 'seed']
+      print('WARNING: seed renamed to "mapping_seed" for compatibility.')
+  else:
+    if 'seed' in df.columns:
+      print('WARNING: seed renamed to "mapping_seed" for compatibility.')
+      df['mapping_seed'] = df.seed
+    else:
+      print('ERROR: outdated bsuite run, please relaunch.')
+  return df
+
+
 def dc_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
   """Preprocess discounting chain data for use with regret metrics."""
   df = df_in.copy()
+  df = _mapping_seed_compatibility(df)
   df['optimal_horizon'] = _HORIZONS[
       (df.mapping_seed % len(_HORIZONS)).astype(int)]
   df['total_regret'] = 1.1 * df.episode - df.total_return
