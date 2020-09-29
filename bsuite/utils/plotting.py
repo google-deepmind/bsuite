@@ -40,7 +40,7 @@ FIVE_COLOURS = [
     '#4daf4a',  # GREEN
     '#f46d43',  # ORANGE
     '#d73027',  # RED
-]
+] * 10  # Hack to allow internal code to use functions without error
 
 CATEGORICAL_COLOURS = ([
     '#313695',  # DARK BLUE
