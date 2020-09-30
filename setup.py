@@ -62,10 +62,12 @@ setuptools.setup(
                  'A collection of reinforcement learning experiments.'),
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
+    url='https://github.com/deepmind/bsuite',
     author='DeepMind',
+    author_email='dm-bsuite-eng+os@google.com',
     license='Apache License, Version 2.0',
     version=imp.load_source('_metadata', 'bsuite/_metadata.py').__version__,
-    keywords='reinforcement-learning python machine learning',
+    keywords='reinforcement-learning python machine-learning',
     packages=setuptools.find_packages(),
     install_requires=[
         'absl-py',
@@ -97,7 +99,6 @@ setuptools.setup(
         'Operating System :: MacOS :: MacOS X',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
     ],
 )

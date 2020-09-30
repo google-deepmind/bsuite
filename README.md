@@ -1,5 +1,6 @@
 # Behaviour Suite for Reinforcement Learning (`bsuite`)
 
+![PyPI Python version](https://img.shields.io/pypi/pyversions/bsuite)
 ![PyPI version](https://badge.fury.io/py/bsuite.svg)
 ![pytest](https://github.com/deepmind/bsuite/workflows/pytest/badge.svg)
 
