@@ -25,7 +25,7 @@ import numpy as np
 class InterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
 
   def make_object_under_test(self):
-    return bandit_scale.load(10, 42)
+    return bandit_scale.load(10, 42, 42)
 
   def make_action_sequence(self):
     valid_actions = range(11)

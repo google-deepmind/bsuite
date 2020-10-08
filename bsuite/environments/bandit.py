@@ -31,14 +31,14 @@ import numpy as np
 class SimpleBandit(base.Environment):
   """SimpleBandit environment."""
 
-  def __init__(self, seed: int = None):
+  def __init__(self, mapping_seed: int = None):
     """Builds a simple bandit environment.
 
     Args:
-      seed: Optional integer. Seed for numpy's random number generator (RNG).
+      mapping_seed: Optional integer. Seed for action mapping.
     """
     super(SimpleBandit, self).__init__()
-    self._rng = np.random.RandomState(seed)
+    self._rng = np.random.RandomState(mapping_seed)
 
     self._n_actions = 11
     action_mask = self._rng.choice(
