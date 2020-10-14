@@ -138,6 +138,8 @@ SETTINGS: Mapping[BSuiteId, EnvKWargs] = frozendict.frozendict(**_SETTINGS)
 SWEEP: Tuple[BSuiteId, ...] = tuple(_SWEEP)
 
 # Mapping from tag (e.g. 'memory') to experiment `bsuite_id`s with that tag.
+# This can be used to run sweeps on all tasks only of a particular tag, by using
+# e.g. TAGS['basic'] or TAGS['scale'].
 TAGS: Mapping[Tag, Tuple[BSuiteId, ...]] = frozendict.frozendict(
     **{k: tuple(v) for k, v in _TAGS.items()})
 
