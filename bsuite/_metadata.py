@@ -20,4 +20,4 @@ This is kept in a separate module so that it can be imported from setup.py, at
 a time when bsuite's dependencies may not have been installed yet.
 """
 
-__version__ = '0.3.4'
+__version__ = '0.3.5'

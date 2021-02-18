@@ -25,8 +25,8 @@ import setuptools
 baselines_require = [
     'dm-sonnet',
     'dm-tree',
-    'tensorflow == 2.1',
-    'tensorflow_probability >= 0.8, < 0.9',
+    'tensorflow',
+    'tensorflow_probability',
     'trfl',
     'tqdm',
 ]
