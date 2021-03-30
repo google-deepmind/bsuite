@@ -75,6 +75,7 @@ setuptools.setup(
         'frozendict',
         'gym',
         'matplotlib',
+        'mdp-playground',
         'numpy',
         'pandas',
         'plotnine',

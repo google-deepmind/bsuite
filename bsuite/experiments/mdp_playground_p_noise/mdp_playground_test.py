@@ -15,12 +15,12 @@
 # ============================================================================
 
 ###TODO change to mdpp stuff below
-"""Tests for bsuite.experiments.cartpole."""
+"""Tests for bsuite.experiments.mdp_playground_p_noise."""
 
 # Import all required packages
 
 from absl.testing import absltest
-from bsuite.environments import cartpole
+from bsuite.environments import mdp_playground
 from dm_env import test_utils
 
 import numpy as np
@@ -36,15 +36,16 @@ class InterfaceTest(test_utils.EnvironmentTestMixin, absltest.TestCase):
     config["action_space_size"] = 8
     config["generate_random_mdp"] = True
     config["terminal_state_density"] = 0.25
-    config["completely_connected"] = True
+    config["maximally_connected"] = True
     config["repeats_in_sequences"] = False
     config["reward_density"] = 0.25
+    config["transition_noise"] = 0.25
     config["make_denser"] = False
-    env = mdp_playground_p_noise.load(**config)
+    env = mdp_playground.DM_RLToyEnv(**config)
     return env
 
   def make_action_sequence(self):
-    valid_actions = [0, 1, 2]
+    valid_actions = list(range(8))
     rng = np.random.RandomState(42)
 
     for _ in range(100):
