@@ -28,6 +28,7 @@ from dm_env import specs
 from dm_env import StepType
 import gym
 import numpy as np
+from typing import Any
 
 # def ohe_observation(obs):
 
@@ -36,7 +37,7 @@ class DM_RLToyEnv(base.Environment):
   base.Environment which is a subclass of dm_env.Environment.
   Based on the DMEnvFromGym in gym_wrapper.py"""
 
-  def __init__(self, max_episode_len=100, **config: dict):
+  def __init__(self, max_episode_len: int = 100, **config: Any):
     self.gym_env = gym.make("RLToy-v0", **config)
     self.dm_env = DMEnvFromGym(self.gym_env)
 
@@ -64,7 +65,7 @@ class DM_RLToyEnv(base.Environment):
 
   def step(self, action: int) -> dm_env.TimeStep:
     dm_env_step = self.dm_env.step(action)
-    
+
     #hack set reward as 0 if dm_env_step.reward returns None which happens in case of restart()
     self._raw_return += 0. if dm_env_step.reward is None else dm_env_step.reward
     self._episode_return += 0. if dm_env_step.reward is None else dm_env_step.reward
