@@ -16,6 +16,8 @@
 # ============================================================================
 """Catch reinforcement learning environment."""
 
+from typing import Optional
+
 from bsuite.environments import base
 from bsuite.experiments.catch import sweep
 
@@ -41,7 +43,10 @@ class Catch(base.Environment):
   The episode terminates when the ball reaches the bottom of the screen.
   """
 
-  def __init__(self, rows: int = 10, columns: int = 5, seed: int = None):
+  def __init__(self,
+               rows: int = 10,
+               columns: int = 5,
+               seed: Optional[int] = None):
     """Initializes a new Catch environment.
 
     Args:

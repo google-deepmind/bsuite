@@ -16,7 +16,7 @@
 # ============================================================================
 """bsuite logging and image observation wrappers."""
 
-from typing import Any, Dict, Sequence
+from typing import Any, Dict, Optional, Sequence
 
 from bsuite import environments
 from bsuite.logging import base
@@ -138,7 +138,8 @@ class Logging(dm_env.Environment):
     return getattr(self._env, attr)
 
 
-def _logarithmic_logging(episode: int, ratios: Sequence[float] = None) -> bool:
+def _logarithmic_logging(episode: int,
+                         ratios: Optional[Sequence[float]] = None) -> bool:
   """Returns `True` only at specific ratios of 10**exponent."""
   if ratios is None:
     ratios = [1., 1.2, 1.4, 1.7, 2., 2.5, 3., 4., 5., 6., 7., 8., 9., 10.]
@@ -253,7 +254,7 @@ class RewardNoise(environments.Environment):
   def __init__(self,
                env: environments.Environment,
                noise_scale: float,
-               seed: int = None):
+               seed: Optional[int] = None):
     """Builds the Reward Noise environment wrapper.
 
     Args:
@@ -316,7 +317,7 @@ class RewardScale(environments.Environment):
   def __init__(self,
                env: environments.Environment,
                reward_scale: float,
-               seed: int = None):
+               seed: Optional[int] = None):
     """Builds the Reward Scale environment wrapper.
 
     Args:

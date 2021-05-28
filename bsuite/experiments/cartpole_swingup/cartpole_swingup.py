@@ -16,6 +16,8 @@
 # ============================================================================
 """A swing up experiment in Cartpole."""
 
+from typing import Optional
+
 from bsuite.environments import base
 from bsuite.environments import cartpole
 from bsuite.experiments.cartpole_swingup import sweep
@@ -43,7 +45,7 @@ class CartpoleSwingup(base.Environment):
                timescale: float = 0.01,
                max_time: float = 10.,
                init_range: float = 0.05,
-               seed: int = None):
+               seed: Optional[int] = None):
     # Setup.
     self._state = cartpole.CartpoleState(0, 0, 0, 0, 0)
     super().__init__()

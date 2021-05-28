@@ -101,7 +101,7 @@ class GymFromDMEnv(gym.Env):
     return getattr(self._env, attr)
 
 
-def space2spec(space: gym.Space, name: str = None):
+def space2spec(space: gym.Space, name: Optional[str] = None):
   """Converts an OpenAI Gym space to a dm_env spec or nested structure of specs.
 
   Box, MultiBinary and MultiDiscrete Gym spaces are converted to BoundedArray

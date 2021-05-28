@@ -22,6 +22,8 @@ This is a classic environment in RL research, first described by:
   PhD thesis, University of Cambridge, 1990.
 """
 
+from typing import Optional
+
 from bsuite.environments import base
 from bsuite.experiments.mountain_car import sweep
 
@@ -35,7 +37,7 @@ class MountainCar(base.Environment):
 
   def __init__(self,
                max_steps: int = 1000,
-               seed: int = None):
+               seed: Optional[int] = None):
     """Mountain Car, an underpowered car must power up a hill.
 
     Args:

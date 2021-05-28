@@ -16,7 +16,7 @@
 # ============================================================================
 """Read functionality for local SQLite-based experiments."""
 
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from bsuite import sweep
 from bsuite.logging import logging_utils
@@ -24,8 +24,9 @@ import pandas as pd
 import sqlite3
 
 
-def load_one_result_set(db_path: str,
-                        connection: sqlite3.Connection = None) -> pd.DataFrame:
+def load_one_result_set(
+    db_path: str,
+    connection: Optional[sqlite3.Connection] = None) -> pd.DataFrame:
   """Returns a pandas DataFrame of bsuite results.
 
   Args:

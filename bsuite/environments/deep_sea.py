@@ -35,6 +35,7 @@ For more information, see papers:
 [2] https://arxiv.org/abs/1806.03335
 """
 
+from typing import Optional
 import warnings
 
 from bsuite.environments import base
@@ -53,8 +54,8 @@ class DeepSea(base.Environment):
                deterministic: bool = True,
                unscaled_move_cost: float = 0.01,
                randomize_actions: bool = True,
-               seed: int = None,
-               mapping_seed: int = None):
+               seed: Optional[int] = None,
+               mapping_seed: Optional[int] = None):
     """Deep sea environment to test for deep exploration.
 
     Args:

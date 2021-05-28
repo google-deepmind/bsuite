@@ -23,6 +23,8 @@ by component. All actions take no effect until time_to_live=0, then the agent
 must repeat the observations that it saw bit-by-bit.
 """
 
+from typing import Optional
+
 from bsuite.environments import base
 
 import dm_env
@@ -36,7 +38,7 @@ class MemoryChain(base.Environment):
   def __init__(self,
                memory_length: int,
                num_bits: int = 1,
-               seed: int = None):
+               seed: Optional[int] = None):
     """Builds the memory chain environment."""
     super(MemoryChain, self).__init__()
     self._memory_length = memory_length

@@ -20,6 +20,8 @@ Observation is a single pixel of 0 - this is an independent arm bandit problem!
 Rewards are [0, 0.1, .. 1] assigned randomly to 11 arms and deterministic
 """
 
+from typing import Optional
+
 from bsuite.environments import base
 from bsuite.experiments.bandit import sweep
 
@@ -31,7 +33,7 @@ import numpy as np
 class SimpleBandit(base.Environment):
   """SimpleBandit environment."""
 
-  def __init__(self, mapping_seed: int = None, num_actions: int = 11):
+  def __init__(self, mapping_seed: Optional[int] = None, num_actions: int = 11):
     """Builds a simple bandit environment.
 
     Args:

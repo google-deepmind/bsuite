@@ -20,6 +20,8 @@ In this environment, we test the agent's generalization ability, and abstract
 away exploration/planning/memory etc -- i.e. a bandit, with no 'state'.
 """
 
+from typing import Optional
+
 from bsuite.environments import base
 from bsuite.experiments.mnist import sweep
 from bsuite.utils import datasets
@@ -32,7 +34,7 @@ import numpy as np
 class MNISTBandit(base.Environment):
   """MNIST classification as a bandit environment."""
 
-  def __init__(self, fraction: float = 1., seed: int = None):
+  def __init__(self, fraction: float = 1., seed: Optional[int] = None):
     """Loads the MNIST training set (60K images & labels) as numpy arrays.
 
     Args:

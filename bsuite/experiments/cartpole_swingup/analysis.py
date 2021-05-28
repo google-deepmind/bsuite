@@ -16,7 +16,7 @@
 # ============================================================================
 """Analysis for cartpole swingup."""
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from bsuite.experiments.cartpole_swingup import sweep
 from bsuite.utils import plotting
@@ -56,7 +56,7 @@ def score(df: pd.DataFrame) -> float:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
+                  sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Plots the average return through time by cartpole swingup."""
   df = cp_swingup_preprocess(df_in=df)
   p = plotting.plot_regret_group_nosmooth(
@@ -70,7 +70,7 @@ def plot_learning(df: pd.DataFrame,
 
 
 def plot_scale(df: pd.DataFrame,
-               sweep_vars: Sequence[str] = None) -> gg.ggplot:
+               sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Plots the best episode observed by height_threshold."""
   df = cp_swingup_preprocess(df_in=df)
 
@@ -93,7 +93,7 @@ def plot_scale(df: pd.DataFrame,
 
 
 def plot_seeds(df_in: pd.DataFrame,
-               sweep_vars: Sequence[str] = None) -> gg.ggplot:
+               sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Plot the returns through time individually by run."""
   df = df_in.copy()
   df['average_return'] = df.raw_return.diff() / df.episode.diff()

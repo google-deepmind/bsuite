@@ -16,7 +16,7 @@
 # ============================================================================
 """Collection of smoothers designed for plotnine ggplot."""
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
@@ -60,7 +60,7 @@ def mean(data: pd.DataFrame,
          span: float = 0.1,
          se: bool = True,
          level: float = 0.95,
-         method_args: Dict[str, Any] = None,
+         method_args: Optional[Dict[str, Any]] = None,
          **params) -> pd.DataFrame:
   """Computes the rolling mean over a portion of the data.
 
