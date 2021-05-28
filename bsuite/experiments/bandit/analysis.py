@@ -16,7 +16,7 @@
 # ============================================================================
 """Analysis for bandit."""
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from bsuite.experiments.bandit import sweep
 from bsuite.utils import plotting
@@ -36,7 +36,7 @@ def score(df: pd.DataFrame) -> float:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
+                  sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Plots the average regret through time."""
   p = plotting.plot_regret_learning(
       df, sweep_vars=sweep_vars, max_episode=sweep.NUM_EPISODES)
@@ -55,8 +55,8 @@ def bandit_learning_format(plot: gg.ggplot) -> gg.ggplot:
 
 
 def plot_seeds(df_in: pd.DataFrame,
-               sweep_vars: Sequence[str] = None,
-               colour_var: str = None) -> gg.ggplot:
+               sweep_vars: Optional[Sequence[str]] = None,
+               colour_var: Optional[str] = None) -> gg.ggplot:
   """Plot the returns through time individually by run."""
   df = df_in.copy()
   df['average_return'] = 1.0 - (df.total_regret.diff() / df.episode.diff())

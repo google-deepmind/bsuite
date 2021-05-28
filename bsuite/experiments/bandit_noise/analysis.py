@@ -16,7 +16,7 @@
 # ============================================================================
 """Analysis for bandit_noise."""
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from bsuite.experiments.bandit import analysis as bandit_analysis
 from bsuite.experiments.bandit_noise import sweep
@@ -39,7 +39,7 @@ def score(df: pd.DataFrame, scaling_var='noise_scale') -> float:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[str] = None,
+                  sweep_vars: Optional[Sequence[str]] = None,
                   group_col: str = 'noise_scale') -> gg.ggplot:
   """Plots the average regret through time."""
   p = plotting.plot_regret_learning(
@@ -49,7 +49,7 @@ def plot_learning(df: pd.DataFrame,
 
 
 def plot_average(df: pd.DataFrame,
-                 sweep_vars: Sequence[str] = None,
+                 sweep_vars: Optional[Sequence[str]] = None,
                  group_col: str = 'noise_scale') -> gg.ggplot:
   """Plots the average regret through time by noise_scale."""
   p = plotting.plot_regret_average(
@@ -68,7 +68,7 @@ def plot_average(df: pd.DataFrame,
 
 
 def plot_seeds(df: pd.DataFrame,
-               sweep_vars: Sequence[str] = None) -> gg.ggplot:
+               sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Plot the performance by individual work unit."""
   return bandit_analysis.plot_seeds(
       df_in=df,

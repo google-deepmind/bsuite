@@ -16,7 +16,7 @@
 # ============================================================================
 """Analysis for mountain_car_scale experiment."""
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from bsuite.experiments.mountain_car import analysis as mc_analysis
 from bsuite.experiments.mountain_car_noise import analysis as mc_noise_analysis
@@ -33,17 +33,17 @@ def score(df: pd.DataFrame) -> float:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
+                  sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   return mc_noise_analysis.plot_learning(df, sweep_vars, 'reward_scale')
 
 
 def plot_average(df: pd.DataFrame,
-                 sweep_vars: Sequence[str] = None) -> gg.ggplot:
+                 sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   return mc_noise_analysis.plot_average(df, sweep_vars, 'reward_scale')
 
 
 def plot_seeds(df: pd.DataFrame,
-               sweep_vars: Sequence[str] = None) -> gg.ggplot:
+               sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Plot the performance by individual work unit."""
   return mc_analysis.plot_seeds(
       df_in=df,

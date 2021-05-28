@@ -16,7 +16,7 @@
 # ============================================================================
 """Analysis functions for mountain_car experiment."""
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from bsuite.experiments.mountain_car import sweep
 from bsuite.utils import plotting
@@ -46,7 +46,7 @@ def mountain_car_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
+                  sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Simple learning curves for mountain_car."""
   df = mountain_car_preprocess(df)
   p = plotting.plot_regret_learning(
@@ -57,8 +57,8 @@ def plot_learning(df: pd.DataFrame,
 
 
 def plot_seeds(df_in: pd.DataFrame,
-               sweep_vars: Sequence[str] = None,
-               colour_var: str = None) -> gg.ggplot:
+               sweep_vars: Optional[Sequence[str]] = None,
+               colour_var: Optional[str] = None) -> gg.ggplot:
   """Plot the returns through time individually by run."""
   df = df_in.copy()
   df['average_return'] = df.raw_return.diff() / df.episode.diff()

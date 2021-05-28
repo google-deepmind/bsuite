@@ -16,7 +16,7 @@
 # ============================================================================
 """Analysis for memory_len."""
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from bsuite.experiments.memory_len import sweep
 from bsuite.utils import plotting
@@ -53,7 +53,7 @@ def score(df: pd.DataFrame, group_col: str = 'memory_length') -> float:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[str] = None,
+                  sweep_vars: Optional[Sequence[str]] = None,
                   group_col: str = 'memory_length') -> gg.ggplot:
   """Plots the average return through time by memory_length."""
   df = memory_preprocess(df_in=df)
@@ -68,7 +68,7 @@ def plot_learning(df: pd.DataFrame,
 
 
 def plot_scale(df: pd.DataFrame,
-               sweep_vars: Sequence[str] = None,
+               sweep_vars: Optional[Sequence[str]] = None,
                group_col: str = 'memory_length') -> gg.ggplot:
   """Plots the regret_ratio through time by memory_length."""
   df = memory_preprocess(df_in=df)
@@ -85,7 +85,7 @@ def plot_scale(df: pd.DataFrame,
 
 
 def plot_seeds(df_in: pd.DataFrame,
-               sweep_vars: Sequence[str] = None,
+               sweep_vars: Optional[Sequence[str]] = None,
                colour_var: str = 'memory_length') -> gg.ggplot:
   """Plot the returns through time individually by run."""
   df = df_in.copy()

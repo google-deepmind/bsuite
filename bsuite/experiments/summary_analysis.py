@@ -16,7 +16,7 @@
 # ============================================================================
 """Plots for summary data across all experiments, e.g. the radar plot."""
 
-from typing import Callable, Mapping, NamedTuple, Sequence, Union
+from typing import Callable, Mapping, NamedTuple, Optional, Sequence, Union
 
 from bsuite.experiments.bandit import analysis as bandit_analysis
 from bsuite.experiments.bandit_noise import analysis as bandit_noise_analysis
@@ -132,7 +132,7 @@ def _bsuite_score_single(df: pd.DataFrame,
 
 
 def bsuite_score(df: pd.DataFrame,
-                 sweep_vars: Sequence[str] = None) -> pd.DataFrame:
+                 sweep_vars: Optional[Sequence[str]] = None) -> pd.DataFrame:
   """Score bsuite for each experiment across hyperparameter settings."""
   score_fun = lambda x: _bsuite_score_single(x, BSUITE_INFO)
   if sweep_vars:
@@ -193,8 +193,9 @@ _ORDERED_TYPES = [
     'basic', 'noise', 'scale', 'exploration', 'credit_assignment', 'memory']
 
 
-def _clean_bar_plot_data(df_in: pd.DataFrame,
-                         sweep_vars: Sequence[str] = None) -> pd.DataFrame:
+def _clean_bar_plot_data(
+    df_in: pd.DataFrame,
+    sweep_vars: Optional[Sequence[str]] = None) -> pd.DataFrame:
   """Clean the summary data for bar plot comparison of agents."""
   df = df_in.copy()
   df['env'] = pd.Categorical(
@@ -215,7 +216,7 @@ def _clean_bar_plot_data(df_in: pd.DataFrame,
 
 
 def bsuite_bar_plot(df_in: pd.DataFrame,
-                    sweep_vars: Sequence[str] = None) -> gg.ggplot:
+                    sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Output bar plot of bsuite data."""
   df = _clean_bar_plot_data(df_in, sweep_vars)
 
@@ -257,8 +258,9 @@ def _bar_plot_compare(df: pd.DataFrame) -> gg.ggplot:
   return p
 
 
-def bsuite_bar_plot_compare(df_in: pd.DataFrame,
-                            sweep_vars: Sequence[str] = None) -> gg.ggplot:
+def bsuite_bar_plot_compare(
+    df_in: pd.DataFrame,
+    sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Output bar plot of bsuite data, comparing agents on each experiment."""
   df = _clean_bar_plot_data(df_in, sweep_vars)
   p = _bar_plot_compare(df)
@@ -270,7 +272,7 @@ def bsuite_bar_plot_compare(df_in: pd.DataFrame,
 def plot_single_experiment(
     summary_df: pd.DataFrame,
     bsuite_env: str,
-    sweep_vars: Sequence[str] = None) -> Union[gg.ggplot, None]:
+    sweep_vars: Optional[Sequence[str]] = None) -> Union[gg.ggplot, None]:
   """Compare score for just one experiment."""
   if len(summary_df) == 0:  # pylint:disable=g-explicit-length-test
     print('WARNING: you have no bsuite summary data, please reload.')
@@ -336,7 +338,7 @@ def _radar(
 
 
 def bsuite_radar_plot(summary_data: pd.DataFrame,
-                      sweep_vars: Sequence[str] = None):
+                      sweep_vars: Optional[Sequence[str]] = None):
   """Output a radar plot of bsuite data from bsuite_summary by tag."""
   fig = plt.figure(figsize=(8, 8), facecolor='white')
 

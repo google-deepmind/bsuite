@@ -21,7 +21,7 @@ Link: https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf.
 """
 
 import copy
-from typing import Sequence
+from typing import Optional, Sequence
 
 from bsuite.baselines import base
 from bsuite.baselines.utils import replay
@@ -48,7 +48,7 @@ class DQN(base.Agent):
       target_update_period: int,
       optimizer: snt.Optimizer,
       epsilon: float,
-      seed: int = None,
+      seed: Optional[int] = None,
   ):
 
     # Internalise hyperparameters.

@@ -16,7 +16,7 @@
 # ============================================================================
 """Analysis for umbrella_distract experiment."""
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from bsuite.experiments.umbrella_distract import sweep
 from bsuite.experiments.umbrella_length import analysis as umbrella_length_analysis
@@ -33,7 +33,7 @@ def score(df: pd.DataFrame) -> float:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
+                  sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Plots the average regret through time."""
   return plotting.plot_regret_group_nosmooth(
       df_in=df,
@@ -44,7 +44,7 @@ def plot_learning(df: pd.DataFrame,
 
 
 def plot_scale(df: pd.DataFrame,
-               sweep_vars: Sequence[str] = None) -> gg.ggplot:
+               sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Plots the average return at end of learning investigating scaling."""
   return plotting.plot_regret_ave_scaling(
       df_in=df,
@@ -56,6 +56,6 @@ def plot_scale(df: pd.DataFrame,
 
 
 def plot_seeds(df_in: pd.DataFrame,
-               sweep_vars: Sequence[str] = None) -> gg.ggplot:
+               sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Plot the returns through time individually by run."""
   return umbrella_length_analysis.plot_seeds(df_in, sweep_vars, 'n_distractor')

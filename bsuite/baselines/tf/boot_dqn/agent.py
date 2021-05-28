@@ -35,7 +35,7 @@ Notes:
 """
 
 import copy
-from typing import Callable, NamedTuple, Sequence
+from typing import Callable, NamedTuple, Optional, Sequence
 
 from bsuite.baselines import base
 from bsuite.baselines.utils import replay
@@ -66,7 +66,7 @@ class BootstrappedDqn(base.Agent):
       mask_prob: float,
       noise_scale: float,
       epsilon_fn: Callable[[int], float] = lambda _: 0.,
-      seed: int = None,
+      seed: Optional[int] = None,
   ):
     """Bootstrapped DQN with additive prior functions."""
     # Agent components.
