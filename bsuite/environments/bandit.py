@@ -65,7 +65,7 @@ class SimpleBandit(base.Environment):
     return dm_env.termination(reward=reward, observation=observation)
 
   def observation_spec(self):
-    return specs.Array(shape=(1, 1), dtype=np.float32)
+    return specs.Array(shape=(1, 1), dtype=np.float32, name='observation')
 
   def action_spec(self):
     return specs.DiscreteArray(self._num_actions, name='action')

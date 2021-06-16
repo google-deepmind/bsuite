@@ -93,7 +93,8 @@ class UmbrellaChain(base.Environment):
     return dm_env.restart(observation)
 
   def observation_spec(self):
-    return specs.Array(shape=(1, 3 + self._n_distractor), dtype=np.float32)
+    return specs.Array(
+        shape=(1, 3 + self._n_distractor), dtype=np.float32, name='observation')
 
   def action_spec(self):
     return specs.DiscreteArray(2, name='action')

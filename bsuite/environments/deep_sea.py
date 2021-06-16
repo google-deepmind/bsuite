@@ -145,7 +145,8 @@ class DeepSea(base.Environment):
     return dm_env.transition(reward=reward, observation=observation)
 
   def observation_spec(self):
-    return specs.Array(shape=(self._size, self._size), dtype=np.float32)
+    return specs.Array(
+        shape=(self._size, self._size), dtype=np.float32, name='observation')
 
   def action_spec(self):
     return specs.DiscreteArray(2, name='action')

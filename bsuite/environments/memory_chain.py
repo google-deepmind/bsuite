@@ -98,7 +98,8 @@ class MemoryChain(base.Environment):
     return dm_env.restart(observation)
 
   def observation_spec(self):
-    return specs.Array(shape=(1, self._num_bits + 2), dtype=np.float32)
+    return specs.Array(
+        shape=(1, self._num_bits + 2), dtype=np.float32, name='observation')
 
   def action_spec(self):
     return specs.DiscreteArray(2, name='action')

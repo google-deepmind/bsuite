@@ -91,7 +91,7 @@ class MountainCar(base.Environment):
     return dm_env.transition(reward=reward, observation=observation)
 
   def observation_spec(self):
-    return specs.Array(shape=(1, 3), dtype=np.float32)
+    return specs.Array(shape=(1, 3), dtype=np.float32, name='observation')
 
   def action_spec(self):
     """Actions [0,1,2] -> [Left, Stay, Right]."""

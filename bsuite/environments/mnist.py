@@ -76,10 +76,11 @@ class MNISTBandit(base.Environment):
     return dm_env.termination(reward=reward, observation=observation)
 
   def observation_spec(self):
-    return specs.Array(shape=self._image_shape, dtype=np.float32)
+    return specs.Array(
+        shape=self._image_shape, dtype=np.float32, name='observation')
 
   def action_spec(self):
-    return specs.DiscreteArray(num_values=10)
+    return specs.DiscreteArray(num_values=10, name='action')
 
   def bsuite_info(self):
     return dict(total_regret=self._total_regret)
