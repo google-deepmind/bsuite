@@ -316,12 +316,12 @@ def _radar(
             'Replacing with zero.'.format(len(selected), curr_tag, label))
     values.append(score)
   values = np.maximum(values, 0.05)  # don't let radar collapse to 0.
-  values = np.concatenate((values, [values[0]]))
+  _values = np.concatenate((values, [values[0]]))
 
   angles = np.linspace(0, 2*np.pi, len(all_tags), endpoint=False)
-  angles = np.concatenate((angles, [angles[0]]))
+  _angles = np.concatenate((angles, [angles[0]]))
 
-  ax.plot(angles, values, '-', linewidth=5, label=label,
+  ax.plot(_angles, _values, '-', linewidth=5, label=label,
           c=color, alpha=edge_alpha, zorder=zorder, linestyle=edge_style)
   ax.fill(angles, values, alpha=alpha, color=color, zorder=zorder)
   ax.set_thetagrids(
