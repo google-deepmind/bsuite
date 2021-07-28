@@ -60,7 +60,7 @@ from bsuite.experiments.mountain_car_scale import sweep as mountain_car_scale_sw
 from bsuite.experiments.umbrella_distract import sweep as umbrella_distract_sweep
 from bsuite.experiments.umbrella_length import sweep as umbrella_length_sweep
 
-import frozendict
+import immutabledict
 
 # Common types aliases.
 BSuiteId = str  # Experiment bsuite_ids are strings, e.g. 'deep_sea/10'.
@@ -132,7 +132,8 @@ UMBRELLA_DISTRACT = _parse_sweep(umbrella_distract_sweep)
 UMBRELLA_LENGTH = _parse_sweep(umbrella_length_sweep)
 
 # Mapping from bsuite id to keyword arguments for the corresponding environment.
-SETTINGS: Mapping[BSuiteId, EnvKWargs] = frozendict.frozendict(**_SETTINGS)
+SETTINGS: Mapping[BSuiteId,
+                  EnvKWargs] = immutabledict.immutabledict(**_SETTINGS)
 
 # Tuple containing all bsuite_ids. Used for hyperparameter sweeps.
 SWEEP: Tuple[BSuiteId, ...] = tuple(_SWEEP)
@@ -140,11 +141,11 @@ SWEEP: Tuple[BSuiteId, ...] = tuple(_SWEEP)
 # Mapping from tag (e.g. 'memory') to experiment `bsuite_id`s with that tag.
 # This can be used to run sweeps on all tasks only of a particular tag, by using
 # e.g. TAGS['basic'] or TAGS['scale'].
-TAGS: Mapping[Tag, Tuple[BSuiteId, ...]] = frozendict.frozendict(
+TAGS: Mapping[Tag, Tuple[BSuiteId, ...]] = immutabledict.immutabledict(
     **{k: tuple(v) for k, v in _TAGS.items()})
 
 # Tuple containing a representative subset bsuite_ids used for agent tests.
 TESTING: Tuple[BSuiteId, ...] = tuple(_TESTING)
 
 # Mapping from bsuite_id to bsuite_num_episodes = how many episodes to run.
-EPISODES: Mapping[BSuiteId, int] = frozendict.frozendict(**_EPISODES)
+EPISODES: Mapping[BSuiteId, int] = immutabledict.immutabledict(**_EPISODES)
