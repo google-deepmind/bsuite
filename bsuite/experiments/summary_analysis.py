@@ -324,8 +324,10 @@ def _radar(
   ax.plot(angles, values, '-', linewidth=5, label=label,
           c=color, alpha=edge_alpha, zorder=zorder, linestyle=edge_style)
   ax.fill(angles, values, alpha=alpha, color=color, zorder=zorder)
+  # TODO(iosband): Necessary for some change in matplotlib code...
+  axis_angles = angles[:-1] * 180/np.pi
   ax.set_thetagrids(
-      angles * 180/np.pi, map(_tag_pretify, all_tags), fontsize=18)
+      axis_angles, map(_tag_pretify, all_tags), fontsize=18)
 
   # To avoid text on top of gridlines, we flip horizontalalignment
   # based on label location
