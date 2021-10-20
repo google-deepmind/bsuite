@@ -112,4 +112,4 @@ class UmbrellaChain(base.Environment):
 
   @property
   def context(self):
-    return self._context
+    return self._context  # pytype: disable=attribute-error  # bind-properties
