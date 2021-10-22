@@ -32,3 +32,7 @@ information on using pull requests.
     *  `analysis.py`: Needs to define `score()`, `plot_learning()`, `plot_seeds()` (and possibly other functions like `plot_average`) that will be used by `bsuite/analysis/results.ipynb` to analyse and plot recorded data.
 
 1.  `bsuite/bsuite.py`, `bsuite/sweep.py`, `bsuite/experiments/summary_analysis.py` and `bsuite/analysis/results.ipynb` need to be modified for each new experiment added. We need to add code lines specific to the new experiment, e.g., `from bsuite.experiments.<exp> import ...`.
+
+1. Run `pytest` in bsuite directory and ensure no tests fail.
+
+1. Run `pytype -j "$(grep -c ^processor /proc/cpuinfo)" bsuite` in bsuite directory and ensure no tests fail.

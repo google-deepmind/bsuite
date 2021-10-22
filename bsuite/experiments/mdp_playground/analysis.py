@@ -37,7 +37,7 @@ def score(df: pd.DataFrame) -> float:
       df, baseline_regret=BASE_REGRET, episode=NUM_EPISODES)
 
   norm_score = 1.0 * regret_score # 2.5 was heuristically chosen value to get Sonnet DQN to score approx. 0.75, so that better algorithms like Rainbow can get score close to 1. With a bigger NN this would mean an unclipped score of 1.1 for Sonnet DQN, which is fair I think. However, a2c_rnn even reached 2.0 on this scale. DQN may be not performing as well because its epsilon is not annealed to 0.
-  print("unclipped score:", norm_score)
+  # print("unclipped score:", norm_score)
   norm_score = np.clip(norm_score, 0, 1)
   return norm_score
 
