@@ -51,6 +51,7 @@ baselines_third_party_require = [
 ]
 
 testing_require = [
+    'gym==0.20.0',
     'mock',
     'pytest-xdist',
     'pytype',
@@ -73,7 +74,6 @@ setuptools.setup(
         'absl-py',
         'dm_env',
         'immutabledict',
-        'gym',
         'matplotlib',
         'numpy',
         'pandas',
