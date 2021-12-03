@@ -52,6 +52,7 @@ baselines_third_party_require = [
 
 testing_require = [
     'gym==0.20.0',
+    'tensorflow_probability == 0.14.1',
     'mock',
     'pytest-xdist',
     'pytype',

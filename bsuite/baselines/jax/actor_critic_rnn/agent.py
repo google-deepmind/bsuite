@@ -88,7 +88,7 @@ class ActorCriticRNN(base.Agent):
       return combined_loss, new_rnn_unroll_state
 
     # Transform the loss into a pure function.
-    loss_fn = hk.without_apply_rng(hk.transform(loss, apply_rng=True)).apply
+    loss_fn = hk.without_apply_rng(hk.transform(loss)).apply
 
     # Define update function.
     @jax.jit
@@ -106,7 +106,7 @@ class ActorCriticRNN(base.Agent):
           rnn_unroll_state=new_rnn_state)
 
     # Initialize network parameters and optimiser state.
-    init, forward = hk.without_apply_rng(hk.transform(network, apply_rng=True))
+    init, forward = hk.without_apply_rng(hk.transform(network))
     dummy_observation = jnp.zeros((1, *obs_spec.shape), dtype=obs_spec.dtype)
     initial_params = init(next(rng), dummy_observation, initial_rnn_state)
     initial_opt_state = optimizer.init(initial_params)
