@@ -32,7 +32,7 @@ import optax
 
 # Internal imports.
 
-flags.DEFINE_integer('num_ensemble', 1, 'Size of ensemble.')
+flags.DEFINE_integer('num_ensemble', 20, 'Size of ensemble.')
 
 # Experiment flags.
 flags.DEFINE_string(
