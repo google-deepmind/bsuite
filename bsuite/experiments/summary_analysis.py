@@ -30,6 +30,12 @@ from bsuite.experiments.catch_scale import analysis as catch_scale_analysis
 from bsuite.experiments.deep_sea import analysis as deep_sea_analysis
 from bsuite.experiments.deep_sea_stochastic import analysis as deep_sea_stochastic_analysis
 from bsuite.experiments.discounting_chain import analysis as discounting_chain_analysis
+from bsuite.experiments.mdp_playground import analysis as mdp_playground_analysis
+from bsuite.experiments.mdp_playground_delay import analysis as mdp_playground_delay_analysis
+from bsuite.experiments.mdp_playground_p_noise import analysis as mdp_playground_p_noise_analysis
+from bsuite.experiments.mdp_playground_r_noise import analysis as mdp_playground_r_noise_analysis
+from bsuite.experiments.mdp_playground_r_sparse import analysis as mdp_playground_r_sparse_analysis
+from bsuite.experiments.mdp_playground_seq_len import analysis as mdp_playground_seq_len_analysis
 from bsuite.experiments.memory_len import analysis as memory_len_analysis
 from bsuite.experiments.memory_size import analysis as memory_size_analysis
 from bsuite.experiments.mnist import analysis as mnist_analysis
@@ -83,6 +89,12 @@ BSUITE_INFO = dict(
     deep_sea=_parse_bsuite(deep_sea_analysis),
     deep_sea_stochastic=_parse_bsuite(deep_sea_stochastic_analysis),
     discounting_chain=_parse_bsuite(discounting_chain_analysis),
+    mdp_playground=_parse_bsuite(mdp_playground_analysis),
+    mdp_playground_delay=_parse_bsuite(mdp_playground_delay_analysis),
+    mdp_playground_p_noise=_parse_bsuite(mdp_playground_p_noise_analysis),
+    mdp_playground_r_noise=_parse_bsuite(mdp_playground_r_noise_analysis),
+    mdp_playground_r_sparse=_parse_bsuite(mdp_playground_r_sparse_analysis),
+    mdp_playground_seq_len=_parse_bsuite(mdp_playground_seq_len_analysis),
     memory_len=_parse_bsuite(memory_len_analysis),
     memory_size=_parse_bsuite(memory_size_analysis),
     mnist=_parse_bsuite(mnist_analysis),
@@ -184,12 +196,13 @@ def _gen_ordered_experiments() -> Sequence[str]:
   scale = [env + '_scale' for env in basics]
   explore = ['deep_sea', 'deep_sea_stochastic', 'cartpole_swingup']
   credit = ['umbrella_length', 'umbrella_distract', 'discounting_chain']
+  mdp_playground = ['mdp_playground', 'mdp_playground_delay', 'mdp_playground_p_noise', 'mdp_playground_r_noise', 'mdp_playground_r_sparse', 'mdp_playground_seq_len']
   memory = ['memory_len', 'memory_size']
-  return basics + noise + scale + explore + credit + memory
+  return basics + noise + scale + explore + credit + memory + mdp_playground
 
 _ORDERED_EXPERIMENTS = _gen_ordered_experiments()
 _ORDERED_TYPES = [
-    'basic', 'noise', 'scale', 'exploration', 'credit_assignment', 'memory']
+    'basic', 'noise', 'scale', 'exploration', 'credit_assignment', 'memory', 'mdp_playground']
 
 
 def _clean_bar_plot_data(

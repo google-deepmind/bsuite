@@ -75,6 +75,7 @@ setuptools.setup(
         'dm_env',
         'immutabledict',
         'matplotlib',
+        'mdp-playground',
         'numpy',
         'pandas',
         'plotnine',
