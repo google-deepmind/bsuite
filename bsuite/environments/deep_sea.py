@@ -118,11 +118,12 @@ class DeepSea(base.Environment):
     action_right = action == self._action_mapping[self._row, self._column]
 
     # Reward calculation
-    if self._column == self._size - 1 and action_right:
+    if self._column == self._size - 1 and action_right \
+            and (self._rng.rand() > 1 / self._size or self._deterministic):
       reward += 1.
       self._denoised_return += 1.
     if not self._deterministic:  # Noisy rewards on the 'end' of chain.
-      if self._row == self._size - 1 and self._column in [0, self._size - 1]:
+      if self._row == self._size - 1 and 0 <= self._column <= self._size - 1:
         reward += self._rng.randn()
 
     # Transition dynamics
