@@ -99,7 +99,7 @@ class Catch(base.Environment):
   def observation_spec(self) -> specs.BoundedArray:
     """Returns the observation spec."""
     return specs.BoundedArray(shape=self._board.shape, dtype=self._board.dtype,
-                              name="board", minimum=0, maximum=1)
+                              name="observation", minimum=0, maximum=1)
 
   def action_spec(self) -> specs.DiscreteArray:
     """Returns the action spec."""

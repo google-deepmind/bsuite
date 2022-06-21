@@ -162,7 +162,7 @@ class Cartpole(base.Environment):
     return specs.DiscreteArray(dtype=np.int, num_values=3, name='action')
 
   def observation_spec(self):
-    return specs.Array(shape=(1, 6), dtype=np.float32, name='state')
+    return specs.Array(shape=(1, 6), dtype=np.float32, name='observation')
 
   @property
   def observation(self) -> np.ndarray:
