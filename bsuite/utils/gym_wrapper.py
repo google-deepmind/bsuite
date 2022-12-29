@@ -174,6 +174,9 @@ class DMEnvFromGym(dm_env.Environment):
     else:
       return dm_env.transition(reward, observation)
 
+  def render(self, mode: str = "human"):
+    return self.gym_env.render(mode)
+
   def close(self):
     self.gym_env.close()
 
