@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -16,7 +15,7 @@
 # ============================================================================
 """Analysis for memory_len experiment."""
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from bsuite.experiments.memory_len import analysis as memory_len_analysis
 from bsuite.experiments.memory_size import sweep
@@ -32,17 +31,17 @@ def score(df: pd.DataFrame) -> float:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
+                  sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   return memory_len_analysis.plot_learning(df, sweep_vars, 'num_bits')
 
 
 def plot_scale(df: pd.DataFrame,
-               sweep_vars: Sequence[str] = None) -> gg.ggplot:
+               sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   return memory_len_analysis.plot_scale(df, sweep_vars, 'num_bits')
 
 
 def plot_seeds(df: pd.DataFrame,
-               sweep_vars: Sequence[str] = None) -> gg.ggplot:
+               sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   return memory_len_analysis.plot_seeds(
       df_in=df[df.episode > 100],
       sweep_vars=sweep_vars,

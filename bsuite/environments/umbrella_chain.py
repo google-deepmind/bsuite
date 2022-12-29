@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -93,7 +92,8 @@ class UmbrellaChain(base.Environment):
     return dm_env.restart(observation)
 
   def observation_spec(self):
-    return specs.Array(shape=(1, 3 + self._n_distractor), dtype=np.float32)
+    return specs.Array(
+        shape=(1, 3 + self._n_distractor), dtype=np.float32, name='observation')
 
   def action_spec(self):
     return specs.DiscreteArray(2, name='action')
@@ -111,4 +111,4 @@ class UmbrellaChain(base.Environment):
 
   @property
   def context(self):
-    return self._context
+    return self._context  # pytype: disable=attribute-error  # bind-properties

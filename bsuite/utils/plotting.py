@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -20,7 +19,7 @@ This code is based around plotnine = python implementation of ggplot.
 Typically, these plots will be imported and used within experiment analysis.
 """
 
-from typing import Callable, Sequence
+from typing import Callable, Optional, Sequence
 
 from bsuite.utils import smoothers
 import matplotlib.style as style
@@ -79,7 +78,7 @@ def score_by_scaling(df: pd.DataFrame,
 
 
 def facet_sweep_plot(base_plot: gg.ggplot,
-                     sweep_vars: Sequence[str] = None,
+                     sweep_vars: Optional[Sequence[str]] = None,
                      tall_plot: bool = False) -> gg.ggplot:
   """Add a facet_wrap to the plot based on sweep_vars."""
   df = base_plot.data.copy()
@@ -115,10 +114,10 @@ def facet_sweep_plot(base_plot: gg.ggplot,
 
 
 def plot_regret_learning(df_in: pd.DataFrame,
-                         group_col: str = None,
-                         sweep_vars: Sequence[str] = None,
+                         group_col: Optional[str] = None,
+                         sweep_vars: Optional[Sequence[str]] = None,
                          regret_col: str = 'total_regret',
-                         max_episode: int = None) -> gg.ggplot:
+                         max_episode: Optional[int] = None) -> gg.ggplot:
   """Plots the average regret through time, grouped by group_var."""
   df = df_in.copy()
   df['average_regret'] = df[regret_col] / df.episode
@@ -157,9 +156,9 @@ def _plot_regret_group(df: pd.DataFrame, group_col: str) -> gg.ggplot:
 
 def plot_regret_group_nosmooth(df_in: pd.DataFrame,
                                group_col: str,
-                               sweep_vars: Sequence[str] = None,
+                               sweep_vars: Optional[Sequence[str]] = None,
                                regret_col: str = 'total_regret',
-                               max_episode: int = None) -> gg.ggplot:
+                               max_episode: Optional[int] = None) -> gg.ggplot:
   """Plots the average regret through time without smoothing."""
   df = df_in.copy()
   df['average_regret'] = df[regret_col] / df.episode
@@ -179,7 +178,7 @@ def plot_regret_group_nosmooth(df_in: pd.DataFrame,
 def _preprocess_ave_regret(df_in: pd.DataFrame,
                            group_col: str,
                            episode: int,
-                           sweep_vars: Sequence[str] = None,
+                           sweep_vars: Optional[Sequence[str]] = None,
                            regret_col: str = 'total_regret') -> gg.ggplot:
   """Preprocess the data at episode for average regret calculations."""
   df = df_in.copy()
@@ -198,7 +197,7 @@ def _preprocess_ave_regret(df_in: pd.DataFrame,
 def plot_regret_average(df_in: pd.DataFrame,
                         group_col: str,
                         episode: int,
-                        sweep_vars: Sequence[str] = None,
+                        sweep_vars: Optional[Sequence[str]] = None,
                         regret_col: str = 'total_regret') -> gg.ggplot:
   """Bar plot the average regret at end of learning."""
   df = _preprocess_ave_regret(df_in, group_col, episode, sweep_vars, regret_col)
@@ -216,7 +215,7 @@ def plot_regret_ave_scaling(df_in: pd.DataFrame,
                             group_col: str,
                             episode: int,
                             regret_thresh: float,
-                            sweep_vars: Sequence[str] = None,
+                            sweep_vars: Optional[Sequence[str]] = None,
                             regret_col: str = 'total_regret') -> gg.ggplot:
   """Point plot of average regret investigating scaling to threshold."""
   df = _preprocess_ave_regret(df_in, group_col, episode, sweep_vars, regret_col)
@@ -233,8 +232,9 @@ def plot_regret_ave_scaling(df_in: pd.DataFrame,
   return facet_sweep_plot(p, sweep_vars)
 
 
-def _make_unique_group_col(df: pd.DataFrame,
-                           sweep_vars: Sequence[str] = None) -> pd.DataFrame:
+def _make_unique_group_col(
+    df: pd.DataFrame,
+    sweep_vars: Optional[Sequence[str]] = None) -> pd.DataFrame:
   """Adds a unique_group column based on sweep_vars + bsuite_id."""
   unique_vars = ['bsuite_id']
   if sweep_vars:
@@ -246,12 +246,13 @@ def _make_unique_group_col(df: pd.DataFrame,
   return unique_group
 
 
-def plot_individual_returns(df_in: pd.DataFrame,
-                            max_episode: int,
-                            return_column: str = 'episode_return',
-                            colour_var: str = None,
-                            yintercept: float = None,
-                            sweep_vars: Sequence[str] = None) -> gg.ggplot:
+def plot_individual_returns(
+    df_in: pd.DataFrame,
+    max_episode: int,
+    return_column: str = 'episode_return',
+    colour_var: Optional[str] = None,
+    yintercept: Optional[float] = None,
+    sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Plot individual learning curves: one curve per sweep setting."""
   df = df_in.copy()
   df['unique_group'] = _make_unique_group_col(df, sweep_vars)

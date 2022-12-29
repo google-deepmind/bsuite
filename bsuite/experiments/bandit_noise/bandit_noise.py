@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -25,10 +24,10 @@ from bsuite.experiments.bandit import sweep
 from bsuite.utils import wrappers
 
 
-def load(noise_scale, seed, mapping_seed):
+def load(noise_scale, seed, mapping_seed, num_actions=11):
   """Load a bandit_noise experiment with the prescribed settings."""
   env = wrappers.RewardNoise(
-      env=bandit.SimpleBandit(mapping_seed=mapping_seed),
+      env=bandit.SimpleBandit(mapping_seed, num_actions=num_actions),
       noise_scale=noise_scale,
       seed=seed)
   env.bsuite_num_episodes = sweep.NUM_EPISODES

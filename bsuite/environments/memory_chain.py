@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -23,6 +22,8 @@ by component. All actions take no effect until time_to_live=0, then the agent
 must repeat the observations that it saw bit-by-bit.
 """
 
+from typing import Optional
+
 from bsuite.environments import base
 
 import dm_env
@@ -36,7 +37,7 @@ class MemoryChain(base.Environment):
   def __init__(self,
                memory_length: int,
                num_bits: int = 1,
-               seed: int = None):
+               seed: Optional[int] = None):
     """Builds the memory chain environment."""
     super(MemoryChain, self).__init__()
     self._memory_length = memory_length
@@ -96,7 +97,8 @@ class MemoryChain(base.Environment):
     return dm_env.restart(observation)
 
   def observation_spec(self):
-    return specs.Array(shape=(1, self._num_bits + 2), dtype=np.float32)
+    return specs.Array(
+        shape=(1, self._num_bits + 2), dtype=np.float32, name='observation')
 
   def action_spec(self):
     return specs.DiscreteArray(2, name='action')

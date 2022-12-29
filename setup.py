@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -25,8 +24,8 @@ import setuptools
 baselines_require = [
     'dm-sonnet',
     'dm-tree',
-    'tensorflow == 2.1',
-    'tensorflow_probability >= 0.8, < 0.9',
+    'tensorflow',
+    'tensorflow_probability',
     'trfl',
     'tqdm',
 ]
@@ -51,6 +50,8 @@ baselines_third_party_require = [
 ]
 
 testing_require = [
+    'gym==0.20.0',
+    'tensorflow_probability == 0.14.1',
     'mock',
     'pytest-xdist',
     'pytype',
@@ -72,8 +73,7 @@ setuptools.setup(
     install_requires=[
         'absl-py',
         'dm_env',
-        'frozendict',
-        'gym',
+        'immutabledict',
         'matplotlib',
         'numpy',
         'pandas',

@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -89,7 +88,7 @@ class DiscountingChain(base.Environment):
     return dm_env.transition(reward=reward, observation=observation)
 
   def observation_spec(self):
-    return specs.Array(shape=(1, 2), dtype=np.float32)
+    return specs.Array(shape=(1, 2), dtype=np.float32, name='observation')
 
   def action_spec(self):
     return specs.DiscreteArray(self._n_actions, name='action')

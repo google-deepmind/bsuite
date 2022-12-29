@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -32,8 +31,8 @@ class BufferTest(absltest.TestCase):
     max_sequence_length = 10
     obs_shape = (3, 3)
     buffer = sequence.Buffer(
-        obs_spec=specs.Array(obs_shape, dtype=np.float),
-        action_spec=specs.Array((), dtype=np.int),
+        obs_spec=specs.Array(obs_shape, dtype=float),
+        action_spec=specs.Array((), dtype=int),
         max_sequence_length=max_sequence_length)
     dummy_step = dm_env.transition(observation=np.zeros(obs_shape), reward=0.)
 

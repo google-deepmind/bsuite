@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -16,7 +15,7 @@
 # ============================================================================
 """Analysis for deep_sea experiment."""
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from bsuite.experiments.deep_sea import sweep
 from bsuite.utils import plotting
@@ -36,9 +35,9 @@ def _check_data(df: pd.DataFrame) -> None:
 
 
 def find_solution(df_in: pd.DataFrame,
-                  sweep_vars: Sequence[str] = None,
+                  sweep_vars: Optional[Sequence[str]] = None,
                   merge: bool = True,
-                  thresh: float = 0.8,
+                  thresh: float = 0.9,
                   num_episodes: int = NUM_EPISODES) -> pd.DataFrame:
   """Find first episode that gets below thresh regret by sweep_vars."""
   # Check data has the necessary columns for deep sea
@@ -93,7 +92,7 @@ def score(df: pd.DataFrame,
 
 
 def _make_baseline(plt_df: pd.DataFrame,
-                   sweep_vars: Sequence[str] = None) -> pd.DataFrame:
+                   sweep_vars: Optional[Sequence[str]] = None) -> pd.DataFrame:
   """Generate baseline 2^N data for each combination of sweep_vars."""
   x = np.arange(5, 20)
   baseline = pd.DataFrame(dict(size=x, episode=2**x))
@@ -111,7 +110,7 @@ def _make_baseline(plt_df: pd.DataFrame,
 
 
 def _base_scaling(plt_df: pd.DataFrame,
-                  sweep_vars: Sequence[str] = None,
+                  sweep_vars: Optional[Sequence[str]] = None,
                   with_baseline: bool = True) -> gg.ggplot:
   """Base underlying piece of the scaling plots for deep sea."""
   p = (gg.ggplot(plt_df)
@@ -137,7 +136,7 @@ def _base_scaling(plt_df: pd.DataFrame,
 
 
 def plot_scaling(plt_df: pd.DataFrame,
-                 sweep_vars: Sequence[str] = None,
+                 sweep_vars: Optional[Sequence[str]] = None,
                  with_baseline: bool = True,
                  num_episodes: int = NUM_EPISODES) -> gg.ggplot:
   """Plot scaling of learning time against exponential baseline."""
@@ -151,7 +150,7 @@ def plot_scaling(plt_df: pd.DataFrame,
 
 
 def plot_scaling_log(plt_df: pd.DataFrame,
-                     sweep_vars: Sequence[str] = None,
+                     sweep_vars: Optional[Sequence[str]] = None,
                      with_baseline=True) -> gg.ggplot:
   """Plot scaling of learning time against exponential baseline."""
   p = _base_scaling(plt_df, sweep_vars, with_baseline)
@@ -163,7 +162,7 @@ def plot_scaling_log(plt_df: pd.DataFrame,
 
 
 def plot_regret(df_in: pd.DataFrame,
-                sweep_vars: Sequence[str] = None,
+                sweep_vars: Optional[Sequence[str]] = None,
                 num_episodes: int = NUM_EPISODES) -> gg.ggplot:
   """Plot average regret of deep_sea through time by size."""
   df = df_in.copy()
@@ -183,7 +182,7 @@ def plot_regret(df_in: pd.DataFrame,
 
 
 def plot_seeds(df_in: pd.DataFrame,
-               sweep_vars: Sequence[str] = None,
+               sweep_vars: Optional[Sequence[str]] = None,
                yintercept: float = 0.99,
                num_episodes: int = NUM_EPISODES) -> gg.ggplot:
   """Plot the returns through time individually by run."""

@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,6 +14,8 @@
 # limitations under the License.
 # ============================================================================
 """A swing up experiment in Cartpole."""
+
+from typing import Optional
 
 from bsuite.environments import base
 from bsuite.environments import cartpole
@@ -43,7 +44,7 @@ class CartpoleSwingup(base.Environment):
                timescale: float = 0.01,
                max_time: float = 10.,
                init_range: float = 0.05,
-               seed: int = None):
+               seed: Optional[int] = None):
     # Setup.
     self._state = cartpole.CartpoleState(0, 0, 0, 0, 0)
     super().__init__()
@@ -128,7 +129,7 @@ class CartpoleSwingup(base.Environment):
     raise NotImplementedError('This environment implements its own auto-reset.')
 
   def action_spec(self):
-    return specs.DiscreteArray(dtype=np.int, num_values=3, name='action')
+    return specs.DiscreteArray(dtype=int, num_values=3, name='action')
 
   def observation_spec(self):
     return specs.Array(shape=(1, 8), dtype=np.float32, name='state')

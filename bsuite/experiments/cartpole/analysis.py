@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -16,7 +15,7 @@
 # ============================================================================
 """Analysis for cartpole."""
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from bsuite.experiments.cartpole import sweep
 from bsuite.utils import plotting
@@ -52,7 +51,7 @@ def cartpole_preprocess(df_in: pd.DataFrame) -> pd.DataFrame:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
+                  sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Simple learning curves for cartpole."""
   df = cartpole_preprocess(df)
   p = plotting.plot_regret_learning(
@@ -63,8 +62,8 @@ def plot_learning(df: pd.DataFrame,
 
 
 def plot_seeds(df_in: pd.DataFrame,
-               sweep_vars: Sequence[str] = None,
-               colour_var: str = None) -> gg.ggplot:
+               sweep_vars: Optional[Sequence[str]] = None,
+               colour_var: Optional[str] = None) -> gg.ggplot:
   """Plot the returns through time individually by run."""
   df = df_in.copy()
   df['average_return'] = df.raw_return.diff() / df.episode.diff()

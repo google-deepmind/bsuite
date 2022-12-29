@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -35,6 +34,7 @@ For more information, see papers:
 [2] https://arxiv.org/abs/1806.03335
 """
 
+from typing import Optional
 import warnings
 
 from bsuite.environments import base
@@ -53,8 +53,8 @@ class DeepSea(base.Environment):
                deterministic: bool = True,
                unscaled_move_cost: float = 0.01,
                randomize_actions: bool = True,
-               seed: int = None,
-               mapping_seed: int = None):
+               seed: Optional[int] = None,
+               mapping_seed: Optional[int] = None):
     """Deep sea environment to test for deep exploration.
 
     Args:
@@ -144,7 +144,8 @@ class DeepSea(base.Environment):
     return dm_env.transition(reward=reward, observation=observation)
 
   def observation_spec(self):
-    return specs.Array(shape=(self._size, self._size), dtype=np.float32)
+    return specs.Array(
+        shape=(self._size, self._size), dtype=np.float32, name='observation')
 
   def action_spec(self):
     return specs.DiscreteArray(2, name='action')

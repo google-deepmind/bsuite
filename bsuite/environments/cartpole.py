@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -17,6 +16,7 @@
 """The Cartpole reinforcement learning environment."""
 
 import collections
+from typing import Optional
 from bsuite.environments import base
 from bsuite.experiments.cartpole import sweep
 
@@ -84,7 +84,7 @@ class Cartpole(base.Environment):
                timescale: float = 0.01,
                max_time: float = 10.,
                init_range: float = 0.05,
-               seed: int = None):
+               seed: Optional[int] = None):
     # Setup.
     self._state = CartpoleState(0, 0, 0, 0, 0)
     super().__init__()
@@ -159,10 +159,10 @@ class Cartpole(base.Environment):
     raise NotImplementedError('This environment implements its own auto-reset.')
 
   def action_spec(self):
-    return specs.DiscreteArray(dtype=np.int, num_values=3, name='action')
+    return specs.DiscreteArray(dtype=int, num_values=3, name='action')
 
   def observation_spec(self):
-    return specs.Array(shape=(1, 6), dtype=np.float32, name='state')
+    return specs.Array(shape=(1, 6), dtype=np.float32, name='observation')
 
   @property
   def observation(self) -> np.ndarray:

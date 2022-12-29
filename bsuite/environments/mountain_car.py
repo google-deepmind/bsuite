@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -22,6 +21,8 @@ This is a classic environment in RL research, first described by:
   PhD thesis, University of Cambridge, 1990.
 """
 
+from typing import Optional
+
 from bsuite.environments import base
 from bsuite.experiments.mountain_car import sweep
 
@@ -35,7 +36,7 @@ class MountainCar(base.Environment):
 
   def __init__(self,
                max_steps: int = 1000,
-               seed: int = None):
+               seed: Optional[int] = None):
     """Mountain Car, an underpowered car must power up a hill.
 
     Args:
@@ -89,7 +90,7 @@ class MountainCar(base.Environment):
     return dm_env.transition(reward=reward, observation=observation)
 
   def observation_spec(self):
-    return specs.Array(shape=(1, 3), dtype=np.float32)
+    return specs.Array(shape=(1, 3), dtype=np.float32, name='observation')
 
   def action_spec(self):
     """Actions [0,1,2] -> [Left, Stay, Right]."""

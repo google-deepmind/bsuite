@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -19,7 +18,7 @@
 import string
 import sys
 import traceback
-from typing import Any, Mapping
+from typing import Any, Mapping, Optional
 
 from absl import logging
 from bsuite import environments
@@ -55,7 +54,7 @@ class Logger(base.Logger):
                db_path: str,
                experiment_name: str,
                setting_index: int,
-               connection: sqlite3.Connection = None,
+               connection: Optional[sqlite3.Connection] = None,
                skip_name_validation: bool = False):
     """Initializes a new SQLite logger.
 

@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -16,7 +15,7 @@
 # ============================================================================
 """Analysis for umbrella_length experiment."""
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from bsuite.experiments.umbrella_length import sweep
 from bsuite.utils import plotting
@@ -46,7 +45,7 @@ def score(df: pd.DataFrame) -> float:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
+                  sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Plots the average regret through time."""
   return plotting.plot_regret_group_nosmooth(
       df_in=df,
@@ -57,7 +56,7 @@ def plot_learning(df: pd.DataFrame,
 
 
 def plot_scale(df: pd.DataFrame,
-               sweep_vars: Sequence[str] = None) -> gg.ggplot:
+               sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Plots the average return at end of learning investigating scaling."""
   return plotting.plot_regret_ave_scaling(
       df_in=df,
@@ -69,7 +68,7 @@ def plot_scale(df: pd.DataFrame,
 
 
 def plot_seeds(df_in: pd.DataFrame,
-               sweep_vars: Sequence[str] = None,
+               sweep_vars: Optional[Sequence[str]] = None,
                colour_var: str = 'chain_length') -> gg.ggplot:
   """Plot the returns through time individually by run."""
   df = df_in.copy()

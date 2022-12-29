@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -23,7 +22,7 @@ environment noise. To make sure that this is not by dumb luck, we use a more
 stringent threshold and only once the agent has done at least 100 episodes.
 """
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from bsuite.experiments.deep_sea import analysis as deep_sea_analysis
 from bsuite.experiments.deep_sea_stochastic import sweep
@@ -41,7 +40,7 @@ plot_regret = deep_sea_analysis.plot_regret
 
 
 def find_solution(df_in: pd.DataFrame,
-                  sweep_vars: Sequence[str] = None,
+                  sweep_vars: Optional[Sequence[str]] = None,
                   num_episodes: int = NUM_EPISODES) -> pd.DataFrame:
   """Find first solution episode, with harsher thresh for stochastic domain."""
   df = df_in.copy()
@@ -60,7 +59,7 @@ def score(df: pd.DataFrame,
 
 
 def plot_seeds(df: pd.DataFrame,
-               sweep_vars: Sequence[str] = None,
+               sweep_vars: Optional[Sequence[str]] = None,
                num_episodes: int = NUM_EPISODES) -> gg.ggplot:
   """Plot the returns through time individually by run."""
   return deep_sea_analysis.plot_seeds(

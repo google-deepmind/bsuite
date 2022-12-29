@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -20,6 +19,8 @@ In this environment, we test the agent's generalization ability, and abstract
 away exploration/planning/memory etc -- i.e. a bandit, with no 'state'.
 """
 
+from typing import Optional
+
 from bsuite.environments import base
 from bsuite.experiments.mnist import sweep
 from bsuite.utils import datasets
@@ -32,7 +33,7 @@ import numpy as np
 class MNISTBandit(base.Environment):
   """MNIST classification as a bandit environment."""
 
-  def __init__(self, fraction: float = 1., seed: int = None):
+  def __init__(self, fraction: float = 1., seed: Optional[int] = None):
     """Loads the MNIST training set (60K images & labels) as numpy arrays.
 
     Args:
@@ -74,10 +75,11 @@ class MNISTBandit(base.Environment):
     return dm_env.termination(reward=reward, observation=observation)
 
   def observation_spec(self):
-    return specs.Array(shape=self._image_shape, dtype=np.float32)
+    return specs.Array(
+        shape=self._image_shape, dtype=np.float32, name='observation')
 
   def action_spec(self):
-    return specs.DiscreteArray(num_values=10)
+    return specs.DiscreteArray(num_values=10, name='action')
 
   def bsuite_info(self):
     return dict(total_regret=self._total_regret)

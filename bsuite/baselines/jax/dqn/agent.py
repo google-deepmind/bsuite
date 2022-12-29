@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -62,7 +61,7 @@ class DQN(base.Agent):
       target_update_period: int,
   ):
     # Transform the (impure) network into a pure function.
-    network = hk.without_apply_rng(hk.transform(network, apply_rng=True))
+    network = hk.without_apply_rng(hk.transform(network))
 
     # Define loss function.
     def loss(params: hk.Params,

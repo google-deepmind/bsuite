@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -15,6 +14,8 @@
 # limitations under the License.
 # ============================================================================
 """Catch reinforcement learning environment."""
+
+from typing import Optional
 
 from bsuite.environments import base
 from bsuite.experiments.catch import sweep
@@ -41,7 +42,10 @@ class Catch(base.Environment):
   The episode terminates when the ball reaches the bottom of the screen.
   """
 
-  def __init__(self, rows: int = 10, columns: int = 5, seed: int = None):
+  def __init__(self,
+               rows: int = 10,
+               columns: int = 5,
+               seed: Optional[int] = None):
     """Initializes a new Catch environment.
 
     Args:
@@ -95,12 +99,12 @@ class Catch(base.Environment):
   def observation_spec(self) -> specs.BoundedArray:
     """Returns the observation spec."""
     return specs.BoundedArray(shape=self._board.shape, dtype=self._board.dtype,
-                              name="board", minimum=0, maximum=1)
+                              name="observation", minimum=0, maximum=1)
 
   def action_spec(self) -> specs.DiscreteArray:
     """Returns the action spec."""
     return specs.DiscreteArray(
-        dtype=np.int, num_values=len(_ACTIONS), name="action")
+        dtype=int, num_values=len(_ACTIONS), name="action")
 
   def _observation(self) -> np.ndarray:
     self._board.fill(0.)

@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -16,7 +15,7 @@
 # ============================================================================
 """Analysis for mnist scale environments."""
 
-from typing import Sequence
+from typing import Optional, Sequence
 
 from bsuite.experiments.mnist import analysis as mnist_analysis
 from bsuite.experiments.mnist_noise import analysis as mnist_noise_analysis
@@ -33,17 +32,17 @@ def score(df: pd.DataFrame) -> float:
 
 
 def plot_learning(df: pd.DataFrame,
-                  sweep_vars: Sequence[str] = None) -> gg.ggplot:
+                  sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   return mnist_noise_analysis.plot_learning(df, sweep_vars, 'reward_scale')
 
 
 def plot_average(df: pd.DataFrame,
-                 sweep_vars: Sequence[str] = None) -> gg.ggplot:
+                 sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   return mnist_noise_analysis.plot_average(df, sweep_vars, 'reward_scale')
 
 
 def plot_seeds(df: pd.DataFrame,
-               sweep_vars: Sequence[str] = None) -> gg.ggplot:
+               sweep_vars: Optional[Sequence[str]] = None) -> gg.ggplot:
   """Plot the performance by individual work unit."""
   return mnist_analysis.plot_seeds(
       df_in=df,

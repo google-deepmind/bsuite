@@ -1,4 +1,3 @@
-# python3
 # pylint: disable=g-bad-file-header
 # Copyright 2019 DeepMind Technologies Limited. All Rights Reserved.
 #
@@ -75,7 +74,7 @@ class ActorCritic(base.Agent):
       return actor_loss + critic_loss
 
     # Transform the loss into a pure function.
-    loss_fn = hk.without_apply_rng(hk.transform(loss, apply_rng=True)).apply
+    loss_fn = hk.without_apply_rng(hk.transform(loss)).apply
 
     # Define update function.
     @jax.jit
@@ -88,7 +87,7 @@ class ActorCritic(base.Agent):
       return TrainingState(params=new_params, opt_state=new_opt_state)
 
     # Initialize network parameters and optimiser state.
-    init, forward = hk.without_apply_rng(hk.transform(network, apply_rng=True))
+    init, forward = hk.without_apply_rng(hk.transform(network))
     dummy_observation = jnp.zeros((1, *obs_spec.shape), dtype=jnp.float32)
     initial_params = init(next(rng), dummy_observation)
     initial_opt_state = optimizer.init(initial_params)
