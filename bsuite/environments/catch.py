@@ -14,6 +14,7 @@
 # limitations under the License.
 # ============================================================================
 """Catch reinforcement learning environment."""
+import warnings
 
 from typing import Optional
 
@@ -65,6 +66,13 @@ class Catch(base.Environment):
     self._total_regret = 0.
     self.bsuite_num_episodes = sweep.NUM_EPISODES
 
+  def _get_observation(self):
+    self._board.fill(0.)
+    self._board[self._ball_y, self._ball_x] = 1.
+    self._board[self._paddle_y, self._paddle_x] = 1.
+
+    return self._board.copy()
+
   def _reset(self) -> dm_env.TimeStep:
     """Returns the first `TimeStep` of a new episode."""
     self._reset_next_step = False
@@ -107,11 +115,10 @@ class Catch(base.Environment):
         dtype=np.int, num_values=len(_ACTIONS), name="action")
 
   def _observation(self) -> np.ndarray:
-    self._board.fill(0.)
-    self._board[self._ball_y, self._ball_x] = 1.
-    self._board[self._paddle_y, self._paddle_x] = 1.
-
-    return self._board.copy()
+    warnings.warn(
+        "Deprecated method `_observation`, use `_get_observation` instead."
+    )
+    return self._get_observation()
 
   def bsuite_info(self):
     return dict(total_regret=self._total_regret)
