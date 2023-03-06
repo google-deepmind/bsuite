@@ -129,7 +129,7 @@ class CartpoleSwingup(base.Environment):
     raise NotImplementedError('This environment implements its own auto-reset.')
 
   def action_spec(self):
-    return specs.DiscreteArray(dtype=np.int, num_values=3, name='action')
+    return specs.DiscreteArray(dtype=np.int32, num_values=3, name='action')
 
   def observation_spec(self):
     return specs.Array(shape=(1, 8), dtype=np.float32, name='state')

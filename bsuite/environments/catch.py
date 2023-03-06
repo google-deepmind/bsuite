@@ -104,7 +104,7 @@ class Catch(base.Environment):
   def action_spec(self) -> specs.DiscreteArray:
     """Returns the action spec."""
     return specs.DiscreteArray(
-        dtype=np.int, num_values=len(_ACTIONS), name="action")
+        dtype=np.int32, num_values=len(_ACTIONS), name="action")
 
   def _observation(self) -> np.ndarray:
     self._board.fill(0.)
