@@ -32,7 +32,7 @@ class BufferTest(absltest.TestCase):
     obs_shape = (3, 3)
     buffer = sequence.Buffer(
         obs_spec=specs.Array(obs_shape, dtype=np.float),
-        action_spec=specs.Array((), dtype=np.int),
+        action_spec=specs.Array((), dtype=np.int32),
         max_sequence_length=max_sequence_length)
     dummy_step = dm_env.transition(observation=np.zeros(obs_shape), reward=0.)
 
