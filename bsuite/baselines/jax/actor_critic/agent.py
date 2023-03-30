@@ -56,7 +56,7 @@ class ActorCritic(base.Agent):
     # Define loss function.
     def loss(trajectory: sequence.Trajectory) -> jnp.ndarray:
       """"Actor-critic loss."""
-      logits, values = network(trajectory.observations)
+      logits, values = network(trajectory.observations)  # pytype: disable=wrong-arg-types  # jax-ndarray
       td_errors = rlax.td_lambda(
           v_tm1=values[:-1],
           r_t=trajectory.rewards,
