@@ -22,7 +22,7 @@ Typically, these plots will be imported and used within experiment analysis.
 from typing import Callable, Optional, Sequence
 
 from bsuite.utils import smoothers
-import matplotlib.style as style
+from matplotlib import style
 import numpy as np
 import pandas as pd
 import plotnine as gg
@@ -179,7 +179,7 @@ def _preprocess_ave_regret(df_in: pd.DataFrame,
                            group_col: str,
                            episode: int,
                            sweep_vars: Optional[Sequence[str]] = None,
-                           regret_col: str = 'total_regret') -> gg.ggplot:
+                           regret_col: str = 'total_regret') -> pd.DataFrame:
   """Preprocess the data at episode for average regret calculations."""
   df = df_in.copy()
   group_vars = (sweep_vars or []) + [group_col]
