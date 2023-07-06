@@ -29,7 +29,7 @@ import plotnine as gg
 
 # Updates the theme to preferred default settings
 gg.theme_set(gg.theme_bw(base_size=18, base_family='serif'))
-gg.theme_update(figure_size=(12, 8), panel_spacing_x=0.5, panel_spacing_y=0.5)
+gg.theme_update(figure_size=(12, 8), panel_spacing_x=0.01, panel_spacing_y=0.01)
 style.use('seaborn-poster')
 style.use('ggplot')
 
@@ -108,7 +108,7 @@ def facet_sweep_plot(base_plot: gg.ggplot,
 
   theme_settings = gg.theme_bw(base_size=18, base_family='serif')
   theme_settings += gg.theme(
-      figure_size=fig_size, panel_spacing_x=0.5, panel_spacing_y=0.5,)
+      figure_size=fig_size, panel_spacing_x=0.01, panel_spacing_y=0.01,)
 
   return base_plot + theme_settings
 
