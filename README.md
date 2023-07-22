@@ -137,15 +137,14 @@ sweep.TAGS['scale']
 
 ### Loading an environment with logging included
 
-We include two implementations of automatic logging, available via:
+We include one implementation of automatic logging, available via:
 
-*   [`bsuite.load_and_record_to_csv`]. This outputs one CSV file per
-    `bsuite_id`, so is suitable for running a set of bsuite experiments split
-    over multiple machines. The implementation is in [`logging/csv_logging.py`]
-*   [`bsuite.load_and_record_to_sqlite`]. This outputs a single file, and is
-    best suited when running a set of bsuite experiments via multiple processes
-    on a single workstation. The implementation is in
-    [`logging/sqlite_logging.py`].
+[`bsuite.load_and_record_to_csv`]. This outputs one CSV file per `bsuite_id`,
+so is suitable for running a set of bsuite experiments split over multiple
+machines. The implementation is in [`logging/csv_logging.py`]
+
+Note, older versions of bsuite included an SQLite logger. If you would like to
+use this, please contact us and we can update and reinstate it.
 
 We also include a terminal logger in [`logging/terminal_logging.py`], exposed
 via `bsuite.load_and_record_to_terminal`.

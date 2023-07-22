@@ -44,7 +44,6 @@ from bsuite.experiments.umbrella_distract import umbrella_distract
 from bsuite.experiments.umbrella_length import umbrella_length
 
 from bsuite.logging import csv_logging
-from bsuite.logging import sqlite_logging
 from bsuite.logging import terminal_logging
 
 import dm_env
@@ -113,61 +112,14 @@ def load_and_record(bsuite_id: str,
                     save_path: str,
                     logging_mode: str = 'csv',
                     overwrite: bool = False) -> dm_env.Environment:
-  """Returns a bsuite environment wrapped with either CSV or SQLite logging."""
+  """Returns a bsuite environment wrapped with CSV or terminal logging."""
   if logging_mode == 'csv':
     return load_and_record_to_csv(bsuite_id, save_path, overwrite)
-  elif logging_mode == 'sqlite':
-    if not save_path.endswith('.db'):
-      save_path += '.db'
-    if overwrite:
-      print('WARNING: overwrite option is ignored for SQLite logging.')
-    return load_and_record_to_sqlite(bsuite_id, save_path)
   elif logging_mode == 'terminal':
     return load_and_record_to_terminal(bsuite_id)
   else:
     raise ValueError((f'Unrecognised logging_mode "{logging_mode}". '
-                      'Must be "csv", "sqlite", or "terminal".'))
-
-
-def load_and_record_to_sqlite(bsuite_id: str,
-                              db_path: str) -> dm_env.Environment:
-  """Returns a bsuite environment that saves results to an SQLite database.
-
-  The returned environment will automatically save the results required for
-  the analysis notebook when stepping through the environment.
-
-  To load the results, specify the file path in the provided notebook, or to
-  manually inspect the results use:
-
-  ```python
-  from bsuite.logging import sqlite_load
-
-  results_df, sweep_vars = sqlite_load.load_bsuite('/path/to/database.db')
-  ```
-
-  Args:
-    bsuite_id: The bsuite id identifying the environment to return. For example,
-      "catch/0" or "deep_sea/3".
-    db_path: Path to the database file for this set of results. The file will be
-      created if it does not already exist. When generating results using
-      multiple different processes, specify the *same* db_path for every
-      bsuite_id.
-
-  Returns:
-    A bsuite environment determined by the bsuite_id.
-  """
-  raw_env = load_from_id(bsuite_id)
-  experiment_name, setting_index = unpack_bsuite_id(bsuite_id)
-  termcolor.cprint(
-      f'Logging results to SQLite database in {db_path}.',
-      color='yellow',
-      attrs=['bold'])
-  return sqlite_logging.wrap_environment(
-      env=raw_env,
-      db_path=db_path,
-      experiment_name=experiment_name,
-      setting_index=setting_index,
-  )
+                      'Must be "csv" or "terminal".'))
 
 
 def load_and_record_to_csv(bsuite_id: str,
