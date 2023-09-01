@@ -375,7 +375,7 @@ def bsuite_radar_plot(summary_data: pd.DataFrame,
   if sweep_vars:
     sweep_data_ = summary_data.groupby('agent')
     for aid, (agent, sweep_df) in enumerate(sweep_data_):
-      _radar(sweep_df, ax, agent, all_tags, color=palette(aid))
+      _radar(sweep_df, ax, agent, all_tags, color=palette(aid))  # pytype: disable=wrong-arg-types  # pandas-drop-duplicates-overloads
     if len(sweep_vars) == 1:
       label = sweep_vars[0]
       if label == 'experiment':
