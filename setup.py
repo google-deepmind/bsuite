@@ -15,7 +15,7 @@
 # ============================================================================
 """Install script for setuptools."""
 
-import imp
+from importlib.machinery import SourceFileLoader
 
 import setuptools
 
@@ -67,7 +67,7 @@ setuptools.setup(
     author='DeepMind',
     author_email='dm-bsuite-eng+os@google.com',
     license='Apache License, Version 2.0',
-    version=imp.load_source('_metadata', 'bsuite/_metadata.py').__version__,
+    version=SourceFileLoader("_metadata", "bsuite/_metadata.py").load_module().__version__, 
     keywords='reinforcement-learning python machine-learning',
     packages=setuptools.find_packages(),
     install_requires=[
