@@ -30,7 +30,7 @@ import plotnine as gg
 # Updates the theme to preferred default settings
 gg.theme_set(gg.theme_bw(base_size=18, base_family='serif'))
 gg.theme_update(figure_size=(12, 8), panel_spacing_x=0.01, panel_spacing_y=0.01)
-style.use('seaborn-poster')
+style.use('seaborn-v0_8-poster')
 style.use('ggplot')
 
 FIVE_COLOURS = [
