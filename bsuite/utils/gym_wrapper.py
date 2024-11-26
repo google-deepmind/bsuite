@@ -66,7 +66,7 @@ class GymFromDMEnv(gym.Env):
         from gym.envs.classic_control import rendering
         self.viewer = rendering.SimpleImageViewer()
       self.viewer.imshow(self._last_observation)
-      return self.viewer.isopen
+      return self.viewer.isopen  # pytype: disable=bad-return-type
 
   @property
   def action_space(self) -> spaces.Discrete:
