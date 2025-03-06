@@ -15,7 +15,7 @@
 # ============================================================================
 """Downloads and loads the MNIST dataset.
 
-Adapted from https://github.com/google/jax/blob/master/examples/datasets.py
+Adapted from https://github.com/jax-ml/jax/blob/master/examples/datasets.py
 """
 
 import array

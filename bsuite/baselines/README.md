@@ -77,7 +77,7 @@ python3 run.py --bsuite_id=SWEEP
 
 [Dopamine]: https://github.com/google/dopamine
 [Haiku]: https://github.com/deepmind/haiku
-[JAX]: https://github.com/google/jax
+[JAX]: https://github.com/jax-ml/jax
 [OpenAI baselines]: https://github.com/openai/baselines
 [Osband et al. 2018]: https://arxiv.org/abs/1806.03335
 [rlax]: https://github.com/deepmind/rlax
