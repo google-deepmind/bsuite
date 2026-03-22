@@ -15,9 +15,16 @@
 # ============================================================================
 """Install script for setuptools."""
 
-import imp
+from importlib import util
 
 import setuptools
+
+
+def _get_version():
+  spec = util.spec_from_file_location('_metadata', 'bsuite/_metadata.py')
+  mod = util.module_from_spec(spec)
+  spec.loader.exec_module(mod)
+  return mod.__version__
 
 # Additional requirements for TensorFlow baselines, excluding OpenAI & Dopamine.
 # See baselines/README.md for more information.
@@ -67,7 +74,7 @@ setuptools.setup(
     author='DeepMind',
     author_email='dm-bsuite-eng+os@google.com',
     license='Apache License, Version 2.0',
-    version=imp.load_source('_metadata', 'bsuite/_metadata.py').__version__,
+    version=_get_version(),
     keywords='reinforcement-learning python machine-learning',
     packages=setuptools.find_packages(),
     install_requires=[
