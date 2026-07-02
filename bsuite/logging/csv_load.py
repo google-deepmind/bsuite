@@ -44,7 +44,7 @@ def load_one_result_set(results_dir: str) -> pd.DataFrame:
     df['results_dir'] = results_dir
     data.append(df)
   df = pd.concat(data, sort=False)
-  return logging_utils.join_metadata(df)
+  return logging_utils.join_metadata(df)  # pyrefly: ignore[bad-argument-type]
 
 
 def load_bsuite(

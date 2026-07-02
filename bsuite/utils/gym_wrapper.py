@@ -52,7 +52,7 @@ class GymFromDMEnv(gym.Env):
     self._last_observation = timestep.observation
     return timestep.observation
 
-  def render(self, mode: str = 'rgb_array') -> Union[np.ndarray, bool]:
+  def render(self, mode: str = 'rgb_array') -> Union[np.ndarray, bool]:  # pyrefly: ignore[bad-return]
     if self._last_observation is None:
       raise ValueError('Environment not ready to render. Call reset() first.')
 
@@ -69,12 +69,12 @@ class GymFromDMEnv(gym.Env):
       return self.viewer.isopen  # pytype: disable=bad-return-type
 
   @property
-  def action_space(self) -> spaces.Discrete:
+  def action_space(self) -> spaces.Discrete:  # pyrefly: ignore[bad-override]
     action_spec = self._env.action_spec()  # type: specs.DiscreteArray
     return spaces.Discrete(action_spec.num_values)
 
   @property
-  def observation_space(self) -> spaces.Box:
+  def observation_space(self) -> spaces.Box:  # pyrefly: ignore[bad-override]
     obs_spec = self._env.observation_spec()  # type: specs.Array
     if isinstance(obs_spec, specs.BoundedArray):
       return spaces.Box(
@@ -89,7 +89,7 @@ class GymFromDMEnv(gym.Env):
         dtype=obs_spec.dtype)
 
   @property
-  def reward_range(self) -> Tuple[float, float]:
+  def reward_range(self) -> Tuple[float, float]:  # pyrefly: ignore[bad-override]
     reward_spec = self._env.reward_spec()
     if isinstance(reward_spec, specs.BoundedArray):
       return reward_spec.minimum, reward_spec.maximum
@@ -128,7 +128,7 @@ def space2spec(space: gym.Space, name: Optional[str] = None):
 
   elif isinstance(space, spaces.MultiDiscrete):
     return specs.BoundedArray(shape=space.shape, dtype=space.dtype,
-                              minimum=np.zeros(space.shape),
+                              minimum=np.zeros(space.shape),  # pyrefly: ignore[no-matching-overload]
                               maximum=space.nvec, name=name)
 
   elif isinstance(space, spaces.Tuple):
@@ -147,9 +147,9 @@ class DMEnvFromGym(dm_env.Environment):
   def __init__(self, gym_env: gym.Env):
     self.gym_env = gym_env
     # Convert gym action and observation spaces to dm_env specs.
-    self._observation_spec = space2spec(self.gym_env.observation_space,
+    self._observation_spec = space2spec(self.gym_env.observation_space,  # pyrefly: ignore[bad-argument-type]
                                         name='observations')
-    self._action_spec = space2spec(self.gym_env.action_space, name='actions')
+    self._action_spec = space2spec(self.gym_env.action_space, name='actions')  # pyrefly: ignore[bad-argument-type]
     self._reset_next_step = True
 
   def reset(self) -> dm_env.TimeStep:

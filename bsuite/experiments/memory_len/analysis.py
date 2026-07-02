@@ -48,7 +48,7 @@ def score(df: pd.DataFrame, group_col: str = 'memory_length') -> float:
     ave_perfection = (
         sub_df.loc[sub_df.episode == max_eps, 'regret_ratio'].mean() / max_eps)
     regret_list.append(ave_perfection)
-  return np.mean(np.array(regret_list) < LEARNING_THRESH)
+  return np.mean(np.array(regret_list) < LEARNING_THRESH)  # pyrefly: ignore[bad-return]
 
 
 def plot_learning(df: pd.DataFrame,

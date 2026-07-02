@@ -29,7 +29,7 @@ import plotnine as gg
 
 # Updates the theme to preferred default settings
 gg.theme_set(gg.theme_bw(base_size=18, base_family='serif'))
-gg.theme_update(figure_size=(12, 8), panel_spacing_x=0.01, panel_spacing_y=0.01)
+gg.theme_update(figure_size=(12, 8), panel_spacing_x=0.01, panel_spacing_y=0.01)  # pyrefly: ignore[bad-argument-type]
 style.use('seaborn-v0_8-poster')
 style.use('ggplot')
 
@@ -182,7 +182,7 @@ def _preprocess_ave_regret(df_in: pd.DataFrame,
                            regret_col: str = 'total_regret') -> pd.DataFrame:
   """Preprocess the data at episode for average regret calculations."""
   df = df_in.copy()
-  group_vars = (sweep_vars or []) + [group_col]
+  group_vars = (sweep_vars or []) + [group_col]  # pyrefly: ignore[unsupported-operation]
   plt_df = (df[df.episode == episode]
             .groupby(group_vars)[regret_col].mean().reset_index())
   if len(plt_df) == 0:  # pylint:disable=g-explicit-length-test

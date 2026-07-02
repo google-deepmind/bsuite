@@ -84,7 +84,7 @@ def plot_scale(df: pd.DataFrame,
        + gg.geom_point(size=5, alpha=0.8)
        + gg.scale_colour_manual(values=['#d73027', '#313695'])
        + gg.geom_hline(gg.aes(yintercept=0.0), alpha=0)  # axis hack
-       + gg.scale_x_discrete(breaks=[0, 0.25, 0.5, 0.75, 1.0])
+       + gg.scale_x_discrete(breaks=[0, 0.25, 0.5, 0.75, 1.0])  # pyrefly: ignore[bad-argument-type]
        + gg.ylab('best return in first {} episodes'.format(NUM_EPISODES))
        + gg.xlab('height threshold')
       )

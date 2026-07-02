@@ -71,7 +71,7 @@ class ActorCritic(base.Agent):
           adv_t=td_errors,
           w_t=jnp.ones_like(td_errors))
 
-      return actor_loss + critic_loss
+      return actor_loss + critic_loss  # pyrefly: ignore[bad-return]
 
     # Transform the loss into a pure function.
     loss_fn = hk.without_apply_rng(hk.transform(loss)).apply
@@ -84,7 +84,7 @@ class ActorCritic(base.Agent):
       gradients = jax.grad(loss_fn)(state.params, trajectory)
       updates, new_opt_state = optimizer.update(gradients, state.opt_state)
       new_params = optax.apply_updates(state.params, updates)
-      return TrainingState(params=new_params, opt_state=new_opt_state)
+      return TrainingState(params=new_params, opt_state=new_opt_state)  # pyrefly: ignore[bad-argument-type]
 
     # Initialize network parameters and optimiser state.
     init, forward = hk.without_apply_rng(hk.transform(network))

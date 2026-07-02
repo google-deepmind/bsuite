@@ -85,7 +85,7 @@ class MemoryChain(base.Environment):
       self._total_perfect += 1
     else:
       reward = -1.
-      self._total_regret += 2.
+      self._total_regret += 2.  # pyrefly: ignore[bad-assignment]
     return dm_env.termination(reward=reward, observation=observation)
 
   def _reset(self) -> dm_env.TimeStep:

@@ -61,7 +61,7 @@ class DQN(base.Agent):
       target_update_period: int,
   ):
     # Transform the (impure) network into a pure function.
-    network = hk.without_apply_rng(hk.transform(network))
+    network = hk.without_apply_rng(hk.transform(network))  # pyrefly: ignore[bad-assignment]
 
     # Define loss function.
     def loss(params: hk.Params,
@@ -69,8 +69,8 @@ class DQN(base.Agent):
              transitions: Sequence[jnp.ndarray]) -> jnp.ndarray:
       """Computes the standard TD(0) Q-learning loss on batch of transitions."""
       o_tm1, a_tm1, r_t, d_t, o_t = transitions
-      q_tm1 = network.apply(params, o_tm1)
-      q_t = network.apply(target_params, o_t)
+      q_tm1 = network.apply(params, o_tm1)  # pyrefly: ignore[missing-attribute]
+      q_t = network.apply(target_params, o_t)  # pyrefly: ignore[missing-attribute]
       batch_q_learning = jax.vmap(rlax.q_learning)
       td_error = batch_q_learning(q_tm1, a_tm1, r_t, discount * d_t, q_t)
       return jnp.mean(td_error**2)
@@ -85,15 +85,15 @@ class DQN(base.Agent):
       new_params = optax.apply_updates(state.params, updates)
 
       return TrainingState(
-          params=new_params,
+          params=new_params,  # pyrefly: ignore[bad-argument-type]
           target_params=state.target_params,
           opt_state=new_opt_state,
           step=state.step + 1)
 
     # Initialize the networks and optimizer.
     dummy_observation = np.zeros((1, *obs_spec.shape), jnp.float32)
-    initial_params = network.init(next(rng), dummy_observation)
-    initial_target_params = network.init(next(rng), dummy_observation)
+    initial_params = network.init(next(rng), dummy_observation)  # pyrefly: ignore[missing-attribute]
+    initial_target_params = network.init(next(rng), dummy_observation)  # pyrefly: ignore[missing-attribute]
     initial_opt_state = optimizer.init(initial_params)
 
     # This carries the agent state relevant to training.
@@ -103,7 +103,7 @@ class DQN(base.Agent):
         opt_state=initial_opt_state,
         step=0)
     self._sgd_step = sgd_step
-    self._forward = jax.jit(network.apply)
+    self._forward = jax.jit(network.apply)  # pyrefly: ignore[missing-attribute]
     self._replay = replay.Replay(capacity=replay_capacity)
 
     # Store hyperparameters.

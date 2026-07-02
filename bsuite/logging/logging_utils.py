@@ -83,4 +83,4 @@ def load_multiple_runs(
     data.append(df)
 
   sweep_vars = ['agent_name']
-  return pd.concat(data, sort=False), sweep_vars
+  return pd.concat(data, sort=False), sweep_vars  # pyrefly: ignore[bad-return]

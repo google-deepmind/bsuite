@@ -120,7 +120,7 @@ class DeepSea(base.Environment):
     # Reward calculation
     if self._column == self._size - 1 and action_right:
       reward += 1.
-      self._denoised_return += 1.
+      self._denoised_return += 1.  # pyrefly: ignore[bad-assignment]
     if not self._deterministic:  # Noisy rewards on the 'end' of chain.
       if self._row == self._size - 1 and self._column in [0, self._size - 1]:
         reward += self._rng.randn()

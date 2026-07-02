@@ -114,7 +114,7 @@ class BootstrappedDqn(base.Agent):
         one_hot_actions = tf.one_hot(a_tm1, depth=self._num_actions)
         train_value = tf.reduce_sum(q_values * one_hot_actions, axis=-1)
         target_value = tf.stop_gradient(tf.reduce_max(target_net(o_t), axis=-1))
-        target_y = r_t + z_t[:, k] + self._discount * d_t * target_value
+        target_y = r_t + z_t[:, k] + self._discount * d_t * target_value  # pyrefly: ignore[unsupported-operation]
         loss = tf.square(train_value - target_y) * m_t[:, k]
         losses.append(loss)
 
@@ -155,8 +155,8 @@ class BootstrappedDqn(base.Agent):
         TransitionWithMaskAndNoise(
             o_tm1=timestep.observation,
             a_tm1=action,
-            r_t=np.float32(new_timestep.reward),
-            d_t=np.float32(new_timestep.discount),
+            r_t=np.float32(new_timestep.reward),  # pyrefly: ignore[bad-argument-type]
+            d_t=np.float32(new_timestep.discount),  # pyrefly: ignore[bad-argument-type]
             o_t=new_timestep.observation,
             m_t=self._rng.binomial(1, self._mask_prob,
                                    self._num_ensemble).astype(np.float32),

@@ -223,14 +223,14 @@ def bsuite_bar_plot(df_in: pd.DataFrame,
        + gg.aes(x='env', y='score', colour='type', fill='type')
        + gg.geom_bar(position='dodge', stat='identity')
        + gg.geom_hline(yintercept=1., linetype='dashed', alpha=0.5)
-       + gg.scale_colour_manual(plotting.CATEGORICAL_COLOURS)
-       + gg.scale_fill_manual(plotting.CATEGORICAL_COLOURS)
+       + gg.scale_colour_manual(plotting.CATEGORICAL_COLOURS)  # pyrefly: ignore[bad-argument-type, missing-argument]
+       + gg.scale_fill_manual(plotting.CATEGORICAL_COLOURS)  # pyrefly: ignore[bad-argument-type, missing-argument]
        + gg.xlab('experiment')
        + gg.theme(axis_text_x=gg.element_text(angle=25, hjust=1))
       )
   if not all(df.finished):  # add a layer of alpha for unfinished jobs
     p += gg.aes(alpha='finished')
-    p += gg.scale_alpha_discrete(range=[0.3, 1.0])
+    p += gg.scale_alpha_discrete(range=[0.3, 1.0])  # pyrefly: ignore[bad-argument-type]
 
   # Compute the necessary size of the plot
   if sweep_vars:
@@ -248,12 +248,12 @@ def _bar_plot_compare(df: pd.DataFrame) -> gg.ggplot:
        + gg.geom_bar(position='dodge', stat='identity')
        + gg.geom_hline(yintercept=1., linetype='dashed', alpha=0.5)
        + gg.theme(axis_text_x=gg.element_text(angle=25, hjust=1))
-       + gg.scale_colour_manual(plotting.CATEGORICAL_COLOURS)
-       + gg.scale_fill_manual(plotting.CATEGORICAL_COLOURS)
+       + gg.scale_colour_manual(plotting.CATEGORICAL_COLOURS)  # pyrefly: ignore[bad-argument-type, missing-argument]
+       + gg.scale_fill_manual(plotting.CATEGORICAL_COLOURS)  # pyrefly: ignore[bad-argument-type, missing-argument]
       )
   if not all(df.finished):  # add a layer of alpha for unfinished jobs
     p += gg.aes(alpha='finished')
-    p += gg.scale_alpha_discrete(range=[0.3, 1.0])
+    p += gg.scale_alpha_discrete(range=[0.3, 1.0])  # pyrefly: ignore[bad-argument-type]
   return p
 
 

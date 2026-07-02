@@ -76,7 +76,7 @@ def find_solution(df_in: pd.DataFrame,
 
   # Optionally merge back with all the df columns.
   if merge:
-    join_vars = sweep_vars + ['episode']
+    join_vars = sweep_vars + ['episode']  # pyrefly: ignore[unsupported-operation]
     plt_df = plt_df.merge(df, on=join_vars)
 
   return plt_df
@@ -104,7 +104,7 @@ def _make_baseline(plt_df: pd.DataFrame,
       for col, val in row.iteritems():
         tmp[col] = val
       data.append(tmp)
-    return pd.concat(data, sort=True)
+    return pd.concat(data, sort=True)  # pyrefly: ignore[bad-return]
   else:
     return baseline
 

@@ -76,7 +76,7 @@ class UmbrellaChain(base.Environment):
         reward = 1.
       else:
         reward = -1.
-        self._total_regret += 2.
+        self._total_regret += 2.  # pyrefly: ignore[bad-assignment]
       observation = self._get_observation()
       return dm_env.termination(reward=reward, observation=observation)
 

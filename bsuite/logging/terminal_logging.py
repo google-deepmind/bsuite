@@ -49,7 +49,7 @@ class Logger(base.Logger):
     """Writes to terminal, pretty-printing the results."""
 
     if self._pretty_print:
-      data = pretty_dict(data)
+      data = pretty_dict(data)  # pyrefly: ignore[bad-assignment]
 
     self._print_fn(data)
 

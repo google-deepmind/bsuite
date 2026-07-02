@@ -37,7 +37,7 @@ def score_by_group(df: pd.DataFrame, group_col: str) -> float:
     ave_regret = (
         sub_df.loc[sub_df.episode == max_eps, 'total_regret'].mean() / max_eps)
     regret_list.append(ave_regret)
-  return np.mean(np.array(regret_list) < REGRET_THRESH)
+  return np.mean(np.array(regret_list) < REGRET_THRESH)  # pyrefly: ignore[bad-return]
 
 
 def score(df: pd.DataFrame) -> float:
