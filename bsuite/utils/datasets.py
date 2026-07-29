@@ -26,7 +26,7 @@ import struct
 
 from absl import logging
 import numpy as np
-from six.moves.urllib.request import urlretrieve
+from six.moves.urllib.request import urlretrieve  # pyrefly: ignore[missing-source-for-stubs]
 
 
 def _download(url, filename, directory="/tmp/mnist"):
@@ -46,12 +46,12 @@ def load_mnist(directory="/tmp/mnist"):
 
   def parse_labels(filename):
     with gzip.open(filename, "rb") as fh:
-      _ = struct.unpack(">II", fh.read(8))
+      _ = struct.unpack(">II", fh.read(8))  # pyrefly: ignore[bad-argument-type]
       return np.array(array.array("B", fh.read()), dtype=np.uint8)
 
   def parse_images(filename):
     with gzip.open(filename, "rb") as fh:
-      _, num_data, rows, cols = struct.unpack(">IIII", fh.read(16))
+      _, num_data, rows, cols = struct.unpack(">IIII", fh.read(16))  # pyrefly: ignore[bad-argument-type]
       return np.array(array.array("B", fh.read()),
                       dtype=np.int8).reshape((num_data, rows, cols))
 

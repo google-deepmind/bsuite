@@ -81,7 +81,7 @@ def facet_sweep_plot(base_plot: gg.ggplot,
                      sweep_vars: Optional[Sequence[str]] = None,
                      tall_plot: bool = False) -> gg.ggplot:
   """Add a facet_wrap to the plot based on sweep_vars."""
-  df = base_plot.data.copy()
+  df = base_plot.data.copy()  # pyrefly: ignore[missing-attribute]
 
   if sweep_vars:
     # Work out what size the plot should be based on the hypers + add facet.
