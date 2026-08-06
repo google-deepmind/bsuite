@@ -151,7 +151,7 @@ class DQN(base.Agent):
 
     # Do a batch of SGD.
     transitions = self._replay.sample(self._batch_size)
-    self._state = self._sgd_step(self._state, transitions)
+    self._state = self._sgd_step(self._state, transitions)  # pyrefly: ignore[bad-argument-type]
 
     # Periodically update target parameters.
     if self._state.step % self._target_update_period == 0:

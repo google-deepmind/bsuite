@@ -193,7 +193,7 @@ class BootstrappedDqn(base.Agent):
       o_tm1, a_tm1, r_t, d_t, o_t, m_t, z_t = transitions
       for k, state in enumerate(self._ensemble):
         transitions = [o_tm1, a_tm1, r_t, d_t, o_t, m_t[:, k], z_t[:, k]]
-        self._ensemble[k] = self._sgd_step(state, transitions)
+        self._ensemble[k] = self._sgd_step(state, transitions)  # pyrefly: ignore[bad-argument-type]
 
     # Periodically update target parameters.
     for k, state in enumerate(self._ensemble):
