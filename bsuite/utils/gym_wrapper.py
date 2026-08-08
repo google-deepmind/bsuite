@@ -97,8 +97,9 @@ class GymFromDMEnv(gym.Env):
 
   def __getattr__(self, attr):
     """Delegate attribute access to underlying environment."""
-    return getattr(self._env, attr)
-
+    if "_env" in self.__dict__:
+      return getattr(self._env, attr)
+    return super().__getattribute__(attr)
 
 def space2spec(space: gym.Space, name: Optional[str] = None):
   """Converts an OpenAI Gym space to a dm_env spec or nested structure of specs.
