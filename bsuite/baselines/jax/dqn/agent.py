@@ -118,7 +118,7 @@ class DQN(base.Agent):
   def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     """Selects actions according to an epsilon-greedy policy."""
     if np.random.rand() < self._epsilon:
-      return np.random.randint(self._num_actions)
+      return np.random.randint(self._num_actions)  # pyrefly: ignore[bad-return]
 
     # Greedy policy, breaking ties uniformly at random.
     observation = timestep.observation[None, ...]

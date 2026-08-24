@@ -133,7 +133,7 @@ class BootstrappedDqn(base.Agent):
   def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     """Select values via Thompson sampling, then use epsilon-greedy policy."""
     if self._rng.rand() < self._epsilon_fn(self._total_steps.numpy()):
-      return self._rng.randint(self._num_actions)
+      return self._rng.randint(self._num_actions)  # pyrefly: ignore[bad-return]
 
     # Greedy policy, breaking ties uniformly at random.
     batched_obs = tf.expand_dims(timestep.observation, axis=0)

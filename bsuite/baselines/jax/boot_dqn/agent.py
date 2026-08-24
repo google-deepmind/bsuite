@@ -147,7 +147,7 @@ class BootstrappedDqn(base.Agent):
     """Select values via Thompson sampling, then use epsilon-greedy policy."""
     self._total_steps += 1
     if np.random.rand() < self._epsilon_fn(self._total_steps):
-      return np.random.randint(self._num_actions)
+      return np.random.randint(self._num_actions)  # pyrefly: ignore[bad-return]
 
     # Greedy policy, breaking ties uniformly at random.
     batched_obs = timestep.observation[None, ...]
