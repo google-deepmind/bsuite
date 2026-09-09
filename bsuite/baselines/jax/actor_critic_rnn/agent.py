@@ -100,7 +100,7 @@ class ActorCriticRNN(base.Agent):
       updates, new_opt_state = optimizer.update(gradients, state.opt_state)
       new_params = optax.apply_updates(state.params, updates)
       return state._replace(
-          params=new_params,
+          params=new_params,  # pyrefly: ignore[bad-argument-type]
           opt_state=new_opt_state,
           rnn_unroll_state=new_rnn_state)
 
