@@ -134,8 +134,9 @@ class Logging(dm_env.Environment):
 
   def __getattr__(self, attr):
     """Delegate attribute access to underlying environment."""
-    return getattr(self._env, attr)
-
+    if "_env" in self.__dict__:
+      return getattr(self._env, attr)
+    return super().__getattribute__(attr)
 
 def _logarithmic_logging(episode: int,
                          ratios: Optional[Sequence[float]] = None) -> bool:
@@ -173,8 +174,9 @@ class ImageObservation(dm_env.Environment):
 
   def __getattr__(self, attr):
     """Delegate attribute access to underlying environment."""
-    return getattr(self._env, attr)
-
+    if "_env" in self.__dict__:
+      return getattr(self._env, attr)
+    return super().__getattribute__(attr)
 
 def _small_state_to_image(shape: Sequence[int],
                           observation: np.ndarray) -> np.ndarray:
@@ -307,8 +309,9 @@ class RewardNoise(environments.Environment):
 
   def __getattr__(self, attr):
     """Delegate attribute access to underlying environment."""
-    return getattr(self._env, attr)
-
+    if "_env" in self.__dict__:
+      return getattr(self._env, attr)
+    return super().__getattribute__(attr)
 
 class RewardScale(environments.Environment):
   """Reward Scale environment wrapper."""
@@ -370,4 +373,6 @@ class RewardScale(environments.Environment):
 
   def __getattr__(self, attr):
     """Delegate attribute access to underlying environment."""
-    return getattr(self._env, attr)
+    if "_env" in self.__dict__:
+      return getattr(self._env, attr)
+    return super().__getattribute__(attr)
