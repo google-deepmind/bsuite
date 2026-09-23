@@ -16,6 +16,7 @@
 """Tests for bsuite.baselines.replay."""
 
 from absl.testing import absltest
+from absl.testing import parameterized
 
 from bsuite.baselines.utils import replay as replay_lib
 import numpy as np
@@ -51,6 +52,62 @@ class BasicReplayTest(absltest.TestCase):
     samples = replay.sample(size=capacity)
     for sample, shape in zip(samples, shapes):
       self.assertEqual(sample.shape, (capacity,) + shape)
+
+
+class ReplayResetTest(parameterized.TestCase):
+
+  @parameterized.parameters(0, 1, 4, 6)
+  def test_reset_clears_size_and_fill_fraction(self, num_added):
+    replay = replay_lib.Replay(capacity=4)
+    for value in range(num_added):
+      replay.add([value + 1])
+    replay.reset()
+    self.assertEqual(replay.size, 0)
+    self.assertEqual(replay.fraction_filled, 0.0)
+    replay.reset()
+    self.assertEqual(replay.size, 0)
+
+  @parameterized.parameters(1, 4, 6)
+  def test_reset_then_refill_matches_fresh_buffer(self, num_added):
+    replay = replay_lib.Replay(capacity=4)
+    for value in range(num_added):
+      replay.add([np.array([value], dtype=np.int32)])
+    replay.reset()
+    fresh = replay_lib.Replay(capacity=4)
+    rng_state = np.random.get_state()
+    try:
+      # New storage has a different shape and two fields. Every sampled
+      # field must belong to an actual post-reset transition.
+      for step in range(7):
+        item = [
+            np.array([step + 10, step + 20], dtype=np.float32),
+            np.int32(step + 30),
+        ]
+        replay.add(item)
+        fresh.add(item)
+        self.assertEqual(replay.size, fresh.size)
+        self.assertEqual(replay.fraction_filled, fresh.fraction_filled)
+        np.random.seed(123)
+        actual = replay.sample(32)
+        np.random.seed(123)
+        expected = fresh.sample(32)
+        for got, wanted in zip(actual, expected):
+          np.testing.assert_array_equal(got, wanted)
+    finally:
+      np.random.set_state(rng_state)
+
+  def test_partial_reset_does_not_sample_unwritten_slots(self):
+    replay = replay_lib.Replay(capacity=4)
+    replay.add([1.0])
+    replay.add([2.0])
+    replay.reset()
+    replay.add([17.0])
+    rng_state = np.random.get_state()
+    try:
+      np.random.seed(0)
+      np.testing.assert_array_equal(replay.sample(64)[0], np.full(64, 17.0))
+    finally:
+      np.random.set_state(rng_state)
 
 
 if __name__ == '__main__':
