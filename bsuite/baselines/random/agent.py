@@ -34,7 +34,7 @@ class Random(base.Agent):
 
   def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     del timestep
-    return self._rng.randint(self._num_actions)  # pyrefly: ignore[bad-return]
+    return self._rng.randint(self._num_actions)
 
   def update(self,
              timestep: dm_env.TimeStep,

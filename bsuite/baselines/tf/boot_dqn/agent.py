@@ -114,7 +114,7 @@ class BootstrappedDqn(base.Agent):
         one_hot_actions = tf.one_hot(a_tm1, depth=self._num_actions)
         train_value = tf.reduce_sum(q_values * one_hot_actions, axis=-1)
         target_value = tf.stop_gradient(tf.reduce_max(target_net(o_t), axis=-1))
-        target_y = r_t + z_t[:, k] + self._discount * d_t * target_value  # pyrefly: ignore[unsupported-operation]
+        target_y = r_t + z_t[:, k] + self._discount * d_t * target_value
         loss = tf.square(train_value - target_y) * m_t[:, k]
         losses.append(loss)
 
@@ -133,7 +133,7 @@ class BootstrappedDqn(base.Agent):
   def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     """Select values via Thompson sampling, then use epsilon-greedy policy."""
     if self._rng.rand() < self._epsilon_fn(self._total_steps.numpy()):
-      return self._rng.randint(self._num_actions)  # pyrefly: ignore[bad-return]
+      return self._rng.randint(self._num_actions)
 
     # Greedy policy, breaking ties uniformly at random.
     batched_obs = tf.expand_dims(timestep.observation, axis=0)

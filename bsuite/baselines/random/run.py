@@ -59,7 +59,7 @@ def run(bsuite_id: str) -> str:
   experiment.run(
       agent=agent,
       environment=env,
-      num_episodes=FLAGS.num_episodes or env.bsuite_num_episodes,  # pytype: disable=attribute-error
+      num_episodes=FLAGS.num_episodes or env.bsuite_num_episodes,  # pyrefly: ignore[missing-attribute]
       verbose=FLAGS.verbose)
 
   return bsuite_id

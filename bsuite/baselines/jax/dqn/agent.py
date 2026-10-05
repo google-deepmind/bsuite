@@ -118,7 +118,7 @@ class DQN(base.Agent):
   def select_action(self, timestep: dm_env.TimeStep) -> base.Action:
     """Selects actions according to an epsilon-greedy policy."""
     if np.random.rand() < self._epsilon:
-      return np.random.randint(self._num_actions)  # pyrefly: ignore[bad-return]
+      return np.random.randint(self._num_actions)
 
     # Greedy policy, breaking ties uniformly at random.
     observation = timestep.observation[None, ...]
@@ -151,7 +151,7 @@ class DQN(base.Agent):
 
     # Do a batch of SGD.
     transitions = self._replay.sample(self._batch_size)
-    self._state = self._sgd_step(self._state, transitions)  # pyrefly: ignore[bad-argument-type]
+    self._state = self._sgd_step(self._state, transitions)
 
     # Periodically update target parameters.
     if self._state.step % self._target_update_period == 0:

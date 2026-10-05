@@ -104,7 +104,7 @@ def _make_baseline(plt_df: pd.DataFrame,
       for col, val in row.iteritems():
         tmp[col] = val
       data.append(tmp)
-    return pd.concat(data, sort=True)  # pyrefly: ignore[bad-return]
+    return pd.concat(data, sort=True)
   else:
     return baseline
 

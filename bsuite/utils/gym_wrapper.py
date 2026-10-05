@@ -66,7 +66,7 @@ class GymFromDMEnv(gym.Env):
         from gym.envs.classic_control import rendering
         self.viewer = rendering.SimpleImageViewer()
       self.viewer.imshow(self._last_observation)
-      return self.viewer.isopen  # pytype: disable=bad-return-type
+      return self.viewer.isopen
 
   @property
   def action_space(self) -> spaces.Discrete:  # pyrefly: ignore[bad-override]
@@ -128,7 +128,7 @@ def space2spec(space: gym.Space, name: Optional[str] = None):
 
   elif isinstance(space, spaces.MultiDiscrete):
     return specs.BoundedArray(shape=space.shape, dtype=space.dtype,
-                              minimum=np.zeros(space.shape),  # pyrefly: ignore[no-matching-overload]
+                              minimum=np.zeros(space.shape),
                               maximum=space.nvec, name=name)
 
   elif isinstance(space, spaces.Tuple):
@@ -147,9 +147,9 @@ class DMEnvFromGym(dm_env.Environment):
   def __init__(self, gym_env: gym.Env):
     self.gym_env = gym_env
     # Convert gym action and observation spaces to dm_env specs.
-    self._observation_spec = space2spec(self.gym_env.observation_space,  # pyrefly: ignore[bad-argument-type]
+    self._observation_spec = space2spec(self.gym_env.observation_space,
                                         name='observations')
-    self._action_spec = space2spec(self.gym_env.action_space, name='actions')  # pyrefly: ignore[bad-argument-type]
+    self._action_spec = space2spec(self.gym_env.action_space, name='actions')
     self._reset_next_step = True
 
   def reset(self) -> dm_env.TimeStep:

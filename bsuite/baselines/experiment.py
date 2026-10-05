@@ -38,7 +38,7 @@ def run(agent: base.Agent,
 
   if verbose:
     environment = terminal_logging.wrap_environment(
-        environment, log_every=True)  # pytype: disable=wrong-arg-types
+        environment, log_every=True)  # pyrefly: ignore[bad-argument-type]
 
   for _ in range(num_episodes):
     # Run an episode.
