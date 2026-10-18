@@ -4,6 +4,10 @@
 ![PyPI version](https://badge.fury.io/py/bsuite.svg)
 ![pytest](https://github.com/deepmind/bsuite/workflows/pytest/badge.svg)
 
+<p align="center">
+  <b>English</b> · <a href="https://github.com/google-deepmind/bsuite/blob/main/README.zh.md">简体中文</a>
+</p>
+
 ![radar plot](reports/standalone/images/radar_plot.png)
 
 ## Introduction
