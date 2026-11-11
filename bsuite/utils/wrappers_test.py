@@ -15,6 +15,8 @@
 # ============================================================================
 """Tests for bsuite.utils.wrapper."""
 
+from unittest import mock
+
 from absl.testing import absltest
 from absl.testing import parameterized
 
@@ -25,7 +27,6 @@ from bsuite.utils import wrappers
 import dm_env
 from dm_env import specs
 from dm_env import test_utils
-import mock
 import numpy as np
 
 
