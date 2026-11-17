@@ -7,19 +7,84 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v1
+    - uses: actions/checkout@v4
       with:
-        python-version: '3.x'
-    - name: Install dependencies
+        persist-credentials: false
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Build distribution
       run: |
-        pip install --upgrade pip setuptools twine
-    - name: Build and publish
+        python3 -m pip install --upgrade pip setuptools twine
+        python3 setup.py sdist
+    - name: Authenticate to Google Cloud (OSS Exit Gate)
+      uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed # v2.1.13
+      with:
+        workload_identity_provider: 'projects/305452601764/locations/global/workloadIdentityPools/builders/providers/github'
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@e427ad8a34f8676edf47cf7d7925499adf3eb74f # v2.2.1
+    - name: Clean up failed staging attempt for this exact version (if any)
+      id: exit_gate_cleanup
+      run: |
+        set -euo pipefail
+        PKG_VER=$(python3 -c 'import email, glob, os, tarfile, zipfile; files = sorted(glob.glob("dist/*.whl") + glob.glob("dist/*.tar.gz")); assert files, "No distributions found in dist/"; p = files[0]; meta = (  zipfile.ZipFile(p).read([n for n in zipfile.ZipFile(p).namelist() if n.endswith(".dist-info/METADATA")][0])  if p.endswith(".whl") else   tarfile.open(p).extractfile([m for m in tarfile.open(p).getmembers() if m.name.endswith("/PKG-INFO") or m.name == "PKG-INFO"][0]).read()); print(email.message_from_bytes(meta)["Version"].strip())')
+        echo "pkg_ver=${PKG_VER}" >> "$GITHUB_OUTPUT"
+        set +e
+        gcloud artifacts versions describe "${PKG_VER}" \
+          --package="bsuite" \
+          --project="oss-exit-gate-prod" \
+          --location="us" \
+          --repository="bsuite--pypi" \
+          --format="value(name)" > /dev/null 2> describe.err
+        DESC_RC=$?
+        set -e
+        if [ "$DESC_RC" -eq 0 ]; then
+          echo "Deleting incomplete staged version ${PKG_VER} before retry..."
+          gcloud artifacts versions delete "${PKG_VER}" \
+            --package="bsuite" \
+            --project="oss-exit-gate-prod" \
+            --location="us" \
+            --repository="bsuite--pypi" \
+            --quiet
+        elif grep -Eqi "NOT_FOUND|not.found|404" describe.err; then
+          echo "Version ${PKG_VER} not present in staging repository — proceeding with fresh upload"
+        else
+          cat describe.err >&2
+          exit "$DESC_RC"
+        fi
+    - name: Stage distributions to OSS Exit Gate and upload manifest
       env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        PKG_VER: ${{ steps.exit_gate_cleanup.outputs.pkg_ver }}
+        RUN_ID: ${{ github.run_id }}
+        RUN_ATTEMPT: ${{ github.run_attempt }}
       run: |
-        python setup.py sdist
-        twine upload dist/*
+        set -euo pipefail
+        true
+        TWINE_PASSWORD="$(gcloud auth print-access-token)"
+        python3 -m twine upload \
+          --repository-url "https://us-python.pkg.dev/oss-exit-gate-prod/bsuite--pypi/" \
+          -u oauth2accesstoken \
+          -p "${TWINE_PASSWORD}" \
+          dist/*
+        cat <<EOF > manifest.json
+        {
+          "publish_all": false,
+          "publishing_groups": [
+            {
+              "packages": [
+                {
+                  "name": "bsuite",
+                  "version": "${PKG_VER}"
+                }
+              ]
+            }
+          ]
+        }
+        EOF
+        gcloud storage cp manifest.json \
+          "gs://oss-exit-gate-prod-projects-bucket/bsuite/pypi/manifests/manifest-${PKG_VER}-${RUN_ID}-${RUN_ATTEMPT}.json"
