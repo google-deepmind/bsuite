@@ -61,6 +61,7 @@ class Replay:
   def reset(self,):
     """Resets the replay."""
     self._data = None
+    self._num_added = 0
 
   @property
   def size(self) -> int:
