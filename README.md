@@ -36,6 +36,8 @@ subdirectory. Each subdirectory corresponds to one experiment and contains:
 -   A sequence of keyword arguments for this environment, defined in the
     `SETTINGS` variable found in the experiment's `sweep.py` file.
 -   A file `analysis.py` defining plots used in the provided Jupyter notebook.
+-   A `TAGS` tuple in `sweep.py` that identifies which agent properties the
+    experiment tests (for example, generalization or noise robustness).
 
 `bsuite` works by logging results from "within" each environment, when loading
 environment via a
@@ -134,6 +136,32 @@ tag, so all the `basic` tasks or `scale` tasks can be loaded with:
 sweep.TAGS['basic']
 sweep.TAGS['scale']
 ```
+
+### Which experiments contribute to each radar plot axis?
+
+The radar plot at the top of this README summarizes performance by challenge
+category, such as `generalization`, `exploration`, or `noise`. The mapping from
+an experiment to these categories is declared in that experiment's
+[`sweep.py`](bsuite/experiments/cartpole_noise/sweep.py), using the `TAGS`
+tuple. For example, `cartpole_noise` declares
+`TAGS = ('noise', 'generalization')`, so its environments contribute to both
+categories.
+
+The repository-wide `sweep.TAGS` mapping is built from these declarations.
+To see which experiments contribute to *any* category without maintaining a
+second, potentially outdated list:
+
+```python
+from bsuite import sweep
+
+for tag, bsuite_ids in sweep.TAGS.items():
+    experiments = sorted({bsuite_id.split('/')[0] for bsuite_id in bsuite_ids})
+    print(f"{tag}: {', '.join(experiments)}")
+```
+
+The [analysis notebook][`analysis/results.ipynb`] calculates experiment scores
+and aggregates them by tag to produce the radar plot. `TAGS` determines the
+membership of each category, not the numerical score itself.
 
 ### Loading an environment with logging included
 
